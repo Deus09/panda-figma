@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, .ion-page, .ion-content {
+  background: #121212 !important;
+} 
