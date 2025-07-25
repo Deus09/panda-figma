@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, .ion-page, .ion-content {
+html, body {
   background: #121212 !important;
 } 

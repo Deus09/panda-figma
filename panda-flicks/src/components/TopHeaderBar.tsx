@@ -2,9 +2,11 @@ import React from 'react';
 import logo from '../assets/logo.png';
 
 const TopHeaderBar: React.FC = () => (
-  <div className="flex flex-row items-center gap-10 px-5 py-2.5 bg-[#222] w-full min-h-[60px]">
-    <img src={logo} alt="Pandaflicks Logo" className="w-10 h-10 rounded-full" />
-    <span className="text-white font-extrabold text-2xl leading-[36px] tracking-tight">Pandaflicks</span>
+  <div className="flex flex-row items-center justify-between bg-[#222] w-[393px] h-[60px] px-[20px] py-[10px]" style={{gap: '125px'}}>
+    <div className="flex flex-row items-center gap-[10px]">
+      <img src={logo} alt="Pandaflicks Logo" className="w-[40px] h-[40px] rounded-full bg-[#D9D9D9]" />
+      <span className="text-white font-extrabold text-[24px] leading-[36px] font-poppins">Pandaflicks</span>
+    </div>
   </div>
 );
 

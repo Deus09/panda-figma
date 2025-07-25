@@ -5,91 +5,43 @@ import BottomNavBar from '../components/BottomNavBar';
 import FabAddButton from '../components/FabAddButton';
 import fabAdd from '../assets/fab-add.svg';
 import React, { useState } from 'react';
+import TabSegment from '../components/TabSegment';
 
-const movies = [
-  {
-    title: 'Lilo & Stitch',
-    date: 'DD/MM/YYYY',
-    rating: '4.5',
-    review: 'Lorem ipsum, asdsdfdfsd fsdf fsfssdfd gdfgsfsd fsfsdfsdfs  kljkljlk sdsdflskj fdkdjflf',
-    poster: '',
-  },
-  {
-    title: 'Dangerous Animals',
-    date: 'DD/MM/YYYY',
-    rating: '4.5',
-    review: 'Lorem ipsum, asdsdfdfsd fsdf fsfssdfd gdfgsfsd fsfsdfsdfs  kljkljlk sdsdflskj fdkdjflf',
-    poster: '',
-  },
-  {
-    title: 'Thunderbolts*',
-    date: 'DD/MM/YYYY',
-    rating: '4.5',
-    review: 'Lorem ipsum, asdsdfdfsd fsdf fsfssdfd gdfgsfsd fsfsdfsdfs  kljkljlk sdsdflskj fdkdjflf',
-    poster: '',
-  },
-  {
-    title: 'How to Train Your Dragon',
-    date: 'DD/MM/YYYY',
-    rating: '4.5',
-    review: 'Lorem ipsum, asdsdfdfsd fsdf fsfssdfd gdfgsfsd fsfsdfsdfs  kljkljlk sdsdflskj fdkdjflf',
-    poster: '',
-  },
-  {
-    title: 'The Midnight Bloom',
-    date: 'DD/MM/YYYY',
-    rating: '4.5',
-    review: 'Lorem ipsum, asdsdfdfsd fsdf fsfssdfd gdfgsfsd fsfsdfsdfs  kljkljlk sdsdflskj fdkdjflf',
-    poster: '',
-  },
-  {
-    title: 'F1',
-    date: 'DD/MM/YYYY',
-    rating: '4.5',
-    review: 'Lorem ipsum, asdsdfdfsd fsdf fsfssdfd gdfgsfsd fsfsdfsdfs  kljkljlk sdsdflskj fdkdjflf',
-    poster: '',
-  },
-];
+// movies array ve mock MovieCard renderlarını kaldır
 
 const Home: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'watched' | 'watchlist'>('watched');
+  const [movieLogs, setMovieLogs] = useState<Array<{
+    title: string;
+    date: string;
+    rating: string;
+    review: string;
+    poster: string;
+    type: 'watched' | 'watchlist';
+  }>>([]);
   return (
     <IonPage className="bg-[#121212]">
       <IonContent fullscreen className="bg-[#121212] relative">
-        <div className="bg-[#121212] min-h-screen">
+        <div className="bg-[#121212] min-h-screen flex flex-col items-center">
           <TopHeaderBar />
           {/* Tab Segment + Filter */}
-          <div className="flex w-full justify-center pt-2 pb-4">
-            <div className="flex flex-row items-center gap-3">
-              <div className="flex w-[193px] h-[25px] rounded-[10px] overflow-hidden border border-white bg-[#222]">
-                <button
-                  className={`w-[100px] h-full flex items-center justify-center font-semibold text-[16px] leading-[24px] border-r border-white rounded-l-[10px] transition-all duration-300 ${activeTab === 'watched' ? 'bg-[#222] text-[#FE7743]' : 'bg-[#222] text-white'}`}
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                  onClick={() => setActiveTab('watched')}
-                >
-                  Watched
-                </button>
-                <button
-                  className={`w-[100px] h-full flex items-center justify-center font-semibold text-[16px] leading-[24px] rounded-r-[10px] transition-all duration-300 ${activeTab === 'watchlist' ? 'bg-white text-[#FE7743]' : 'bg-[#222] text-white'}`}
-                  style={{ fontFamily: 'Poppins, sans-serif', borderLeft: 'none' }}
-                  onClick={() => setActiveTab('watchlist')}
-                >
-                  Watch List
-                </button>
-              </div>
+          <div className="flex w-full justify-center pt-[24px] pb-[20px]">
+            <div className="flex flex-row items-center gap-[12px]">
+              <TabSegment activeTab={activeTab} onTabChange={setActiveTab} />
               <button className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center transition-colors p-0 shadow-none border-none" aria-label="Filter">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#FE7743" className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h18m-16.5 0a1.5 1.5 0 0 0-1.5 1.5v2.25c0 .414.168.81.44 1.1l5.56 5.9c.28.297.44.697.44 1.1V19.5a1.5 1.5 0 0 0 1.5 1.5h3a1.5 1.5 0 0 0 1.5-1.5v-3.15c0-.403.16-.803.44-1.1l5.56-5.9A1.5 1.5 0 0 0 21 8.25V6a1.5 1.5 0 0 0-1.5-1.5H3z" />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" strokeWidth={2} stroke="#FE7743" className="w-[18px] h-[18px]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3.75h13.5m-12.375 0A1.125 1.125 0 0 0 2.25 4.875v1.687c0 .311.126.608.33.826l4.162 4.426c.21.224.33.525.33.826v2.36a1.125 1.125 0 0 0 1.125 1.125h2.25a1.125 1.125 0 0 0 1.125-1.125v-2.36c0-.301.12-.602.33-.826l4.162-4.426A1.125 1.125 0 0 0 15.75 6.562V4.875a1.125 1.125 0 0 0-1.125-1.125H2.25z" />
                 </svg>
               </button>
             </div>
           </div>
-          <div className="flex flex-col gap-2 px-1.5 pb-24">
-            {movies.map((movie, idx) => (
+          {/* Movie List */}
+          <div className="flex flex-col gap-[12px] items-center pb-[110px] w-full">
+            {movieLogs.filter(log => log.type === activeTab).map((movie, idx) => (
               <MovieCard key={idx} {...movie} />
             ))}
           </div>
-          <FabAddButton />
+          <FabAddButton onAddMovieLog={log => setMovieLogs(prev => [...prev, log])} />
           <BottomNavBar />
         </div>
       </IonContent>
