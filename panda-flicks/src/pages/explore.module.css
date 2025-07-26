@@ -1,0 +1,29 @@
+/* Explore Page Styles */
+.explorePage {
+  background-color: #0C1117 !important;
+}
+
+.exploreContent {
+  background-color: #0C1117 !important;
+  --background: #0C1117 !important;
+}
+
+/* Override Ionic's default background */
+ion-content {
+  --background: #0C1117 !important;
+  background-color: #0C1117 !important;
+}
+
+ion-page {
+  background-color: #0C1117 !important;
+}
+
+/* Ensure the entire page has dark background */
+:global(.ion-page) {
+  background-color: #0C1117 !important;
+}
+
+:global(.ion-content) {
+  --background: #0C1117 !important;
+  background-color: #0C1117 !important;
+} 

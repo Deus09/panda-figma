@@ -3,7 +3,9 @@ import { IonContent, IonPage } from '@ionic/react';
 import TabSegment from '../components/TabSegment';
 import MovieDetailModal from '../components/MovieDetailModal';
 import SeriesDetailModal from '../components/SeriesDetailModal';
+import BottomNavBar from '../components/BottomNavBar';
 import { getPopularMovies, getPopularSeries, TMDBMovieResult } from '../services/tmdb';
+import styles from './explore.module.css';
 
 const Explore: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'flicks' | 'series'>('flicks');
@@ -82,8 +84,8 @@ const Explore: React.FC = () => {
   };
 
   return (
-    <IonPage className="bg-[#0C1117]">
-      <IonContent className="bg-[#0C1117]">
+    <IonPage className={styles.explorePage}>
+      <IonContent className={styles.exploreContent}>
         <div className="flex flex-col items-center w-full pt-6 pb-2 px-0">
           {/* Başlık */}
           <span className="block text-white font-bold text-[22px] leading-[33px] mb-2 font-poppins w-full max-w-[332px] text-left">Panda Explorer</span>
@@ -146,6 +148,9 @@ const Explore: React.FC = () => {
           onClose={handleCloseSeriesModal}
           seriesId={selectedSeriesId}
         />
+        
+        {/* Bottom Navigation */}
+        <BottomNavBar className="rounded-t-[24px]" />
       </IonContent>
     </IonPage>
   );
