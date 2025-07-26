@@ -1,5 +1,5 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'your-gemini-api-key-here';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
 
 export const improveComment = async (comment: string, movieTitle: string): Promise<string> => {
   try {
@@ -35,15 +35,7 @@ export const chatWithCast = async (
   movieTitle: string
 ): Promise<string> => {
   try {
-    const prompt = `You are ${castMember.name}, playing the character ${castMember.character} in the movie "${movieTitle}". 
-
-IMPORTANT: You are NOT the real ${castMember.name}. You are role-playing as the CHARACTER ${castMember.character} from the movie "${movieTitle}". 
-
-Respond as if you are ${castMember.character} speaking about the movie, your character's experiences, motivations, relationships with other characters, and behind-the-scenes moments. Stay in character and respond naturally as the character would.
-
-User's message: "${message}"
-
-Respond as ${castMember.character}:`;
+    const prompt = `You are role-playing as \"${castMember.character}\" from the movie \"${movieTitle}\". Stay in character and answer the user's message as \"${castMember.character}\". If you don't know something, improvise as the character would. User's message: \"${message}\"`;
 
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
@@ -64,9 +56,31 @@ Respond as ${castMember.character}:`;
     }
 
     const data = await response.json();
-    return data.candidates[0].content.parts[0].text;
+
+    // Yanıtı kontrol et
+    if (
+      !data.candidates ||
+      !Array.isArray(data.candidates) ||
+      data.candidates.length === 0 ||
+      !data.candidates[0].content ||
+      !data.candidates[0].content.parts ||
+      !data.candidates[0].content.parts[0].text
+    ) {
+      return "Sorry, the cast member is having trouble responding right now. Please try again later or ask a different question.";
+    }
+
+    const answer = data.candidates[0].content.parts[0].text;
+    if (
+      answer.toLowerCase().includes("having trouble") ||
+      answer.toLowerCase().includes("i'm sorry") ||
+      answer.trim() === ""
+    ) {
+      return "Sorry, the cast member is having trouble responding right now. Please try again later or ask a different question.";
+    }
+
+    return answer;
   } catch (error) {
     console.error('Error chatting with cast:', error);
-    throw error;
+    return "Sorry, there was an error contacting the cast member. Please try again later.";
   }
 }; 

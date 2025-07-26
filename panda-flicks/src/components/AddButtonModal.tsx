@@ -8,11 +8,12 @@ import CastChatModal from './CastChatModal';
 interface AddButtonModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (log?: { selectedMovie?: TMDBMovieResult; tmdbId?: number }) => void;
   onAddMovieLog?: (log: any) => void;
+  onMovieSelect?: (movie: TMDBMovieResult, id: number) => void;
 }
 
-const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog }) => {
+const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect }) => {
   const [watchList, setWatchList] = useState(false);
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -33,13 +34,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   const [showImproveAlert, setShowImproveAlert] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [pendingImproved, setPendingImproved] = useState('');
-  const [showToast, setShowToast] = useState(false);
   
   // Cast chat states
   const [showCastSelection, setShowCastSelection] = useState(false);
   const [showCastChat, setShowCastChat] = useState(false);
   const [selectedCastMember, setSelectedCastMember] = useState<TMDBCastMember | null>(null);
-  const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
 
   React.useEffect(() => {
     console.log('Selected rating:', rating);
@@ -61,13 +60,8 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       setShowCastSelection(false);
       setShowCastChat(false);
       setSelectedCastMember(null);
-      setShowToast(false);
-      if (toastTimeout) {
-        clearTimeout(toastTimeout);
-        setToastTimeout(null);
-      }
     }
-  }, [open, toastTimeout]);
+  }, [open]);
 
   useEffect(() => {
     if (search.length >= 3) {
@@ -84,12 +78,6 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   if (!open) return null;
 
   const handleCancel = () => {
-    // Toast timeout'unu temizle
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-      setToastTimeout(null);
-    }
-    
     setSearch('');
     setSelectedMovie(null);
     setTmdbId(null);
@@ -101,7 +89,6 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     });
     setComment('');
     setWatchList(false);
-    setShowToast(false);
     onClose();
   };
 
@@ -134,29 +121,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     };
     onAddMovieLog?.(log);
     
-    // Modal'ı hemen kapat
-    onSave();
-    
-    // Toast göster
-    console.log('Setting showToast to true');
-    setShowToast(true);
-    
-    // 5 saniye sonra toast'u kapat
-    const timeout = setTimeout(() => {
-      console.log('Toast timeout triggered');
-      setShowToast(false);
-    }, 5000);
-    
-    setToastTimeout(timeout);
+    // Modal'ı kapat
+    onSave({ selectedMovie, tmdbId: tmdbId ?? undefined });
   };
 
   const handleChatWithCast = () => {
-    // Toast timeout'unu temizle
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-      setToastTimeout(null);
-    }
-    setShowToast(false);
     setShowCastSelection(true);
   };
 
@@ -228,6 +197,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                         setTmdbId(movie.id);
                         setSuggestions([]);
                         setSearch(movie.title);
+                        if (onMovieSelect) onMovieSelect(movie, movie.id);
                       }}
                     >
                       <img
@@ -403,41 +373,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
         )}
       </div>
       
-      {/* Success Toast */}
-      {showToast && (() => {
-        console.log('Toast rendering, showToast:', showToast);
-        return (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 rounded-lg shadow-2xl">
-              <h1 className="text-black text-2xl font-bold mb-4">Success!</h1>
-              <p className="text-black mb-4">Your movie has been added successfully.</p>
-              <button 
-                className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
-                onClick={handleChatWithCast}
-              >
-                Chat with Cast
-              </button>
-            </div>
-          </div>
-        );
-      })()}
-
       {/* Cast Selection Modal */}
       <CastSelectionModal
         open={showCastSelection}
         onClose={() => {
           setShowCastSelection(false);
-          // Eğer chat açılmamışsa toast'u tekrar göster
-          if (!showCastChat) {
-            setShowToast(true);
-            const timeout = setTimeout(() => {
-              if (!showCastSelection && !showCastChat) {
-                setShowToast(false);
-                onSave();
-              }
-            }, 5000);
-            setToastTimeout(timeout);
-          }
         }}
         movieId={tmdbId || 0}
         movieTitle={selectedMovie?.title || ''}
