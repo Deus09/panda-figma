@@ -24,7 +24,7 @@ const Explore: React.FC = () => {
         </div>
         {/* Segment */}
         <div className="flex justify-center pt-2 pb-2">
-          <TabSegment activeTab={activeTab === 'flicks' ? 'watched' : 'watchlist'} onTabChange={tab => setActiveTab(tab === 'watched' ? 'flicks' : 'series')} />
+          <TabSegment activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
         {/* Poster Grid */}
         <div className="flex flex-col items-center mt-0">
