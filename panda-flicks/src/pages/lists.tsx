@@ -1,77 +1,716 @@
+import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
 import BottomNavBar from '../components/BottomNavBar';
-import React, { useState } from 'react';
+import MovieDetailModal from '../components/MovieDetailModal';
+import { searchMovies } from '../services/tmdb';
+import styles from './lists.module.css';
 
-const flicks = [
-  { title: 'New Released', qty: 20, img: '', color: 'bg-[#C4C4C4]' },
-  { title: 'Marvel Adventure', qty: 10, img: '', color: 'bg-[#A3ABB2]' },
-  { title: 'New Released', qty: 20, img: '', color: 'bg-[#C4C4C4]' },
-];
-const series = [
-  { title: 'Series One', qty: 8, img: '', color: 'bg-[#A3ABB2]' },
-  { title: 'Series Two', qty: 12, img: '', color: 'bg-[#C4C4C4]' },
-  { title: 'Series Three', qty: 5, img: '', color: 'bg-[#A3ABB2]' },
-];
+// Film listesi verileri
+const filmListeleri = {
+  "filmListeleri": [
+    {
+      "listeAdi": "IMDb Top 10 Efsanesi",
+      "aciklama": "Tüm zamanların en yüksek puanlı, izleyici tarafından baş tacı edilmiş filmleri.",
+      "filmSayisi": 10,
+      "filmler": [
+        {
+          "sira": 1,
+          "filmAdi": "The Shawshank Redemption",
+          "yil": 1994,
+          "yonetmen": "Frank Darabont",
+          "imdbPuani": 9.3,
+          "kisaAciklama": "Umut, dostluk ve hayatta kalma üzerine zamansız bir başyapıt."
+        },
+        {
+          "sira": 2,
+          "filmAdi": "The Godfather",
+          "yil": 1972,
+          "yonetmen": "Francis Ford Coppola",
+          "imdbPuani": 9.2,
+          "kisaAciklama": "Bir suç ailesinin epik öyküsü ve sinema tarihinin en etkili gangster filmi."
+        },
+        {
+          "sira": 3,
+          "filmAdi": "The Dark Knight",
+          "yil": 2008,
+          "yonetmen": "Christopher Nolan",
+          "imdbPuani": 9.0,
+          "kisaAciklama": "Süper kahraman türünü yeniden tanımlayan, anarşi ve düzen üzerine karanlık bir masal."
+        },
+        {
+          "sira": 4,
+          "filmAdi": "12 Angry Men",
+          "yil": 1957,
+          "yonetmen": "Sidney Lumet",
+          "imdbPuani": 9.0,
+          "kisaAciklama": "Tek bir odada geçen, adalet ve önyargı kavramlarını sorgulatan bir mahkeme draması."
+        },
+        {
+          "sira": 5,
+          "filmAdi": "Schindler's List",
+          "yil": 1993,
+          "yonetmen": "Steven Spielberg",
+          "imdbPuani": 8.9,
+          "kisaAciklama": "İnsanlığın en karanlık anlarında bile iyiliğin nasıl parlayabildiğini gösteren dokunaklı bir yapım."
+        },
+        {
+          "sira": 6,
+          "filmAdi": "The Lord of the Rings: The Return of the King",
+          "yil": 2003,
+          "yonetmen": "Peter Jackson",
+          "imdbPuani": 8.9,
+          "kisaAciklama": "Bir fantastik destanın görkemli ve tatmin edici finali."
+        },
+        {
+          "sira": 7,
+          "filmAdi": "Pulp Fiction",
+          "yil": 1994,
+          "yonetmen": "Quentin Tarantino",
+          "imdbPuani": 8.9,
+          "kisaAciklama": "Doğrusal olmayan anlatımı ve unutulmaz diyaloglarıyla modern sinemayı etkileyen bir kült film."
+        },
+        {
+          "sira": 8,
+          "filmAdi": "Forrest Gump",
+          "yil": 1994,
+          "yonetmen": "Robert Zemeckis",
+          "imdbPuani": 8.8,
+          "kisaAciklama": "20. yüzyıl Amerikan tarihine saf bir kalple tanıklık eden bir adamın hayat yolculuğu."
+        },
+        {
+          "sira": 9,
+          "filmAdi": "Fight Club",
+          "yil": 1999,
+          "yonetmen": "David Fincher",
+          "imdbPuani": 8.8,
+          "kisaAciklama": "Tüketim kültürüne ve modern insanın yabancılaşmasına sert bir eleştiri."
+        },
+        {
+          "sira": 10,
+          "filmAdi": "Inception",
+          "yil": 2010,
+          "yonetmen": "Christopher Nolan",
+          "imdbPuani": 8.8,
+          "kisaAciklama": "Rüyaların katmanlı dünyasında geçen, akıl almaz bir soygun hikayesi."
+        }
+      ]
+    },
+    {
+      "listeAdi": "Son 10 Yılın En İyi Film Oscar Kazananları",
+      "aciklama": "Akademi tarafından 'En İyi Film' ödülüne layık görülen modern klasiklerin geçidi.",
+      "filmSayisi": 11,
+      "filmler": [
+        {
+          "sira": 1,
+          "filmAdi": "Oppenheimer",
+          "yil": 2023,
+          "yonetmen": "Christopher Nolan",
+          "kazandigiYil": 2024,
+          "kisaAciklama": "Atom bombasının babasının karmaşık ve çelişkili portresi, görsel bir şölenle sunuluyor."
+        },
+        {
+          "sira": 2,
+          "filmAdi": "Everything Everywhere All at Once",
+          "yil": 2022,
+          "yonetmen": "Daniel Kwan, Daniel Scheinert",
+          "kazandigiYil": 2023,
+          "kisaAciklama": "Paralel evrenlerde geçen, aksiyon dolu, komik ve dokunaklı bir aile hikayesi."
+        },
+        {
+          "sira": 3,
+          "filmAdi": "CODA",
+          "yil": 2021,
+          "yonetmen": "Sian Heder",
+          "kazandigiYil": 2022,
+          "kisaAciklama": "İşitme engelli bir ailenin işiten tek üyesinin hayallerinin peşinden gitme mücadelesi."
+        },
+        {
+          "sira": 4,
+          "filmAdi": "Nomadland",
+          "yil": 2020,
+          "yonetmen": "Chloé Zhao",
+          "kazandigiYil": 2021,
+          "kisaAciklama": "Modern Amerika'da karavanıyla göçebe bir hayat süren bir kadının dokunaklı öyküsü."
+        },
+        {
+          "sira": 5,
+          "filmAdi": "Parasite",
+          "yil": 2019,
+          "yonetmen": "Bong Joon Ho",
+          "kazandigiYil": 2020,
+          "kisaAciklama": "Sınıf çatışmasını kara mizah ve gerilimle harmanlayan Güney Kore sinemasından bir başyapıt."
+        },
+        {
+          "sira": 6,
+          "filmAdi": "Green Book",
+          "yil": 2018,
+          "yonetmen": "Peter Farrelly",
+          "kazandigiYil": 2019,
+          "kisaAciklama": "Irkçılığın hüküm sürdüğü yıllarda siyahi bir piyanist ile İtalyan-Amerikan şoförünün dostluğu."
+        },
+        {
+          "sira": 7,
+          "filmAdi": "The Shape of Water",
+          "yil": 2017,
+          "yonetmen": "Guillermo del Toro",
+          "kazandigiYil": 2018,
+          "kisaAciklama": "Soğuk Savaş döneminde geçen, yalnız bir kadının ve suda yaşayan bir yaratığın fantastik aşk hikayesi."
+        },
+        {
+          "sira": 8,
+          "filmAdi": "Moonlight",
+          "yil": 2016,
+          "yonetmen": "Barry Jenkins",
+          "kazandigiYil": 2017,
+          "kisaAciklama": "Genç bir siyahi adamın çocukluğundan yetişkinliğine kimliğini ve yerini bulma arayışı."
+        },
+        {
+          "sira": 9,
+          "filmAdi": "Spotlight",
+          "yil": 2015,
+          "yonetmen": "Tom McCarthy",
+          "kazandigiYil": 2016,
+          "kisaAciklama": "Katolik Kilisesi'ndeki taciz skandalını ortaya çıkaran gazetecilerin gerçek hikayesi."
+        },
+        {
+          "sira": 10,
+          "filmAdi": "Birdman",
+          "yil": 2014,
+          "yonetmen": "Alejandro G. Iñárritu",
+          "kazandigiYil": 2015,
+          "kisaAciklama": "Tek planda çekilmiş gibi görünen, eski bir süper kahraman aktörünün geri dönüş çabası."
+        },
+        {
+          "sira": 11,
+          "filmAdi": "12 Years a Slave",
+          "yil": 2013,
+          "yonetmen": "Steve McQueen",
+          "kazandigiYil": 2014,
+          "kisaAciklama": "Özgür bir adamken kaçırılıp köle olarak satılan Solomon Northup'un sarsıcı gerçek hikayesi."
+        }
+      ]
+    },
+    {
+      "listeAdi": "Kafa Yakan Bilim Kurgu Filmleri",
+      "aciklama": "Gerçekliği sorgulatan, zihin açan ve izleyiciyi düşünmeye iten modern bilim kurgu klasikleri.",
+      "filmSayisi": 10,
+      "filmler": [
+        {
+          "sira": 1,
+          "filmAdi": "Arrival",
+          "yil": 2016,
+          "yonetmen": "Denis Villeneuve",
+          "imdbPuani": 7.9,
+          "kisaAciklama": "Dilbilimin ve zaman algısının sınırlarını zorlayan, duygusal ve zeki bir ilk temas hikayesi."
+        },
+        {
+          "sira": 2,
+          "filmAdi": "Blade Runner 2049",
+          "yil": 2017,
+          "yonetmen": "Denis Villeneuve",
+          "imdbPuani": 8.0,
+          "kisaAciklama": "Orijinal filmin mirasını taşıyan, görsel olarak büyüleyici bir neo-noir ve varoluşsal bir sorgulama."
+        },
+        {
+          "sira": 3,
+          "filmAdi": "Interstellar",
+          "yil": 2014,
+          "yonetmen": "Christopher Nolan",
+          "imdbPuani": 8.6,
+          "kisaAciklama": "İnsanlığın geleceği için uzayın derinliklerine yapılan, bilim ve sevgi dolu bir yolculuk."
+        },
+        {
+          "sira": 4,
+          "filmAdi": "Ex Machina",
+          "yil": 2014,
+          "yonetmen": "Alex Garland",
+          "imdbPuani": 7.7,
+          "kisaAciklama": "Yapay zekanın bilinç ve manipülasyon yeteneklerini sorgulatan klostrofobik bir gerilim."
+        },
+        {
+          "sira": 5,
+          "filmAdi": "Her",
+          "yil": 2013,
+          "yonetmen": "Spike Jonze",
+          "imdbPuani": 8.0,
+          "kisaAciklama": "Yalnız bir adamın bir işletim sistemine aşık olmasını anlatan, teknoloji ve ilişkilere dair melankolik bir bakış."
+        },
+        {
+          "sira": 6,
+          "filmAdi": "District 9",
+          "yil": 2009,
+          "yonetmen": "Neill Blomkamp",
+          "imdbPuani": 7.9,
+          "kisaAciklama": "Apartheid ve yabancı düşmanlığına dair güçlü bir alegori sunan, belgesel tarzında bir bilim kurgu."
+        },
+        {
+          "sira": 7,
+          "filmAdi": "Children of Men",
+          "yil": 2006,
+          "yonetmen": "Alfonso Cuarón",
+          "imdbPuani": 7.9,
+          "kisaAciklama": "İnsanlığın soyunun tükendiği bir dünyada, umudun peşindeki nefes kesen bir kaçış öyküsü."
+        },
+        {
+          "sira": 8,
+          "filmAdi": "Dune: Part One & Two",
+          "yil": "2021 & 2024",
+          "yonetmen": "Denis Villeneuve",
+          "imdbPuani": 8.0,
+          "kisaAciklama": "Frank Herbert'in kült romanından uyarlanan, epik ölçekte ve görsel olarak baş döndürücü bir destan."
+        },
+        {
+          "sira": 9,
+          "filmAdi": "Source Code",
+          "yil": 2011,
+          "yonetmen": "Duncan Jones",
+          "imdbPuani": 7.5,
+          "kisaAciklama": "Bir askerin, bir tren patlamasını önlemek için sürekli olarak 8 dakikayı yeniden yaşadığı tempolu bir gerilim."
+        },
+        {
+          "sira": 10,
+          "filmAdi": "Annihilation",
+          "yil": 2018,
+          "yonetmen": "Alex Garland",
+          "imdbPuani": 6.8,
+          "kisaAciklama": "Gizemli bir bölgeye giren bir grup bilim insanının karşılaştığı, hem güzel hem de korkutucu olaylar."
+        }
+      ]
+    },
+    {
+      "listeAdi": "Ters Köşe Yapan Psikolojik Gerilimler",
+      "aciklama": "Sonuna kadar merak içinde bırakacak, şaşırtıcı finalleriyle hafızalara kazınan filmler.",
+      "filmSayisi": 10,
+      "filmler": [
+        {
+          "sira": 1,
+          "filmAdi": "The Prestige",
+          "yil": 2006,
+          "yonetmen": "Christopher Nolan",
+          "imdbPuani": 8.5,
+          "kisaAciklama": "İki sihirbazın takıntıya dönüşen rekabetini anlatan, zekice kurgulanmış bir hikaye."
+        },
+        {
+          "sira": 2,
+          "filmAdi": "Shutter Island",
+          "yil": 2010,
+          "yonetmen": "Martin Scorsese",
+          "imdbPuani": 8.2,
+          "kisaAciklama": "Bir akıl hastanesindeki kayıp vakasını araştıran dedektifin giderek kendi akıl sağlığını sorgulaması."
+        },
+        {
+          "sira": 3,
+          "filmAdi": "The Sixth Sense",
+          "yil": 1999,
+          "yonetmen": "M. Night Shyamalan",
+          "imdbPuani": 8.2,
+          "kisaAciklama": "Sinema tarihinin en ikonik finaline sahip, ölüleri gören bir çocuk ve psikoloğunun hikayesi."
+        },
+        {
+          "sira": 4,
+          "filmAdi": "Oldeuboi (Oldboy)",
+          "yil": 2003,
+          "yonetmen": "Park Chan-wook",
+          "imdbPuani": 8.4,
+          "kisaAciklama": "15 yıl sebepsizce hapsedilen bir adamın intikam arayışını anlatan, şok edici ve stilize bir film."
+        },
+        {
+          "sira": 5,
+          "filmAdi": "The Usual Suspects",
+          "yil": 1995,
+          "yonetmen": "Bryan Singer",
+          "imdbPuani": 8.5,
+          "kisaAciklama": "Polise ifade veren bir dolandırıcının anlattığı karmaşık soygun hikayesi ve efsanevi finali."
+        },
+        {
+          "sira": 6,
+          "filmAdi": "Memento",
+          "yil": 2000,
+          "yonetmen": "Christopher Nolan",
+          "imdbPuani": 8.4,
+          "kisaAciklama": "Kısa süreli hafıza kaybı yaşayan bir adamın, karısının katilini bulma çabasını tersten anlatan bir yapım."
+        },
+        {
+          "sira": 7,
+          "filmAdi": "Gone Girl",
+          "yil": 2014,
+          "yonetmen": "David Fincher",
+          "imdbPuani": 8.1,
+          "kisaAciklama": "Karısı aniden ortadan kaybolan bir adamın, medyanın ve polisin hedefi haline gelmesini konu alan bir gerilim."
+        },
+        {
+          "sira": 8,
+          "filmAdi": "Prisoners",
+          "yil": 2013,
+          "yonetmen": "Denis Villeneuve",
+          "imdbPuani": 8.1,
+          "kisaAciklama": "Kızı kaçırılan bir babanın, adaleti kendi sağlamaya çalışmasını anlatan karanlık ve sürükleyici bir film."
+        },
+        {
+          "sira": 9,
+          "filmAdi": "Se7en",
+          "yil": 1995,
+          "yonetmen": "David Fincher",
+          "imdbPuani": 8.6,
+          "kisaAciklama": "Yedi ölümcül günahı temel alan bir dizi cinayeti araştıran iki dedektifin kasvetli hikayesi."
+        },
+        {
+          "sira": 10,
+          "filmAdi": "The Handmaiden",
+          "yil": 2016,
+          "yonetmen": "Park Chan-wook",
+          "imdbPuani": 8.1,
+          "kisaAciklama": "Japon işgali altındaki Kore'de geçen, aldatma ve tutku dolu, katmanlı bir intikam öyküsü."
+        }
+      ]
+    },
+    {
+      "listeAdi": "Quentin Tarantino Filmografisi",
+      "aciklama": "Diyalogları, müzik seçimleri ve şiddeti stilize kullanımıyla tanınan efsane yönetmenin en iyileri.",
+      "filmSayisi": 10,
+      "filmler": [
+        { "sira": 1, "filmAdi": "Pulp Fiction", "yil": 1994 },
+        { "sira": 2, "filmAdi": "Reservoir Dogs", "yil": 1992 },
+        { "sira": 3, "filmAdi": "Inglourious Basterds", "yil": 2009 },
+        { "sira": 4, "filmAdi": "Django Unchained", "yil": 2012 },
+        { "sira": 5, "filmAdi": "Kill Bill: Vol. 1", "yil": 2003 },
+        { "sira": 6, "filmAdi": "Once Upon a Time in Hollywood", "yil": 2019 },
+        { "sira": 7, "filmAdi": "The Hateful Eight", "yil": 2015 },
+        { "sira": 8, "filmAdi": "Jackie Brown", "yil": 1997 },
+        { "sira": 9, "filmAdi": "Kill Bill: Vol. 2", "yil": 2004 },
+        { "sira": 10, "filmAdi": "Death Proof", "yil": 2007 }
+      ]
+    },
+    {
+      "listeAdi": "Çocuklar İçin Olmayan Animasyon Başyapıtları",
+      "aciklama": "Animasyonun sadece bir tür değil, her türlü hikayeyi anlatabilecek bir sanat formu olduğunu kanıtlayan filmler.",
+      "filmSayisi": 11,
+      "filmler": [
+        {
+          "sira": 1,
+          "filmAdi": "Spirited Away",
+          "yil": 2001,
+          "yonetmen": "Hayao Miyazaki",
+          "kisaAciklama": "Ruhların dünyasında kaybolan bir kızın büyüme hikayesini anlatan, Oscar ödüllü bir fantezi."
+        },
+        {
+          "sira": 2,
+          "filmAdi": "Spider-Man: Into the Spider-Verse",
+          "yil": 2018,
+          "yonetmen": "Bob Persichetti, Peter Ramsey, Rodney Rothman",
+          "kisaAciklama": "Çizgi roman estetiğini sinemaya taşıyan, görsel olarak devrim niteliğinde bir süper kahraman filmi."
+        },
+        {
+          "sira": 3,
+          "filmAdi": "Grave of the Fireflies",
+          "yil": 1988,
+          "yonetmen": "Isao Takahata",
+          "kisaAciklama": "2. Dünya Savaşı'nın sonlarında hayatta kalmaya çalışan iki kardeşin yürek burkan dramı."
+        },
+        {
+          "sira": 4,
+          "filmAdi": "Princess Mononoke",
+          "yil": 1997,
+          "yonetmen": "Hayao Miyazaki",
+          "kisaAciklama": "Doğa ve insanlık arasındaki savaşı konu alan, epik ve karmaşık bir macera."
+        },
+        {
+          "sira": 5,
+          "filmAdi": "Persepolis",
+          "yil": 2007,
+          "yonetmen": "Marjane Satrapi, Vincent Paronnaud",
+          "kisaAciklama": "İran İslam Devrimi sırasında büyüyen bir kızın otobiyografik hikayesini anlatan dokunaklı bir yapım."
+        },
+        {
+          "sira": 6,
+          "filmAdi": "WALL-E",
+          "yil": 2008,
+          "yonetmen": "Andrew Stanton",
+          "kisaAciklama": "Diyalogsuz ilk yarısıyla sinema dersi veren, çevre bilinci ve aşk üzerine bir Pixar klasiği."
+        },
+        {
+          "sira": 7,
+          "filmAdi": "Akira",
+          "yil": 1988,
+          "yonetmen": "Katsuhiro Otomo",
+          "kisaAciklama": "Siberpunk türünün temel taşlarından olan, distopik bir gelecekte geçen bir aksiyon ve gizem filmi."
+        },
+        {
+          "sira": 8,
+          "filmAdi": "Perfect Blue",
+          "yil": 1997,
+          "yonetmen": "Satoshi Kon",
+          "kisaAciklama": "Şöhret, kimlik ve gerçeklik algısının kayboluşunu anlatan gerilim dolu bir psikolojik anime."
+        },
+        {
+          "sira": 9,
+          "filmAdi": "Klaus",
+          "yil": 2019,
+          "yonetmen": "Sergio Pablos",
+          "kisaAciklama": "Noel Baba efsanesine taze ve sıcak bir başlangıç hikayesi sunan, el çizimi estetiğiyle büyüleyen bir film."
+        },
+        {
+          "sira": 10,
+          "filmAdi": "I Lost My Body",
+          "yil": 2019,
+          "yonetmen": "Jérémy Clapin",
+          "kisaAciklama": "Sahibini arayan kesik bir elin Paris'teki yolculuğunu anlatan, özgün ve melankolik bir Fransız animasyonu."
+        },
+        {
+          "sira": 11,
+          "filmAdi": "Your Name.",
+          "yil": 2016,
+          "yonetmen": "Makoto Shinkai",
+          "kisaAciklama": "Bedenleri yer değiştiren iki gencin kader ve zamanla iç içe geçen romantik hikayesi."
+        }
+      ]
+    },
+    {
+      "listeAdi": "Dünya Sinemasından Başyapıtlar",
+      "aciklama": "Hollywood'un ötesine geçerek farklı kültürlerin ve yönetmenlerin sinema sanatına kattığı eşsiz eserler.",
+      "filmSayisi": 12,
+      "filmler": [
+        { "sira": 1, "filmAdi": "Parasite", "yil": 2019, "ulke": "Güney Kore" },
+        { "sira": 2, "filmAdi": "Cidade de Deus (City of God)", "yil": 2002, "ulke": "Brezilya" },
+        { "sira": 3, "filmAdi": "La vita è bella (Life Is Beautiful)", "yil": 1997, "ulke": "İtalya" },
+        { "sira": 4, "filmAdi": "Le Fabuleux Destin d'Amélie Poulain (Amélie)", "yil": 2001, "ulke": "Fransa" },
+        { "sira": 5, "filmAdi": "Das Leben der Anderen (The Lives of Others)", "yil": 2006, "ulke": "Almanya" },
+        { "sira": 6, "filmAdi": "Jodaeiye Nader az Simin (A Separation)", "yil": 2011, "ulke": "İran" },
+        { "sira": 7, "filmAdi": "El secreto de sus ojos (The Secret in Their Eyes)", "yil": 2009, "ulke": "Arjantin" },
+        { "sira": 8, "filmAdi": "Crouching Tiger, Hidden Dragon", "yil": 2000, "ulke": "Tayvan" },
+        { "sira": 9, "filmAdi": "Roma", "yil": 2018, "ulke": "Meksika" },
+        { "sira": 10, "filmAdi": "Jagten (The Hunt)", "yil": 2012, "ulke": "Danimarka" },
+        { "sira": 11, "filmAdi": "Yip Man (Ip Man)", "yil": 2008, "ulke": "Hong Kong" },
+        { "sira": 12, "filmAdi": "Kış Uykusu", "yil": 2014, "ulke": "Türkiye" }
+      ]
+    },
+    {
+      "listeAdi": "Coen Kardeşler'in Unutulmazları",
+      "aciklama": "Kara mizahı, eksantrik karakterleri ve özgün senaryolarıyla tanınan yönetmen kardeşlerin en iyi işleri.",
+      "filmSayisi": 10,
+      "filmler": [
+        { "sira": 1, "filmAdi": "No Country for Old Men", "yil": 2007 },
+        { "sira": 2, "filmAdi": "Fargo", "yil": 1996 },
+        { "sira": 3, "filmAdi": "The Big Lebowski", "yil": 1998 },
+        { "sira": 4, "filmAdi": "O Brother, Where Art Thou?", "yil": 2000 },
+        { "sira": 5, "filmAdi": "A Serious Man", "yil": 2009 },
+        { "sira": 6, "filmAdi": "Inside Llewyn Davis", "yil": 2013 },
+        { "sira": 7, "filmAdi": "Miller's Crossing", "yil": 1990 },
+        { "sira": 8, "filmAdi": "Barton Fink", "yil": 1991 },
+        { "sira": 9, "filmAdi": "True Grit", "yil": 2010 },
+        { "sira": 10, "filmAdi": "Raising Arizona", "yil": 1987 }
+      ]
+    },
+    {
+      "listeAdi": "Gülmek Garanti: Modern Komedi Klasikleri",
+      "aciklama": "Sadece güldürmekle kalmayan, zeki senaryoları ve unutulmaz karakterleriyle öne çıkan 21. yüzyıl komedileri.",
+      "filmSayisi": 10,
+      "filmler": [
+        { "sira": 1, "filmAdi": "The Grand Budapest Hotel", "yil": 2014, "yonetmen": "Wes Anderson" },
+        { "sira": 2, "filmAdi": "What We Do in the Shadows", "yil": 2014, "yonetmen": "Jemaine Clement, Taika Waititi" },
+        { "sira": 3, "filmAdi": "Little Miss Sunshine", "yil": 2006, "yonetmen": "Jonathan Dayton, Valerie Faris" },
+        { "sira": 4, "filmAdi": "Superbad", "yil": 2007, "yonetmen": "Greg Mottola" },
+        { "sira": 5, "filmAdi": "Shaun of the Dead", "yil": 2004, "yonetmen": "Edgar Wright" },
+        { "sira": 6, "filmAdi": "Borat", "yil": 2006, "yonetmen": "Larry Charles" },
+        { "sira": 7, "filmAdi": "The Death of Stalin", "yil": 2017, "yonetmen": "Armando Iannucci" },
+        { "sira": 8, "filmAdi": "Booksmart", "yil": 2019, "yonetmen": "Olivia Wilde" },
+        { "sira": 9, "filmAdi": "Palm Springs", "yil": 2020, "yonetmen": "Max Barbakow" },
+        { "sira": 10, "filmAdi": "Toni Erdmann", "yil": 2016, "yonetmen": "Maren Ade" }
+      ]
+    },
+    {
+      "listeAdi": "Epik Tarihi Dramalar",
+      "aciklama": "Geçmişin büyük olaylarını ve kişiliklerini görkemli bir sinematografiyle canlandıran, sürükleyici filmler.",
+      "filmSayisi": 10,
+      "filmler": [
+        { "sira": 1, "filmAdi": "Gladiator", "yil": 2000, "yonetmen": "Ridley Scott" },
+        { "sira": 2, "filmAdi": "Schindler's List", "yil": 1993, "yonetmen": "Steven Spielberg" },
+        { "sira": 3, "filmAdi": "Braveheart", "yil": 1995, "yonetmen": "Mel Gibson" },
+        { "sira": 4, "filmAdi": "Lawrence of Arabia", "yil": 1962, "yonetmen": "David Lean" },
+        { "sira": 5, "filmAdi": "The Last of the Mohicans", "yil": 1992, "yonetmen": "Michael Mann" },
+        { "sira": 6, "filmAdi": "Master and Commander: The Far Side of the World", "yil": 2003, "yonetmen": "Peter Weir" },
+        { "sira": 7, "filmAdi": "Kingdom of Heaven (Director's Cut)", "yil": 2005, "yonetmen": "Ridley Scott" },
+        { "sira": 8, "filmAdi": "Downfall (Der Untergang)", "yil": 2004, "yonetmen": "Oliver Hirschbiegel" },
+        { "sira": 9, "filmAdi": "1917", "yil": 2019, "yonetmen": "Sam Mendes" },
+        { "sira": 10, "filmAdi": "The Pianist", "yil": 2002, "yonetmen": "Roman Polanski" }
+      ]
+    }
+  ]
+};
+
+interface Film {
+  sira: number;
+  filmAdi: string;
+  yil: number | string;
+  yonetmen?: string;
+  imdbPuani?: number;
+  kisaAciklama?: string;
+  kazandigiYil?: number;
+  ulke?: string;
+  tmdbId?: number;
+  posterPath?: string;
+}
+
+interface Liste {
+  listeAdi: string;
+  aciklama: string;
+  filmSayisi: number;
+  filmler: Film[];
+}
 
 const Lists: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'flicks' | 'series'>('flicks');
-  const lists = activeTab === 'flicks' ? flicks : series;
+  const [selectedListe, setSelectedListe] = useState<Liste | null>(null);
+  const [showListeDetail, setShowListeDetail] = useState(false);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const [showMovieDetail, setShowMovieDetail] = useState(false);
+  const [filmData, setFilmData] = useState<Map<string, { id: number; posterPath?: string }>>(new Map());
+
+  // Film adlarından TMDB ID'lerini bul
+  const findMovieIds = async (liste: Liste) => {
+    const newFilmData = new Map(filmData);
+    
+    for (const film of liste.filmler) {
+      if (!newFilmData.has(film.filmAdi)) {
+        try {
+          const searchResults = await searchMovies(film.filmAdi);
+          if (searchResults.length > 0) {
+            // İlk sonucu al (en uygun olanı)
+            const firstResult = searchResults[0];
+            newFilmData.set(film.filmAdi, {
+              id: firstResult.id,
+              posterPath: firstResult.poster_path
+            });
+          }
+        } catch (error) {
+          console.error(`Error finding movie ID for ${film.filmAdi}:`, error);
+        }
+      }
+    }
+    
+    setFilmData(newFilmData);
+  };
+
+  const handleListeClick = async (liste: Liste) => {
+    setSelectedListe(liste);
+    setShowListeDetail(true);
+    // Film ID'lerini bul
+    await findMovieIds(liste);
+  };
+
+  const handleCloseListeDetail = () => {
+    setShowListeDetail(false);
+    setSelectedListe(null);
+  };
+
+  const handleMovieClick = (filmAdi: string) => {
+    const movieData = filmData.get(filmAdi);
+    if (movieData) {
+      setSelectedMovieId(movieData.id);
+      setShowMovieDetail(true);
+    }
+  };
+
+  const handleCloseMovieModal = () => {
+    setShowMovieDetail(false);
+    setSelectedMovieId(null);
+  };
 
   return (
-    <IonPage>
-      <IonContent fullscreen>
-        <div className="flex flex-col items-center mt-0 bg-[#121212] min-h-screen">
-          {/* Header */}
-          <div className="flex flex-col items-center pt-6 pb-2">
-            <span className="block text-white font-bold text-[22px] leading-[33px] mb-1">Panda Lists</span>
-            <span className="block text-[#EFEEEA] text-[12px] mb-2">Discover Panda’s Special Lists For You</span>
-          </div>
-          {/* Segment */}
-          <div className="flex justify-center pt-2 pb-4">
-            <div className="flex w-[200px] h-[25px] rounded-[10px] overflow-hidden border border-white bg-[#222]">
-              <button
-                className={`flex-1 h-full flex items-center justify-center font-semibold text-[16px] leading-[24px] transition-all duration-500 border-r border-white rounded-l-[10px] ${activeTab === 'flicks' ? 'bg-white text-[#FE7743]' : 'bg-[#222] text-white'}`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
-                onClick={() => setActiveTab('flicks')}
-              >
-                Flicks
-              </button>
-              <button
-                className={`flex-1 h-full flex items-center justify-center font-semibold text-[16px] leading-[24px] transition-all duration-500 rounded-r-[10px] ${activeTab === 'series' ? 'bg-white text-[#FE7743]' : 'bg-[#222] text-white'}`}
-                style={{ fontFamily: 'Poppins, sans-serif', borderLeft: 'none' }}
-                onClick={() => setActiveTab('series')}
-              >
-                Series
-              </button>
+    <IonPage className={styles.listsPage}>
+      <IonContent className={styles.listsContent}>
+        {/* Ana Liste Görünümü */}
+        {!showListeDetail ? (
+          <div className="p-4">
+            <h1 className="text-white font-bold text-2xl mb-6 font-poppins">Film Listeleri</h1>
+            <div className="space-y-4">
+              {filmListeleri.filmListeleri.map((liste, index) => (
+                <div
+                  key={index}
+                  className="bg-[#1A1F2E] rounded-lg p-4 cursor-pointer hover:bg-[#2A2F3E] transition-colors"
+                  onClick={() => handleListeClick(liste)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h2 className="text-white font-semibold text-lg font-poppins">{liste.listeAdi}</h2>
+                    <span className="text-[#FE7743] text-sm font-medium">{liste.filmSayisi} film</span>
+                  </div>
+                  <p className="text-[#EFEEEA] text-sm mb-3 font-poppins">{liste.aciklama}</p>
+                  <div className="flex gap-2">
+                    {liste.filmler.slice(0, 3).map((film, filmIndex) => (
+                      <div key={filmIndex} className="w-12 h-16 bg-gray-700 rounded overflow-hidden">
+                        <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">{film.sira}</span>
+                        </div>
+                      </div>
+                    ))}
+                    {liste.filmSayisi > 3 && (
+                      <div className="w-12 h-16 bg-gray-700 rounded overflow-hidden flex items-center justify-center">
+                        <span className="text-white text-xs">+{liste.filmSayisi - 3}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-          {/* List Cards Grid */}
-          <div className="flex flex-col items-center mt-0 w-full">
-            <div className="flex flex-col gap-y-[22px] max-w-[306px] mx-auto w-full relative min-h-[350px]">
-              <div
-                key={activeTab}
-                className="absolute inset-0 transition-all duration-700 ease-in-out"
-                style={{
-                  opacity: 1,
-                  zIndex: 1,
-                  pointerEvents: 'auto',
-                  transition: 'opacity 0.7s cubic-bezier(0.4,0,0.2,1)',
-                }}
+        ) : (
+          /* Liste Detay Görünümü */
+          <div className="p-4">
+            <div className="flex items-center mb-6">
+              <button
+                onClick={handleCloseListeDetail}
+                className="mr-4 p-2 text-white"
               >
-                {lists.map((item, idx) => (
-                  <div key={idx} className="w-[302px] h-[113px] rounded-[12px] shadow-[0_10px_4px_0_rgba(0,0,0,0.15)] overflow-hidden flex flex-col mb-[22px] last:mb-0">
-                    <div className={`w-full h-[100px] ${item.color} border-t border-l border-r border-white rounded-t-[12px]`}></div>
-                    <div className="flex flex-row items-center gap-2 bg-[#222] border-b border-l border-r border-white rounded-b-[12px] px-4 py-2 -mt-2">
-                      <span className="text-white text-[12px] font-normal flex-1">{item.title}</span>
-                      <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[#222] text-[12px] font-normal">{item.qty}</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <h1 className="text-white font-bold text-xl font-poppins">{selectedListe?.listeAdi}</h1>
+            </div>
+            
+            <p className="text-[#EFEEEA] text-sm mb-6 font-poppins">{selectedListe?.aciklama}</p>
+            
+            <div className="grid grid-cols-3 gap-3">
+              {selectedListe?.filmler.map((film, index) => {
+                const movieData = filmData.get(film.filmAdi);
+                return (
+                  <div
+                    key={index}
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => handleMovieClick(film.filmAdi)}
+                  >
+                    <div className="aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden mb-2">
+                      {movieData?.posterPath ? (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w185${movieData.posterPath}`}
+                          alt={film.filmAdi}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                          <span className="text-white text-sm font-bold text-center px-2">{film.filmAdi}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white text-xs font-medium font-poppins">{film.filmAdi}</p>
+                      <p className="text-[#FE7743] text-xs font-poppins">{film.yil}</p>
                     </div>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
-          <BottomNavBar className="rounded-t-[24px]" />
-        </div>
+        )}
+
+        {/* Bottom Navigation */}
+        <BottomNavBar className="rounded-t-[24px]" />
+
+        {/* Movie Detail Modal */}
+        <MovieDetailModal
+          open={showMovieDetail}
+          onClose={handleCloseMovieModal}
+          movieId={selectedMovieId}
+        />
       </IonContent>
     </IonPage>
   );

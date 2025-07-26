@@ -48,18 +48,23 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> => {
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=1&include_adult=false`
+      `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
     
     if (!response.ok) {
-      throw new Error(`Failed to fetch movies: ${response.status}`);
+      throw new Error(`Failed to search movies: ${response.status}`);
     }
     
     const data = await response.json();
-    return data.results || [];
+    return (data.results || []).map((movie: any) => ({
+      id: movie.id,
+      title: movie.title,
+      release_date: movie.release_date,
+      poster_path: movie.poster_path
+    }));
   } catch (error) {
     console.error('Error searching movies:', error);
-    throw new Error('Failed to search movies. Please try again.');
+    return [];
   }
 };
 
