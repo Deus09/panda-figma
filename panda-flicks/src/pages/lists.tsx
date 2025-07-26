@@ -564,6 +564,36 @@ const Lists: React.FC = () => {
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
   const [showMovieDetail, setShowMovieDetail] = useState(false);
   const [filmData, setFilmData] = useState<Map<string, { id: number; posterPath?: string }>>(new Map());
+  const [loadingPoster, setLoadingPoster] = useState<{ [key: string]: boolean }>({});
+
+  // Sayfa yüklendiğinde tüm listelerin poster verilerini yükle
+  useEffect(() => {
+    const loadAllPosters = async () => {
+      const newFilmData = new Map(filmData);
+      
+      for (const liste of filmListeleri.filmListeleri) {
+        for (const film of liste.filmler) {
+          if (!newFilmData.has(film.filmAdi)) {
+            try {
+              const searchResults = await searchMovies(film.filmAdi);
+              if (searchResults.length > 0) {
+                const firstResult = searchResults[0];
+                newFilmData.set(film.filmAdi, {
+                  id: firstResult.id,
+                  posterPath: firstResult.poster_path
+                });
+              }
+            } catch (error) {
+              console.error(`Error finding movie ID for ${film.filmAdi}:`, error);
+            }
+          }
+        }
+      }
+      setFilmData(newFilmData);
+    };
+
+    loadAllPosters();
+  }, []);
 
   // Film adlarından TMDB ID'lerini bul
   const findMovieIds = async (liste: Liste) => {
@@ -590,11 +620,33 @@ const Lists: React.FC = () => {
     setFilmData(newFilmData);
   };
 
+  // Poster yüklenince skeleton'u kaldır
+  const handlePosterLoad = (filmAdi: string) => {
+    setLoadingPoster((prev) => ({ ...prev, [filmAdi]: false }));
+  };
+
+  // Liste kartı için poster seç
+  const getListePoster = (liste: Liste) => {
+    if (liste.filmler.length === 0) return null;
+    
+    // İlk filmden poster al
+    const firstFilm = liste.filmler[0];
+    const movieData = filmData.get(firstFilm.filmAdi);
+    return movieData?.posterPath;
+  };
+
+  // Liste açıldığında loadingPoster'ı true yap
   const handleListeClick = async (liste: Liste) => {
     setSelectedListe(liste);
     setShowListeDetail(true);
     // Film ID'lerini bul
     await findMovieIds(liste);
+    // Skeleton başlat
+    const loadingMap: { [key: string]: boolean } = {};
+    liste.filmler.forEach(film => {
+      loadingMap[film.filmAdi] = true;
+    });
+    setLoadingPoster(loadingMap);
   };
 
   const handleCloseListeDetail = () => {
@@ -620,41 +672,51 @@ const Lists: React.FC = () => {
       <IonContent className={styles.listsContent}>
         {/* Ana Liste Görünümü */}
         {!showListeDetail ? (
-          <div className="p-4">
+          <div className="p-4 pb-24">
             <h1 className="text-white font-bold text-2xl mb-6 font-poppins">Film Listeleri</h1>
+            
             <div className="space-y-4">
-              {filmListeleri.filmListeleri.map((liste, index) => (
-                <div
-                  key={index}
-                  className="bg-[#1A1F2E] rounded-lg p-4 cursor-pointer hover:bg-[#2A2F3E] transition-colors"
-                  onClick={() => handleListeClick(liste)}
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h2 className="text-white font-semibold text-lg font-poppins">{liste.listeAdi}</h2>
-                    <span className="text-[#FE7743] text-sm font-medium">{liste.filmSayisi} film</span>
-                  </div>
-                  <p className="text-[#EFEEEA] text-sm mb-3 font-poppins">{liste.aciklama}</p>
-                  <div className="flex gap-2">
-                    {liste.filmler.slice(0, 3).map((film, filmIndex) => (
-                      <div key={filmIndex} className="w-12 h-16 bg-gray-700 rounded overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">{film.sira}</span>
+              {filmListeleri.filmListeleri.map((liste: Liste, index: number) => {
+                const posterPath = getListePoster(liste);
+                return (
+                  <div
+                    key={index}
+                    className="bg-gray-800 rounded-xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => handleListeClick(liste)}
+                  >
+                    {/* Poster Alanı */}
+                    <div className="h-48 bg-gray-700 relative">
+                      {posterPath ? (
+                        <img
+                          src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+                          alt={liste.listeAdi}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                          <span className="text-white text-lg font-bold text-center px-4">{liste.listeAdi}</span>
                         </div>
+                      )}
+                      
+                      {/* Film Sayısı Badge */}
+                      <div className="absolute top-3 right-3 bg-[#FE7743] text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
+                        {liste.filmSayisi} film
                       </div>
-                    ))}
-                    {liste.filmSayisi > 3 && (
-                      <div className="w-12 h-16 bg-gray-700 rounded overflow-hidden flex items-center justify-center">
-                        <span className="text-white text-xs">+{liste.filmSayisi - 3}</span>
-                      </div>
-                    )}
+                    </div>
+                    
+                    {/* Liste Bilgileri */}
+                    <div className="p-4 bg-gray-800">
+                      <h3 className="text-white font-bold text-lg font-poppins mb-2">{liste.listeAdi}</h3>
+                      <p className="text-[#EFEEEA] text-sm font-poppins">{liste.aciklama}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ) : (
           /* Liste Detay Görünümü */
-          <div className="p-4">
+          <div className="p-4 pb-24">
             <div className="flex items-center mb-6">
               <button
                 onClick={handleCloseListeDetail}
@@ -672,6 +734,7 @@ const Lists: React.FC = () => {
             <div className="grid grid-cols-3 gap-3">
               {selectedListe?.filmler.map((film, index) => {
                 const movieData = filmData.get(film.filmAdi);
+                const isLoading = loadingPoster[film.filmAdi];
                 return (
                   <div
                     key={index}
@@ -680,11 +743,17 @@ const Lists: React.FC = () => {
                   >
                     <div className="aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden mb-2">
                       {movieData?.posterPath ? (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w185${movieData.posterPath}`}
-                          alt={film.filmAdi}
-                          className="w-full h-full object-cover"
-                        />
+                        <>
+                          {isLoading && (
+                            <div className="w-full h-full bg-gray-700 animate-pulse" />
+                          )}
+                          <img
+                            src={`https://image.tmdb.org/t/p/w185${movieData.posterPath}`}
+                            alt={film.filmAdi}
+                            className={`w-full h-full object-cover ${isLoading ? 'hidden' : ''}`}
+                            onLoad={() => handlePosterLoad(film.filmAdi)}
+                          />
+                        </>
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
                           <span className="text-white text-sm font-bold text-center px-2">{film.filmAdi}</span>
