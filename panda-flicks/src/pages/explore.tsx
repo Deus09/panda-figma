@@ -37,14 +37,24 @@ const Explore: React.FC = () => {
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [searchTab, setSearchTab] = useState<'all' | 'movies' | 'series' | 'persons'>('all');
 
-  // Genre mapping
-  const GENRE_MAP: { [key: string]: number } = {
+  // Film türleri için ID'ler
+  const MOVIE_GENRES: { [key: string]: number } = {
     'Aksiyon': 28,
     'Komedi': 35,
     'Dram': 18,
     'Korku': 27,
     'Romantik': 10749,
     'Bilim Kurgu': 878,
+  };
+
+  // Dizi türleri için ID'ler (TMDB'de farklı)
+  const SERIES_GENRES: { [key: string]: number } = {
+    'Aksiyon': 10759, // Action & Adventure
+    'Komedi': 35,
+    'Dram': 18,
+    'Korku': 9648, // Mystery (daha uygun dizi türü)
+    'Romantik': 10749,
+    'Bilim Kurgu': 10765, // Sci-Fi & Fantasy
   };
 
   const categories = [
@@ -68,20 +78,30 @@ const Explore: React.FC = () => {
 
   // Sekme değiştiğinde genre araması varsa tekrar yap
   useEffect(() => {
-    if (selectedGenre && isGenreMode) {
+    if (selectedGenre && isGenreMode && search.trim()) {
+      // Arama kutusundaki türün adını al
+      const genreName = search.trim();
+      
+      // Yeni sekmeye göre doğru tür ID'sini bul ve API çağrısı yap
       if (activeTab === 'flicks') {
-        loadMoviesByGenre(selectedGenre);
+        const genreId = MOVIE_GENRES[genreName];
+        if (genreId) {
+          loadMoviesByGenre(genreId);
+        }
       } else {
-        loadSeriesByGenre(selectedGenre);
+        const genreId = SERIES_GENRES[genreName];
+        if (genreId) {
+          loadSeriesByGenre(genreId);
+        }
       }
     }
-  }, [activeTab, selectedGenre, isGenreMode]);
+  }, [activeTab, selectedGenre, isGenreMode, search]);
 
   // Search fonksiyonu
   useEffect(() => {
     if (search.trim()) {
       // Eğer arama kutusu dolu ve genre modunda değilsek, normal arama yap
-      const genreName = Object.keys(GENRE_MAP).find(name => name === search.trim());
+      const genreName = Object.keys(MOVIE_GENRES).find(name => name === search.trim());
       
       if (!genreName) {
         // Normal metin araması - genre filtresini temizle
@@ -157,13 +177,6 @@ const Explore: React.FC = () => {
     setSearch(genreName);
     setSelectedCategory(`genre:${genreName}`);
     
-    // Genre ID'yi bul
-    const genreId = GENRE_MAP[genreName];
-    if (!genreId) {
-      console.error('Genre ID not found for:', genreName);
-      return;
-    }
-
     // Arama modunu temizle
     setIsSearchMode(false);
     setSearchResults({ movies: [], series: [], persons: [] });
@@ -171,11 +184,25 @@ const Explore: React.FC = () => {
     // Genre modunu aktif et
     setIsGenreMode(true);
     
-    // Aktif sekmeye göre API çağrısı yap
+    let genreId: number | undefined;
+    
+    // Aktif sekmeye göre doğru tür ID'sini al
     if (activeTab === 'flicks') {
-      await loadMoviesByGenre(genreId);
-    } else {
-      await loadSeriesByGenre(genreId);
+      genreId = MOVIE_GENRES[genreName];
+      if (genreId) {
+        await loadMoviesByGenre(genreId);
+      } else {
+        console.warn(`"${genreName}" türü için film kategorisi bulunamadı.`);
+        setGenreResults([]);
+      }
+    } else { // activeTab === 'series'
+      genreId = SERIES_GENRES[genreName];
+      if (genreId) {
+        await loadSeriesByGenre(genreId);
+      } else {
+        console.warn(`"${genreName}" türü için dizi kategorisi bulunamadı.`);
+        setGenreResults([]);
+      }
     }
   };
 
@@ -327,7 +354,7 @@ const Explore: React.FC = () => {
         </div>
 
         {/* İçerik */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center pb-24">
           {!isSearchMode ? (
             // Normal Keşif Modu veya Genre Filtresi
             currentLoading ? (
