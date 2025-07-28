@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import SettingsModal from '../components/SettingsModal';
-import MovieCard from '../components/MovieCard';
 import LocalStorageService, { UserProfile } from '../services/localStorage';
 import styles from './profile.module.css';
 
@@ -155,15 +154,6 @@ const Profile: React.FC = () => {
     });
   };
 
-  const getRecentMovies = () => {
-    // LocalStorage'dan son izlenen filmleri al
-    const watchedMovies = LocalStorageService.getMovieLogsByType('watched');
-    // Tarih sırasına göre sırala (en yeni önce) ve ilk 5'ini al
-    return watchedMovies
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-      .slice(0, 5);
-  };
-
   const getCurrentAvatar = () => {
     if (avatarPreview) return avatarPreview;
     if (profile?.avatar) return profile.avatar;
@@ -288,7 +278,7 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#1A1A1A] text-white">
+    <div className="flex flex-col min-h-screen bg-black text-white">
       <TopHeaderBar 
         title="Sinema Karnem" 
         showBackButton={false}
@@ -296,166 +286,135 @@ const Profile: React.FC = () => {
       />
       
       <div className="flex-1 px-4 py-6 pb-32 overflow-y-auto">
-        {/* Profil Başlığı (Hero Section) */}
-        <div className="bg-[#222] rounded-[20px] p-6 mb-6 shadow-lg relative overflow-hidden">
-          {/* Arka Plan - En Yüksek Puanlı Film Afişi (Opsiyonel) */}
-          <div className="absolute inset-0 opacity-5 bg-gradient-to-r from-[#FE7743]/10 to-[#E56A3C]/10"></div>
+        {/* Hero Section - Kişisel Karşılama */}
+        <div className="relative bg-gradient-to-br from-[#111] to-[#1a1a1a] rounded-[20px] p-6 mb-6 overflow-hidden">
+          {/* Kişiselleştirilmiş Arka Plan - En yüksek puanlı film afişi */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="w-full h-full bg-gradient-to-r from-[#FE7743]/20 to-[#E56A3C]/20 blur-3xl"></div>
+          </div>
           
           <div className="relative z-10 flex items-start space-x-4">
-            {/* Avatar - Sol Hizalı */}
-            <div className="relative flex-shrink-0">
+            {/* Avatar - Sol tarafta */}
+            <div className="flex-shrink-0">
               <img
                 src={getCurrentAvatar()}
-                alt="Profile"
-                className="w-20 h-20 rounded-full object-cover border-4 border-[#FE7743]"
+                alt={profile.username}
+                className="w-20 h-20 rounded-full border-3 border-[#FE7743] shadow-xl"
+                onError={(e) => {
+                  e.currentTarget.src = generateInitialsAvatar(profile.username);
+                }}
               />
-              {isEditing && (
+            </div>
+            
+            {/* Kullanıcı Bilgileri - Sağ tarafta */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-2xl font-bold text-white font-poppins">@{profile.username}</h1>
+                {/* Profili Düzenle - İkincil kalem ikonu */}
                 <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#FE7743] rounded-full flex items-center justify-center text-white hover:bg-[#E56A3C] transition-colors"
+                  onClick={() => setIsEditing(true)}
+                  className="p-2 bg-[#333]/60 hover:bg-[#444]/80 rounded-full transition-all duration-300 backdrop-blur-sm"
                 >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <svg width="16" height="16" fill="currentColor" className="text-[#FE7743]" viewBox="0 0 24 24">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
                 </button>
+              </div>
+              
+              {profile.fullName && (
+                <p className="text-gray-300 text-lg font-medium font-poppins mb-1">{profile.fullName}</p>
               )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-            </div>
-
-            {/* Kullanıcı Bilgileri - Sağ Hizalı */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2 mb-2">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={editData.username}
-                    onChange={(e) => setEditData(prev => ({ ...prev, username: e.target.value }))}
-                    className="bg-[#333] text-white text-xl font-bold rounded-lg px-3 py-1 border border-gray-600 focus:border-[#FE7743] focus:outline-none flex-1"
-                    placeholder="Kullanıcı Adı"
-                  />
-                ) : (
-                  <>
-                    <h1 className="text-xl font-bold text-white font-poppins">
-                      @{profile.username}
-                    </h1>
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="w-6 h-6 bg-[#FE7743]/20 hover:bg-[#FE7743]/40 rounded-full flex items-center justify-center text-[#FE7743] transition-colors"
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                      </svg>
-                    </button>
-                  </>
-                )}
+              
+              {profile.bio && (
+                <p className="text-gray-400 text-sm font-poppins mb-3 leading-relaxed">{profile.bio}</p>
+              )}
+              
+              <div className="flex items-center text-xs text-gray-500 font-poppins">
+                <svg width="14" height="14" className="mr-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 11H7v8h2v-8zm4-4h-2v12h2V7zm4-4h-2v16h2V3z"/>
+                </svg>
+                {new Date(profile.joinDate).toLocaleDateString('tr-TR', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })} tarihinde katıldı
               </div>
-
-              {/* Hakkında */}
-              <div className="mb-3">
-                {isEditing ? (
-                  <textarea
-                    value={editData.bio}
-                    onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
-                    className="w-full bg-[#333] text-white rounded-lg px-3 py-2 border border-gray-600 focus:border-[#FE7743] focus:outline-none resize-none text-sm"
-                    rows={2}
-                    placeholder="Kendinizi tanıtın..."
-                  />
-                ) : (
-                  <p className="text-gray-300 text-sm leading-relaxed font-poppins">
-                    {profile.bio || "Henüz bir biyografi eklenmemiş."}
-                  </p>
-                )}
-              </div>
-
-              {/* Favori Türler */}
-              <div className="mb-3">
-                {isEditing ? (
-                  <div className="flex flex-wrap gap-1">
-                    {popularGenres.slice(0, 6).map((genre) => (
-                      <button
-                        key={genre}
-                        onClick={() => handleGenreToggle(genre)}
-                        className={`px-2 py-1 rounded-full text-xs font-medium transition-colors ${
-                          editData.favoriteGenres.includes(genre)
-                            ? 'bg-[#FE7743] text-white'
-                            : 'bg-[#333] text-gray-300 hover:bg-[#444]'
-                        }`}
-                      >
-                        {genre}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-1">
-                    {profile.favoriteGenres.slice(0, 3).map((genre) => (
-                      <span
-                        key={genre}
-                        className="px-2 py-1 bg-[#FE7743] text-white rounded-full text-xs font-medium"
-                      >
-                        {genre}
-                      </span>
-                    ))}
-                    {profile.favoriteGenres.length > 3 && (
-                      <span className="px-2 py-1 bg-gray-600 text-white rounded-full text-xs font-medium">
-                        +{profile.favoriteGenres.length - 3}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Aramıza Katılma Tarihi */}
-              <p className="text-gray-400 text-xs font-poppins">
-                Aramıza Katılma Tarihi: {formatJoinDate(profile.joinDate)}
-              </p>
             </div>
           </div>
-
-          {/* Avatar Galerisi - Düzenleme Modunda */}
-          {isEditing && (
-            <div className="mt-6 pt-4 border-t border-[#333]">
-              <p className="text-[#FE7743] text-sm mb-3">Avatar Galerisi</p>
-              <div className="grid grid-cols-4 gap-3">
-                {avatarGallery.map((avatar) => (
-                  <button
-                    key={avatar.id}
-                    onClick={() => handleAvatarGallerySelect(avatar.url)}
-                    className="w-12 h-12 rounded-full border-2 border-gray-600 hover:border-[#FE7743] transition-colors overflow-hidden"
+        </div>
+                      editData.favoriteGenres.includes(genre)
+                        ? 'bg-[#FE7743] text-white'
+                        : 'bg-[#333] text-gray-300 hover:bg-[#444]'
+                    }`}
                   >
-                    <img
-                      src={`https://placehold.co/48x48/333/FE7743?text=${avatar.name.charAt(0)}`}
-                      alt={avatar.name}
-                      className="w-full h-full object-cover"
-                    />
+                    {genre}
                   </button>
                 ))}
               </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {profile.favoriteGenres.length > 0 ? (
+                  profile.favoriteGenres.map((genre) => (
+                    <span
+                      key={genre}
+                      className="px-3 py-1 bg-[#FE7743] text-white rounded-full text-xs font-medium"
+                    >
+                      {genre}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-400 text-sm">Henüz favori tür seçilmemiş</span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Üyelik Tarihi */}
+          <div className="mb-6">
+            <p className="text-[#FE7743] text-sm font-medium mb-1 font-poppins">Aramıza Katılma Tarihi</p>
+            <p className="text-gray-300 text-sm font-poppins">
+              {formatJoinDate(profile.joinDate)}
+            </p>
+          </div>
+
+          {/* İstatistikler */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-[#333] rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-[#FE7743] font-poppins">{profile.watchedCount}</p>
+              <p className="text-gray-300 text-sm font-poppins">İzlenen Film</p>
             </div>
-          )}
+            <div className="bg-[#333] rounded-lg p-4 text-center">
+              <p className="text-2xl font-bold text-[#FE7743] font-poppins">{profile.watchlistCount}</p>
+              <p className="text-gray-300 text-sm font-poppins">İzlenecek Film</p>
+            </div>
+          </div>
 
           {/* Düzenleme Butonları */}
-          {isEditing && (
-            <div className="mt-6 flex gap-3">
+          <div className="flex gap-3">
+            {isEditing ? (
+              <>
+                <button
+                  onClick={handleSave}
+                  className="flex-1 bg-[#4CAF50] hover:bg-[#45A049] text-white py-3 rounded-lg font-medium transition-colors font-poppins"
+                >
+                  Kaydet
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="flex-1 bg-[#666] hover:bg-[#555] text-white py-3 rounded-lg font-medium transition-colors font-poppins"
+                >
+                  İptal
+                </button>
+              </>
+            ) : (
               <button
-                onClick={handleSave}
-                className="flex-1 bg-[#4CAF50] hover:bg-[#45A049] text-white py-2 rounded-lg font-medium transition-colors font-poppins text-sm"
+                onClick={() => setIsEditing(true)}
+                className="w-full bg-[#FE7743] hover:bg-[#E56A3C] text-white py-3 rounded-lg font-medium transition-colors font-poppins"
               >
-                Kaydet
+                Profili Düzenle
               </button>
-              <button
-                onClick={handleCancel}
-                className="flex-1 bg-[#666] hover:bg-[#555] text-white py-2 rounded-lg font-medium transition-colors font-poppins text-sm"
-              >
-                İptal
-              </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* İstatistiksel Gösterge Paneli (Dashboard) */}
@@ -697,57 +656,6 @@ const Profile: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Son Aktiviteler Modülü */}
-        <div className="bg-[#222] rounded-[20px] p-6 mb-6 shadow-lg">
-          <div className="flex items-center mb-6">
-            <div className="w-1 h-6 bg-[#FE7743] rounded-full mr-3"></div>
-            <h2 className="text-xl font-bold text-white font-poppins">Son Aktiviteler</h2>
-          </div>
-
-          {/* Yatayda Kaydırılabilir Film Şeridi */}
-          <div className="overflow-x-auto pb-4">
-            <div className="flex space-x-4 min-w-max">
-              {/* Son izlenen filmler için MovieCard'lar */}
-              {getRecentMovies().map((movie, index) => (
-                <div key={`recent-${index}`} className="flex-shrink-0 w-48">
-                  <MovieCard
-                    title={movie.title}
-                    date={movie.date}
-                    rating={movie.rating}
-                    review={movie.review}
-                    poster={movie.poster}
-                  />
-                </div>
-              ))}
-              
-              {/* Eğer hiç film yoksa */}
-              {getRecentMovies().length === 0 && (
-                <div className="flex-shrink-0 w-48 h-64 bg-[#333] rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-600">
-                  <svg width="48" height="48" className="text-gray-500 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
-                  </svg>
-                  <p className="text-gray-400 text-sm text-center font-poppins">
-                    Henüz film eklenmemiş
-                  </p>
-                  <p className="text-gray-500 text-xs text-center mt-1 font-poppins">
-                    İlk filminizi ekleyin
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Alt Bilgi */}
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#333]">
-            <p className="text-gray-400 text-sm font-poppins">
-              Son {getRecentMovies().length} aktivite
-            </p>
-            <button className="text-[#FE7743] text-sm font-medium hover:text-[#E56A3C] transition-colors font-poppins">
-              Tümünü Gör →
-            </button>
           </div>
         </div>
 

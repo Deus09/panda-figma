@@ -19,11 +19,11 @@ const ToggleSwitch: React.FC<{
   label: string;
 }> = ({ checked, onChange, label }) => (
   <div className="flex items-center justify-between py-3">
-    <span className="text-white font-medium font-poppins">{label}</span>
+    <span className="text-card-foreground font-medium font-sans">{label}</span>
     <button
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#FE7743] focus:ring-offset-2 focus:ring-offset-gray-800 ${
-        checked ? 'bg-[#FE7743]' : 'bg-gray-600'
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background ${
+        checked ? 'bg-primary' : 'bg-muted'
       }`}
     >
       <span
@@ -45,8 +45,8 @@ const GenreChip: React.FC<{
     onClick={onToggle}
     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
       isSelected
-        ? 'bg-[#FE7743] text-white shadow-lg shadow-[#FE7743]/25'
-        : 'bg-[#333] text-gray-300 border border-gray-600 hover:border-[#FE7743] hover:text-white'
+        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+        : 'bg-secondary text-secondary-foreground border border-border hover:border-primary hover:text-card-foreground'
     }`}
   >
     {genre}
@@ -71,6 +71,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen = true, onClose })
   const handleSavePreferences = () => {
     try {
       LocalStorageService.saveUserPreferences(preferences);
+      
+      // Apply dark mode theme immediately
+      if (preferences.darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      
       onClose();
     } catch (error) {
       console.error('Error saving preferences:', error);
@@ -133,13 +141,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen = true, onClose })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
-      <div className="bg-[#1A1A1A] rounded-[20px] p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto border border-[#333] shadow-2xl">
+      <div className="bg-card rounded-[20px] p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto border border-border shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold font-poppins text-white">Ayarlar</h2>
+          <h2 className="text-2xl font-bold font-sans text-card-foreground">Ayarlar</h2>
           <button 
             onClick={onClose} 
-            className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-[#333] rounded-full"
+            className="text-muted-foreground hover:text-card-foreground transition-colors p-2 hover:bg-muted rounded-full"
           >
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
