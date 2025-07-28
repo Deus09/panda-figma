@@ -38,6 +38,30 @@ export interface TMDBSeriesDetails {
   genres?: { id: number; name: string }[];
 }
 
+export interface TMDBActorDetails {
+  id: number;
+  name: string;
+  birthday?: string;
+  deathday?: string;
+  place_of_birth?: string;
+  biography?: string;
+  profile_path?: string;
+  known_for_department?: string;
+  popularity?: number;
+}
+
+export interface TMDBActorCredit {
+  id: number;
+  title?: string; // For movies
+  name?: string; // For TV shows
+  character: string;
+  release_date?: string;
+  first_air_date?: string;
+  poster_path?: string;
+  vote_average?: number;
+  media_type: 'movie' | 'tv';
+}
+
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'your-api-key-here';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -297,5 +321,75 @@ export const getSimilarSeries = async (seriesId: number): Promise<TMDBMovieResul
   } catch (error) {
     console.error('Error fetching similar series:', error);
     return [];
+  }
+};
+
+export const getActorDetails = async (actorId: number): Promise<TMDBActorDetails> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch actor details: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return {
+      id: data.id,
+      name: data.name,
+      birthday: data.birthday,
+      deathday: data.deathday,
+      place_of_birth: data.place_of_birth,
+      biography: data.biography,
+      profile_path: data.profile_path,
+      known_for_department: data.known_for_department,
+      popularity: data.popularity
+    };
+  } catch (error) {
+    console.error('Error fetching actor details:', error);
+    throw new Error('Failed to load actor details. Please try again.');
+  }
+};
+
+export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[]> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/person/${actorId}/combined_credits?api_key=${TMDB_API_KEY}&language=en-US`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch actor credits: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Actor credits response:', data); // Debug log
+    
+    const credits = [...(data.cast || [])].map((credit: any) => {
+      console.log('Processing credit:', credit); // Debug individual credit
+      return {
+        id: credit.id,
+        title: credit.title,
+        name: credit.name,
+        character: credit.character || 'Unknown Character',
+        release_date: credit.release_date,
+        first_air_date: credit.first_air_date,
+        poster_path: credit.poster_path,
+        vote_average: credit.vote_average,
+        media_type: credit.media_type
+      };
+    });
+    
+    console.log('Processed credits:', credits); // Debug log
+    
+    // Sort by popularity/vote average and release date
+    return credits.sort((a, b) => {
+      const aDate = new Date(a.release_date || a.first_air_date || '1900-01-01').getTime();
+      const bDate = new Date(b.release_date || b.first_air_date || '1900-01-01').getTime();
+      return bDate - aDate; // Most recent first
+    });
+  } catch (error) {
+    console.error('Error fetching actor credits:', error);
+    throw new Error('Failed to load actor filmography. Please try again.');
   }
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
+import ActorDetailModal from './ActorDetailModal';
 
 interface MovieDetailModalProps {
   open: boolean;
@@ -15,6 +16,8 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [similarMovies, setSimilarMovies] = useState<TMDBMovieResult[]>([]);
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
+  const [actorModalOpen, setActorModalOpen] = useState(false);
+  const [selectedActorId, setSelectedActorId] = useState<number | null>(null);
 
   useEffect(() => {
     if (open && movieId) {
@@ -77,6 +80,16 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
     setLoading(true);
     // Set new movie ID - this will trigger useEffect
     setSelectedMovieId(newMovieId);
+  };
+
+  const handleActorClick = (actorId: number) => {
+    setSelectedActorId(actorId);
+    setActorModalOpen(true);
+  };
+
+  const handleActorModalClose = () => {
+    setActorModalOpen(false);
+    setSelectedActorId(null);
   };
 
   const formatRuntime = (minutes: number) => {
@@ -180,7 +193,11 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                   <h2 className="text-[#EFEEEA] font-poppins font-bold text-2xl mb-1">Stars</h2>
                   <div className="flex gap-4 overflow-x-auto">
                     {cast.slice(0, 6).map((member) => (
-                      <div key={member.id} className="flex flex-col items-center gap-1 min-w-[46px]">
+                      <div 
+                        key={member.id} 
+                        className="flex flex-col items-center gap-1 min-w-[46px] cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => handleActorClick(member.id)}
+                      >
                         <div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-[#D9D9D9]">
                           <img
                             src={member.profile_path ? `https://image.tmdb.org/t/p/w92${member.profile_path}` : 'https://placehold.co/50x50?text=?'}
@@ -242,6 +259,14 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
             </div>
           </>
         ) : null}
+
+        {/* Actor Detail Modal */}
+        <ActorDetailModal
+          open={actorModalOpen}
+          onClose={handleActorModalClose}
+          actorId={selectedActorId}
+          onMovieClick={handleSimilarMovieClick}
+        />
       </div>
     </div>
   );

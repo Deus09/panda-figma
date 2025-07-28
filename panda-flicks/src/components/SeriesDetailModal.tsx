@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSeriesDetails, getSeriesCast, getSeriesTrailerKey, getSimilarSeries, TMDBSeriesDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
+import ActorDetailModal from './ActorDetailModal';
 
 interface SeriesDetailModalProps {
   open: boolean;
@@ -15,6 +16,8 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [similarSeries, setSimilarSeries] = useState<TMDBMovieResult[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<number | null>(null);
+  const [actorModalOpen, setActorModalOpen] = useState(false);
+  const [selectedActorId, setSelectedActorId] = useState<number | null>(null);
 
   useEffect(() => {
     if (open && seriesId) {
@@ -77,6 +80,16 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
     setLoading(true);
     // Set new series ID - this will trigger useEffect
     setSelectedSeriesId(newSeriesId);
+  };
+
+  const handleActorClick = (actorId: number) => {
+    setSelectedActorId(actorId);
+    setActorModalOpen(true);
+  };
+
+  const handleActorModalClose = () => {
+    setActorModalOpen(false);
+    setSelectedActorId(null);
   };
 
   const formatYear = (dateString?: string) => {
@@ -174,7 +187,11 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                   <h2 className="text-[#EFEEEA] font-poppins font-bold text-2xl mb-1">Stars</h2>
                   <div className="flex gap-4 overflow-x-auto">
                     {cast.slice(0, 6).map((member) => (
-                      <div key={member.id} className="flex flex-col items-center gap-1 min-w-[46px]">
+                      <div 
+                        key={member.id} 
+                        className="flex flex-col items-center gap-1 min-w-[46px] cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => handleActorClick(member.id)}
+                      >
                         <div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-[#D9D9D9]">
                           <img
                             src={member.profile_path ? `https://image.tmdb.org/t/p/w92${member.profile_path}` : 'https://placehold.co/50x50?text=?'}
@@ -183,7 +200,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                           />
                         </div>
                         <span className="text-[#F8F8FF] font-poppins text-[10px] font-medium text-center leading-3">
-                          {member.name.split(' ').slice(0, 2).join('\n')}
+                          {member.name.split(' ').slice(0, 2).join(' ')}
                         </span>
                       </div>
                     ))}
@@ -236,6 +253,14 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
             </div>
           </>
         ) : null}
+
+        {/* Actor Detail Modal */}
+        <ActorDetailModal
+          open={actorModalOpen}
+          onClose={handleActorModalClose}
+          actorId={selectedActorId}
+          onSeriesClick={handleSimilarSeriesClick}
+        />
       </div>
     </div>
   );
