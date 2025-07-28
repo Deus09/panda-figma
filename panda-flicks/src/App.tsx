@@ -9,6 +9,7 @@ import Tab2 from './pages/Tab2';
 import Tab3 from './pages/Tab3';
 import Explore from './pages/explore';
 import Lists from './pages/lists';
+import Profile from './pages/profile';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -59,6 +60,9 @@ const App: React.FC = () => (
       </Route>
       <Route exact path="/lists">
         <Lists />
+      </Route>
+      <Route exact path="/profile">
+        <Profile />
       </Route>
       <Route exact path="/">
         <Redirect to="/home" />

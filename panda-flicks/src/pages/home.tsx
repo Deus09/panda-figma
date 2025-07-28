@@ -47,6 +47,8 @@ const Home: React.FC = () => {
     try {
       const newLog = LocalStorageService.saveMovieLog(logData);
       setMovieLogs(prev => [...prev, newLog]);
+      // Profil istatistiklerini güncelle
+      LocalStorageService.updateProfileStats();
     } catch (error) {
       console.error('Error adding movie log:', error);
     }
@@ -58,6 +60,8 @@ const Home: React.FC = () => {
       const updatedLog = LocalStorageService.updateMovieLog(id, updates);
       if (updatedLog) {
         setMovieLogs(prev => prev.map(log => log.id === id ? updatedLog : log));
+        // Profil istatistiklerini güncelle
+        LocalStorageService.updateProfileStats();
       }
     } catch (error) {
       console.error('Error updating movie log:', error);
@@ -70,6 +74,8 @@ const Home: React.FC = () => {
       const success = LocalStorageService.deleteMovieLog(id);
       if (success) {
         setMovieLogs(prev => prev.filter(log => log.id !== id));
+        // Profil istatistiklerini güncelle
+        LocalStorageService.updateProfileStats();
       }
     } catch (error) {
       console.error('Error deleting movie log:', error);

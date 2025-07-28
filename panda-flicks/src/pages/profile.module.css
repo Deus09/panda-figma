@@ -1,0 +1,628 @@
+/* Profile page specific styles */
+.profileContainer {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+}
+
+.avatarUpload {
+  position: relative;
+  display: inline-block;
+}
+
+.avatarUpload:hover .uploadOverlay {
+  opacity: 1;
+}
+
+.uploadOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+.genreTag {
+  transition: all 0.2s ease;
+  transform: scale(1);
+}
+
+.genreTag:hover {
+  transform: scale(1.05);
+}
+
+.genreTag.selected {
+  box-shadow: 0 0 0 2px #FE7743;
+}
+
+.statsCard {
+  background: linear-gradient(135deg, #333 0%, #444 100%);
+  border: 1px solid rgba(254, 119, 67, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.statsCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #FE7743, #4ECDC4, #96CEB4, #FFEAA7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.statsCard:hover::before {
+  opacity: 1;
+}
+
+.statsCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(254, 119, 67, 0.15);
+}
+
+.dashboardCard {
+  background: linear-gradient(135deg, #333 0%, #444 100%);
+  border: 1px solid rgba(254, 119, 67, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboardCard::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(254, 119, 67, 0.05), transparent);
+  transform: rotate(45deg);
+  transition: all 0.6s ease;
+  opacity: 0;
+}
+
+.dashboardCard:hover::after {
+  animation: shimmer 1.5s ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.editButton {
+  background: linear-gradient(135deg, #FE7743 0%, #E56A3C 100%);
+  box-shadow: 0 4px 15px rgba(254, 119, 67, 0.3);
+}
+
+.editButton:hover {
+  box-shadow: 0 6px 20px rgba(254, 119, 67, 0.4);
+  transform: translateY(-1px);
+}
+
+.profileCard {
+  background: linear-gradient(135deg, #222 0%, #333 100%);
+  border: 1px solid rgba(254, 119, 67, 0.1);
+}
+
+.iconContainer {
+  transition: all 0.3s ease;
+}
+
+.statsCard:hover .iconContainer {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.quickStatsGrid {
+  background: rgba(51, 51, 51, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(254, 119, 67, 0.1);
+}
+
+.statValue {
+  background: linear-gradient(45deg, #FE7743, #E56A3C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (max-width: 768px) {
+  .avatarGallery {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboardGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Animasyonlar */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(254, 119, 67, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(254, 119, 67, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(254, 119, 67, 0);
+  }
+}
+
+@keyframes countUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.countUpAnimation {
+  animation: countUp 0.6s ease-out;
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Rozet stilleri */
+.badgeCard {
+  position: relative;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.badgeCard:hover {
+  transform: scale(1.05);
+}
+
+.badgeCard.earned {
+  background: linear-gradient(135deg, rgba(254, 119, 67, 0.2) 0%, rgba(229, 106, 60, 0.2) 100%);
+  border-color: #FE7743;
+  box-shadow: 0 4px 20px rgba(254, 119, 67, 0.2);
+}
+
+.badgeCard.locked {
+  background: rgba(51, 51, 51, 0.5);
+  border-color: #666;
+  opacity: 0.6;
+}
+
+.badgeCard.locked:hover {
+  opacity: 0.8;
+}
+
+.badgeIcon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.badgeProgress {
+  background: #666;
+  border-radius: 9999px;
+  height: 0.5rem;
+  overflow: hidden;
+}
+
+.badgeProgressBar {
+  background: linear-gradient(90deg, #FE7743 0%, #E56A3C 100%);
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.5s ease;
+}
+
+.badgeEarnedCheck {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #FE7743;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(254, 119, 67, 0.5);
+  animation: pulse 2s infinite;
+}
+
+/* Seviye göstergesi */
+.levelBadge {
+  background: linear-gradient(135deg, #FE7743 0%, #E56A3C 100%);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 8px rgba(254, 119, 67, 0.3);
+}
+
+/* Başarı bildirim animasyonu */
+@keyframes badgeEarned {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+.badgeEarnedAnimation {
+  animation: badgeEarned 0.6s ease-out;
+}
+
+/* Gradyan efektleri */
+.gradientText {
+  background: linear-gradient(135deg, #FE7743 0%, #E56A3C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Rozet kategorisi renkleri */
+.badgeCategory-milestone {
+  border-left: 4px solid #FE7743;
+}
+
+.badgeCategory-genre {
+  border-left: 4px solid #4ECDC4;
+}
+
+.badgeCategory-time {
+  border-left: 4px solid #FFEAA7;
+}
+
+.badgeCategory-streak {
+  border-left: 4px solid #96CEB4;
+}
+
+.badgeCategory-special {
+  border-left: 4px solid #DDA0DD;
+}
+
+/* Rozet animasyonları */
+.badgeUnlocked {
+  animation: badgeUnlock 0.8s ease-out;
+}
+
+@keyframes badgeUnlock {
+  0% {
+    transform: scale(0.5) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Konfeti animasyonu */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: #FE7743;
+  animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Rozet ışıltı efekti */
+.badgeGlow {
+  position: relative;
+  overflow: hidden;
+}
+
+.badgeGlow::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(254, 119, 67, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  animation: glow-sweep 2s infinite;
+}
+
+@keyframes glow-sweep {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  50% {
+    transform: translateX(0%) translateY(0%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+/* İlerleme çubuğu animasyonu */
+.progressBarGlow {
+  box-shadow: 0 0 10px rgba(254, 119, 67, 0.5);
+  animation: progress-pulse 2s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(254, 119, 67, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(254, 119, 67, 0.6);
+  }
+}
+
+/* Yakın tamamlanma efekti */
+.nearCompletion {
+  animation: near-completion 1.5s ease-in-out infinite;
+}
+
+@keyframes near-completion {
+  0%, 100% {
+    border-color: #FE7743;
+    box-shadow: 0 0 10px rgba(254, 119, 67, 0.3);
+  }
+  50% {
+    border-color: #E56A3C;
+    box-shadow: 0 0 20px rgba(254, 119, 67, 0.5);
+  }
+}
+
+/* Dashboard İyileştirmeleri */
+.statisticCard {
+  background: linear-gradient(135deg, #333 0%, #444 100%);
+  border: 1px solid rgba(254, 119, 67, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.statisticCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(254, 119, 67, 0.15);
+  border-color: rgba(254, 119, 67, 0.3);
+}
+
+/* Mikro-chart Animasyonları */
+.microChart {
+  opacity: 0.1;
+  transition: opacity 0.3s ease;
+}
+
+.statisticCard:hover .microChart {
+  opacity: 0.2;
+}
+
+/* Progress Ring Animasyonu */
+.progressRing {
+  transition: all 1.5s ease-in-out;
+}
+
+.progressRing:hover {
+  filter: drop-shadow(0 0 10px #FE7743);
+}
+
+/* Trend Göstergesi */
+.trendIndicator {
+  animation: trend-pulse 2s infinite;
+}
+
+@keyframes trend-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Zaman Tüneli Progress Bar */
+.timelineProgress {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.timelineProgress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: timeline-shimmer 2s infinite;
+}
+
+@keyframes timeline-shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+/* Hızlı Bakış Kartları */
+.quickOverviewCard {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.quickOverviewCard:hover {
+  transform: scale(1.02);
+}
+
+/* İyileştirilmiş Hover Efektleri */
+.hoverScale {
+  transition: transform 0.2s ease;
+}
+
+.hoverScale:hover {
+  transform: scale(1.02);
+}
+
+.hoverGlow {
+  transition: all 0.3s ease;
+}
+
+.hoverGlow:hover {
+  filter: drop-shadow(0 0 8px rgba(254, 119, 67, 0.5));
+}
+
+/* Chip Component Stili */
+.chipComponent {
+  background: linear-gradient(135deg, #4ECDC4 0%, #45B7D1 100%);
+  transition: all 0.3s ease;
+}
+
+.chipComponent:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+/* Gelişmiş Gradient Borders */
+.gradientBorder {
+  position: relative;
+  background: linear-gradient(45deg, #FE7743, #4ECDC4, #96CEB4, #FFEAA7);
+  padding: 2px;
+  border-radius: 12px;
+}
+
+.gradientBorder::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: #333;
+  border-radius: 10px;
+  z-index: -1;
+}
+
+/* Dinamik Sayı Animasyonu */
+.numberCounter {
+  animation: number-pop 0.5s ease-out;
+}
+
+@keyframes number-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Dashboard Optimizasyonu */
+@media (max-width: 768px) {
+  .statisticCard {
+    padding: 12px;
+  }
+  
+  .quickOverviewCard {
+    margin-bottom: 16px;
+  }
+}

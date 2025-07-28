@@ -11,7 +11,7 @@ const navItems = [
   { icon: iconExplore, label: 'Explore', path: '/explore' },
   { icon: iconSocial, label: 'Social', path: null },
   { icon: iconLists, label: 'Lists', path: '/lists' },
-  { icon: iconProfile, label: 'Profile', path: null },
+  { icon: iconProfile, label: 'Profile', path: '/profile' },
 ];
 
 const BottomNavBar: React.FC<{ className?: string }> = ({ className = '' }) => {
