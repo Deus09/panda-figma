@@ -5,6 +5,13 @@ export interface TMDBMovieResult {
   poster_path?: string;
 }
 
+export interface TMDBPaginatedResponse {
+  results: TMDBMovieResult[];
+  page: number;
+  total_pages: number;
+  total_results: number;
+}
+
 export interface TMDBCastMember {
   id: number;
   name: string;
@@ -186,10 +193,10 @@ export const getPopularMovies = async (): Promise<TMDBMovieResult[]> => {
   }
 };
 
-export const getMoviesByGenre = async (genreId: number): Promise<TMDBMovieResult[]> => {
+export const getMoviesByGenre = async (genreId: number, page: number = 1): Promise<TMDBPaginatedResponse> => {
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=1&sort_by=popularity.desc`
+      `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
     );
     
     if (!response.ok) {
@@ -197,22 +204,27 @@ export const getMoviesByGenre = async (genreId: number): Promise<TMDBMovieResult
     }
     
     const data = await response.json();
-    return (data.results || []).map((movie: any) => ({
-      id: movie.id,
-      title: movie.title,
-      release_date: movie.release_date,
-      poster_path: movie.poster_path
-    }));
+    return {
+      results: (data.results || []).map((movie: any) => ({
+        id: movie.id,
+        title: movie.title,
+        release_date: movie.release_date,
+        poster_path: movie.poster_path
+      })),
+      page: data.page,
+      total_pages: data.total_pages,
+      total_results: data.total_results
+    };
   } catch (error) {
     console.error('Error fetching movies by genre:', error);
     throw new Error('Failed to load movies by genre. Please try again.');
   }
 };
 
-export const getSeriesByGenre = async (genreId: number): Promise<TMDBMovieResult[]> => {
+export const getSeriesByGenre = async (genreId: number, page: number = 1): Promise<TMDBPaginatedResponse> => {
   try {
     const response = await fetch(
-      `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=1&sort_by=popularity.desc`
+      `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
     );
     
     if (!response.ok) {
@@ -220,12 +232,17 @@ export const getSeriesByGenre = async (genreId: number): Promise<TMDBMovieResult
     }
     
     const data = await response.json();
-    return (data.results || []).map((series: any) => ({
-      id: series.id,
-      title: series.name, // TV serileri için name kullanılır
-      release_date: series.first_air_date, // TV serileri için first_air_date kullanılır
-      poster_path: series.poster_path
-    }));
+    return {
+      results: (data.results || []).map((series: any) => ({
+        id: series.id,
+        title: series.name, // TV serileri için name kullanılır
+        release_date: series.first_air_date, // TV serileri için first_air_date kullanılır
+        poster_path: series.poster_path
+      })),
+      page: data.page,
+      total_pages: data.total_pages,
+      total_results: data.total_results
+    };
   } catch (error) {
     console.error('Error fetching series by genre:', error);
     throw new Error('Failed to load series by genre. Please try again.');

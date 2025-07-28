@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonPage } from '@ionic/react';
+import { IonContent, IonPage, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
 import ExploreTabSegment from '../components/ExploreTabSegment';
 import SearchTabSegment from '../components/SearchTabSegment';
 import PersonCard from '../components/PersonCard';
 import CategoryChip from '../components/CategoryChip';
 import BottomNavBar from '../components/BottomNavBar';
 import SkeletonLoader from '../components/SkeletonLoader';
-import { getPopularMovies, getPopularSeries, searchAll, getMoviesByGenre, getSeriesByGenre, searchMovies, searchSeries, TMDBMovieResult, TMDBMultiSearchResponse, TMDBSearchResult } from '../services/tmdb';
+import { getPopularMovies, getPopularSeries, searchAll, getMoviesByGenre, getSeriesByGenre, searchMovies, searchSeries, TMDBMovieResult, TMDBMultiSearchResponse, TMDBSearchResult, TMDBPaginatedResponse } from '../services/tmdb';
 import { useModal } from '../context/ModalContext';
 import styles from './explore.module.css';
 
@@ -26,6 +26,11 @@ const Explore: React.FC = () => {
   const [genreResults, setGenreResults] = useState<TMDBMovieResult[]>([]);
   const [genreLoading, setGenreLoading] = useState(false);
   const [isGenreMode, setIsGenreMode] = useState(false);
+  
+  // Infinite scroll states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   
   // Search states
   const [searchResults, setSearchResults] = useState<TMDBMultiSearchResponse>({
@@ -82,16 +87,21 @@ const Explore: React.FC = () => {
       // Arama kutusundaki türün adını al
       const genreName = search.trim();
       
+      // Pagination'ı sıfırla ve sonuçları temizle
+      setCurrentPage(1);
+      setTotalPages(0);
+      setGenreResults([]);
+      
       // Yeni sekmeye göre doğru tür ID'sini bul ve API çağrısı yap
       if (activeTab === 'flicks') {
         const genreId = MOVIE_GENRES[genreName];
         if (genreId) {
-          loadMoviesByGenre(genreId);
+          loadMoviesByGenre(genreId, 1);
         }
       } else {
         const genreId = SERIES_GENRES[genreName];
         if (genreId) {
-          loadSeriesByGenre(genreId);
+          loadSeriesByGenre(genreId, 1);
         }
       }
     }
@@ -124,6 +134,8 @@ const Explore: React.FC = () => {
       setSelectedGenre(null);
       setGenreResults([]);
       setSelectedCategory(null);
+      setCurrentPage(1);
+      setTotalPages(0);
     }
   }, [search, selectedGenre, activeTab]);
 
@@ -142,33 +154,47 @@ const Explore: React.FC = () => {
     }
   };
 
-  const loadMoviesByGenre = async (genreId: number) => {
+  const loadMoviesByGenre = async (genreId: number, page: number = 1) => {
     setGenreLoading(true);
     setError(null);
     try {
-      const data = await getMoviesByGenre(genreId);
-      setGenreResults(data);
+      const data = await getMoviesByGenre(genreId, page);
+      if (page === 1) {
+        setGenreResults(data.results);
+      } else {
+        setGenreResults(prev => [...prev, ...data.results]);
+      }
       setSelectedGenre(genreId);
+      setCurrentPage(data.page);
+      setTotalPages(data.total_pages);
     } catch (err) {
       setError('Failed to load movies by genre');
       console.error('Error loading movies by genre:', err);
     } finally {
       setGenreLoading(false);
+      setIsLoadingMore(false);
     }
   };
 
-  const loadSeriesByGenre = async (genreId: number) => {
+  const loadSeriesByGenre = async (genreId: number, page: number = 1) => {
     setGenreLoading(true);
     setError(null);
     try {
-      const data = await getSeriesByGenre(genreId);
-      setGenreResults(data);
+      const data = await getSeriesByGenre(genreId, page);
+      if (page === 1) {
+        setGenreResults(data.results);
+      } else {
+        setGenreResults(prev => [...prev, ...data.results]);
+      }
       setSelectedGenre(genreId);
+      setCurrentPage(data.page);
+      setTotalPages(data.total_pages);
     } catch (err) {
       setError('Failed to load series by genre');
       console.error('Error loading series by genre:', err);
     } finally {
       setGenreLoading(false);
+      setIsLoadingMore(false);
     }
   };
 
@@ -181,8 +207,11 @@ const Explore: React.FC = () => {
     setIsSearchMode(false);
     setSearchResults({ movies: [], series: [], persons: [] });
     
-    // Genre modunu aktif et
+    // Genre modunu aktif et ve pagination'ı sıfırla
     setIsGenreMode(true);
+    setCurrentPage(1);
+    setTotalPages(0);
+    setGenreResults([]);
     
     let genreId: number | undefined;
     
@@ -190,7 +219,7 @@ const Explore: React.FC = () => {
     if (activeTab === 'flicks') {
       genreId = MOVIE_GENRES[genreName];
       if (genreId) {
-        await loadMoviesByGenre(genreId);
+        await loadMoviesByGenre(genreId, 1);
       } else {
         console.warn(`"${genreName}" türü için film kategorisi bulunamadı.`);
         setGenreResults([]);
@@ -198,11 +227,43 @@ const Explore: React.FC = () => {
     } else { // activeTab === 'series'
       genreId = SERIES_GENRES[genreName];
       if (genreId) {
-        await loadSeriesByGenre(genreId);
+        await loadSeriesByGenre(genreId, 1);
       } else {
         console.warn(`"${genreName}" türü için dizi kategorisi bulunamadı.`);
         setGenreResults([]);
       }
+    }
+  };
+
+  // Infinite scroll için veri yükleme fonksiyonu
+  const loadMoreData = async (event: any) => {
+    if (isLoadingMore || currentPage >= totalPages || !selectedGenre || !isGenreMode) {
+      event.target.complete();
+      return;
+    }
+
+    setIsLoadingMore(true);
+    const nextPage = currentPage + 1;
+    
+    try {
+      // Arama kutusundaki türün adını al
+      const genreName = search.trim();
+      
+      if (activeTab === 'flicks') {
+        const genreId = MOVIE_GENRES[genreName];
+        if (genreId) {
+          await loadMoviesByGenre(genreId, nextPage);
+        }
+      } else {
+        const genreId = SERIES_GENRES[genreName];
+        if (genreId) {
+          await loadSeriesByGenre(genreId, nextPage);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading more data:', error);
+    } finally {
+      event.target.complete();
     }
   };
 
@@ -309,6 +370,8 @@ const Explore: React.FC = () => {
                   setIsSearchMode(false);
                   setIsGenreMode(false);
                   setSearchResults({ movies: [], series: [], persons: [] });
+                  setCurrentPage(1);
+                  setTotalPages(0);
                 }}
                 className="w-[16px] h-[16px] flex items-center justify-center rounded-full bg-[#A3ABB2] hover:bg-[#8B9399] transition-colors"
                 aria-label="Temizle"
@@ -368,21 +431,37 @@ const Explore: React.FC = () => {
                 <div className="text-red-400 font-poppins">{error}</div>
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
-                {currentData.map((item) => (
-                  <div
-                    key={item.id}
-                    className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
-                    onClick={() => activeTab === 'flicks' || isGenreMode ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
+              <>
+                <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
+                  {currentData.map((item) => (
+                    <div
+                      key={item.id}
+                      className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
+                      onClick={() => activeTab === 'flicks' || isGenreMode ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
+                    >
+                      <img
+                        src={item.poster_path ? `https://image.tmdb.org/t/p/w185${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Infinite Scroll - Sadece genre modunda göster */}
+                {isGenreMode && (
+                  <IonInfiniteScroll
+                    onIonInfinite={loadMoreData}
+                    threshold="100px"
+                    disabled={currentPage >= totalPages || isLoadingMore}
                   >
-                    <img
-                      src={item.poster_path ? `https://image.tmdb.org/t/p/w185${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
+                    <IonInfiniteScrollContent
+                      loadingSpinner="bubbles"
+                      loadingText="Daha fazla yükleniyor..."
                     />
-                  </div>
-                ))}
-              </div>
+                  </IonInfiniteScroll>
+                )}
+              </>
             )
           ) : (
             // Arama Sonuçları Modu
