@@ -4,9 +4,10 @@ import AddButtonModal from './AddButtonModal';
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
 import { chatWithCast } from '../services/gemini';
+import { MovieLog } from '../services/localStorage';
 
 interface FabAddButtonProps {
-  onAddMovieLog?: (log: any) => void;
+  onAddMovieLog?: (log: Omit<MovieLog, 'id' | 'createdAt' | 'updatedAt'>) => void;
 }
 
 const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
