@@ -15,10 +15,6 @@ interface AddButtonModalProps {
 
 const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect }) => {
   const [watchList, setWatchList] = useState(false);
-  const [mediaType, setMediaType] = useState<'movie' | 'tv'>('movie');
-  const [seasonCount, setSeasonCount] = useState<number>(1);
-  const [episodeCount, setEpisodeCount] = useState<number>(1);
-  const [runtime, setRuntime] = useState<number>(120);
   const [date, setDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -55,10 +51,6 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       setTmdbId(null);
       setRating(0);
       setHoverRating(null);
-      setMediaType('movie');
-      setSeasonCount(1);
-      setEpisodeCount(1);
-      setRuntime(120);
       setDate(() => {
         const today = new Date();
         return today.toISOString().split('T')[0];
@@ -91,10 +83,6 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     setTmdbId(null);
     setRating(0);
     setHoverRating(null);
-    setMediaType('movie');
-    setSeasonCount(1);
-    setEpisodeCount(1);
-    setRuntime(120);
     setDate(() => {
       const today = new Date();
       return today.toISOString().split('T')[0];
@@ -130,14 +118,9 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       review: comment,
       poster: selectedMovie.poster_path ? `https://image.tmdb.org/t/p/w92${selectedMovie.poster_path}` : '',
       type: watchList ? 'watchlist' : 'watched',
-      mediaType,
+      mediaType: 'movie', // TMDB'den gelecek
       tmdbId: tmdbId ?? undefined,
-      runtime,
-      // Dizi için ek bilgiler
-      ...(mediaType === 'tv' && {
-        seasonCount,
-        episodeCount
-      })
+      runtime: 120 // TMDB'den gelecek
     };
     onAddMovieLog?.(log);
     
@@ -248,75 +231,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             </button>
           </div>
 
-          {/* Media Type Selection */}
-          <div className="mb-8">
-            <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-3">Tür</span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setMediaType('movie')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-                  mediaType === 'movie' 
-                    ? 'bg-[#FE7743] text-white' 
-                    : 'bg-[#EFEEEA] text-black hover:bg-gray-200'
-                }`}
-              >
-                🎬 Film
-              </button>
-              <button
-                type="button"
-                onClick={() => setMediaType('tv')}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors ${
-                  mediaType === 'tv' 
-                    ? 'bg-[#FE7743] text-white' 
-                    : 'bg-[#EFEEEA] text-black hover:bg-gray-200'
-                }`}
-              >
-                📺 Dizi
-              </button>
-            </div>
-          </div>
+          {/* Additional fields for TV shows - Geçici olarak kaldırıldı, TMDB'den gelecek */}
+          {/* TV dizileri için sezon/bölüm bilgileri TMDB API'sinden otomatik olarak gelecek */}
 
-          {/* Additional fields for TV shows */}
-          {mediaType === 'tv' && (
-            <div className="mb-8 grid grid-cols-2 gap-4">
-              <div>
-                <span className="block text-[14px] font-semibold font-poppins text-[#F8F8FF] mb-2">Sezon Sayısı</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={seasonCount}
-                  onChange={(e) => setSeasonCount(parseInt(e.target.value) || 1)}
-                  className="w-full h-[40px] rounded-[12px] bg-[#EFEEEA] px-3 text-black text-[16px] font-poppins outline-none"
-                />
-              </div>
-              <div>
-                <span className="block text-[14px] font-semibold font-poppins text-[#F8F8FF] mb-2">Bölüm Sayısı</span>
-                <input
-                  type="number"
-                  min="1"
-                  value={episodeCount}
-                  onChange={(e) => setEpisodeCount(parseInt(e.target.value) || 1)}
-                  className="w-full h-[40px] rounded-[12px] bg-[#EFEEEA] px-3 text-black text-[16px] font-poppins outline-none"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Runtime */}
-          <div className="mb-8">
-            <span className="block text-[14px] font-semibold font-poppins text-[#F8F8FF] mb-2">
-              {mediaType === 'tv' ? 'Ortalama Bölüm Süresi (dakika)' : 'Film Süresi (dakika)'}
-            </span>
-            <input
-              type="number"
-              min="1"
-              value={runtime}
-              onChange={(e) => setRuntime(parseInt(e.target.value) || (mediaType === 'tv' ? 45 : 120))}
-              className="w-full h-[40px] rounded-[12px] bg-[#EFEEEA] px-3 text-black text-[16px] font-poppins outline-none"
-              placeholder={mediaType === 'tv' ? '45' : '120'}
-            />
-          </div>
+          {/* Runtime - Kaldırıldı, TMDB'den gelecek */}
+          {/* Film/dizi süre bilgisi TMDB API'sinden otomatik olarak gelecek */}
 
           {/* Date Watched */}
           <div className="flex items-center justify-between mb-8">
