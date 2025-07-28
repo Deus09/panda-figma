@@ -216,6 +216,42 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     onSave({ selectedMovie, tmdbId: tmdbId ?? undefined });
   };
 
+  // TV dizisi bölümlerini kaydetme fonksiyonu
+  const handleSaveEpisodes = () => {
+    if (!selectedSeries || !selectedSeason || checkedEpisodes.size === 0) return;
+    
+    console.log('Saving TV series episodes:', {
+      series: selectedSeries.name,
+      season: selectedSeason.season_number,
+      episodes: Array.from(checkedEpisodes)
+    });
+
+    // Her seçilen bölüm için ayrı log oluştur
+    Array.from(checkedEpisodes).forEach(episodeId => {
+      const episode = selectedSeason.episodes?.find(ep => ep.id === episodeId);
+      if (episode) {
+        const log = {
+          title: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
+          date,
+          rating: rating.toString(),
+          review: comment,
+          poster: episode.still_path ? `https://image.tmdb.org/t/p/w92${episode.still_path}` : 
+                 (selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w92${selectedSeries.poster_path}` : ''),
+          type: watchList ? 'watchlist' : 'watched',
+          mediaType: 'tv',
+          tmdbId: selectedSeries.id,
+          seasonNumber: selectedSeason.season_number,
+          episodeNumber: episode.episode_number,
+          episodeId: episode.id
+        };
+        onAddMovieLog?.(log);
+      }
+    });
+
+    // Modal'ı kapat
+    onSave();
+  };
+
   const handleChatWithCast = () => {
     setShowCastSelection(true);
   };
@@ -526,18 +562,18 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
               </IonItem>
 
               {/* Episode List */}
-              <div className="space-y-2 max-h-[calc(95vh-300px)] overflow-y-auto mb-6 pr-1">
+              <div className="space-y-2 max-h-[400px] overflow-y-auto mb-6 pr-1">
                 {selectedSeason.episodes?.map((episode) => (
-                  <IonItem 
+                  <div 
                     key={episode.id}
-                    className="bg-card rounded-lg border-border"
+                    className="flex items-center p-3 bg-card rounded-lg border border-border"
                   >
                     <IonCheckbox 
-                      slot="start"
+                      className="mr-4"
                       checked={checkedEpisodes.has(episode.id)}
                       onIonChange={() => handleEpisodeToggle(episode.id)}
                     />
-                    <IonThumbnail slot="start" className="w-24 h-16 mr-2">
+                    <IonThumbnail className="w-24 h-16 mr-2">
                       {episode.still_path ? (
                         <img 
                           src={`https://image.tmdb.org/t/p/w200${episode.still_path}`} 
@@ -550,41 +586,32 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                         </div>
                       )}
                     </IonThumbnail>
-                    <IonLabel className="text-[#F8F8FF]">
-                      <h3 className="font-semibold whitespace-normal">
-                        {episode.episode_number}. {episode.name}
-                      </h3>
-                      {episode.overview && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 whitespace-normal">
-                          {episode.overview}
-                        </p>
-                      )}
-                    </IonLabel>
-                  </IonItem>
+                    <h3 className="font-semibold text-[#F8F8FF] whitespace-normal">
+                      {episode.episode_number}. {episode.name}
+                    </h3>
+                  </div>
                 )) ?? []}
               </div>
 
               {/* Action Buttons */}
               <div className="flex justify-center gap-6 mt-6">
-                <IonButton 
-                  fill="outline"
+                <button 
                   onClick={() => setView('seasons')} 
-                  className="w-[130px] h-[40px]"
+                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md"
                 >
                   Back
-                </IonButton>
-                <IonButton 
-                  fill="solid" 
-                  color="primary" 
+                </button>
+                <button 
+                  onClick={handleSaveEpisodes}
                   disabled={checkedEpisodes.size === 0}
-                  onClick={() => {
-                    console.log('Selected episodes:', Array.from(checkedEpisodes));
-                    // TODO: Navigate to rating/comment screen
-                  }}
-                  className="w-[130px] h-[40px]"
+                  className={`w-[130px] h-[40px] rounded-[12px] text-[16px] font-poppins font-semibold shadow-lg ${
+                    checkedEpisodes.size === 0 
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                      : 'bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90'
+                  }`}
                 >
-                  Devam ({checkedEpisodes.size})
-                </IonButton>
+                  Save ({checkedEpisodes.size})
+                </button>
               </div>
             </div>
           )}
