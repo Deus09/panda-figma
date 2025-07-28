@@ -91,7 +91,28 @@ export interface TMDBMultiSearchResponse {
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'your-api-key-here';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
-// Simple cache for cast data
+// Genel önbellekleme sistemi
+const cache = new Map<string, any>();
+const cacheTimestamps = new Map<string, number>();
+const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 dakika
+
+// Önbelleği temizlemek için yardımcı fonksiyon
+export const clearCache = () => {
+  cache.clear();
+  cacheTimestamps.clear();
+  console.log('Cache cleared successfully.');
+};
+
+// Sürekli önbellek boyutunu kontrol etmek için yardımcı fonksiyon
+export const getCacheStats = () => {
+  return {
+    cacheSize: cache.size,
+    timestampSize: cacheTimestamps.size,
+    entries: Array.from(cache.keys())
+  };
+};
+
+// Simple cache for cast data (mevcut)
 const castCache = new Map<number, { data: TMDBCastMember[]; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
@@ -274,7 +295,18 @@ export const getPopularSeries = async (): Promise<TMDBMovieResult[]> => {
 };
 
 export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails> => {
+  const cacheKey = `movie:${movieId}`;
+  const now = Date.now();
+
+  // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
+  if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
+    console.log(`CACHE HIT: Returning movie ${movieId} from cache.`);
+    return cache.get(cacheKey);
+  }
+
+  console.log(`CACHE MISS: Fetching movie ${movieId} from API.`);
   try {
+    // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`
     );
@@ -284,7 +316,7 @@ export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails
     }
     
     const data = await response.json();
-    return {
+    const movieDetails = {
       id: data.id,
       title: data.title,
       release_date: data.release_date,
@@ -295,8 +327,14 @@ export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails
       vote_average: data.vote_average,
       genres: data.genres || []
     };
+
+    // 3. Gelen veriyi ve şu anki zamanı önbelleğe kaydet
+    cache.set(cacheKey, movieDetails);
+    cacheTimestamps.set(cacheKey, now);
+
+    return movieDetails;
   } catch (error) {
-    console.error('Error fetching movie details:', error);
+    console.error(`Error fetching movie details for ID ${movieId}:`, error);
     throw new Error('Failed to load movie details. Please try again.');
   }
 };
@@ -337,7 +375,18 @@ export const getSimilarMovies = async (movieId: number): Promise<TMDBMovieResult
 };
 
 export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDetails> => {
+  const cacheKey = `series:${seriesId}`;
+  const now = Date.now();
+
+  // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
+  if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
+    console.log(`CACHE HIT: Returning series ${seriesId} from cache.`);
+    return cache.get(cacheKey);
+  }
+
+  console.log(`CACHE MISS: Fetching series ${seriesId} from API.`);
   try {
+    // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${seriesId}?api_key=${TMDB_API_KEY}&language=en-US`
     );
@@ -347,7 +396,7 @@ export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDeta
     }
     
     const data = await response.json();
-    return {
+    const seriesDetails = {
       id: data.id,
       name: data.name,
       first_air_date: data.first_air_date,
@@ -359,8 +408,14 @@ export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDeta
       vote_average: data.vote_average,
       genres: data.genres || []
     };
+
+    // 3. Gelen veriyi ve şu anki zamanı önbelleğe kaydet
+    cache.set(cacheKey, seriesDetails);
+    cacheTimestamps.set(cacheKey, now);
+
+    return seriesDetails;
   } catch (error) {
-    console.error('Error fetching series details:', error);
+    console.error(`Error fetching series details for ID ${seriesId}:`, error);
     throw new Error('Failed to load series details. Please try again.');
   }
 };
@@ -435,7 +490,18 @@ export const getSimilarSeries = async (seriesId: number): Promise<TMDBMovieResul
 };
 
 export const getActorDetails = async (actorId: number): Promise<TMDBActorDetails> => {
+  const cacheKey = `actor:${actorId}`;
+  const now = Date.now();
+
+  // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
+  if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
+    console.log(`CACHE HIT: Returning actor ${actorId} from cache.`);
+    return cache.get(cacheKey);
+  }
+
+  console.log(`CACHE MISS: Fetching actor ${actorId} from API.`);
   try {
+    // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
     );
@@ -445,7 +511,7 @@ export const getActorDetails = async (actorId: number): Promise<TMDBActorDetails
     }
     
     const data = await response.json();
-    return {
+    const actorDetails = {
       id: data.id,
       name: data.name,
       birthday: data.birthday,
@@ -456,14 +522,31 @@ export const getActorDetails = async (actorId: number): Promise<TMDBActorDetails
       known_for_department: data.known_for_department,
       popularity: data.popularity
     };
+
+    // 3. Gelen veriyi ve şu anki zamanı önbelleğe kaydet
+    cache.set(cacheKey, actorDetails);
+    cacheTimestamps.set(cacheKey, now);
+
+    return actorDetails;
   } catch (error) {
-    console.error('Error fetching actor details:', error);
+    console.error(`Error fetching actor details for ID ${actorId}:`, error);
     throw new Error('Failed to load actor details. Please try again.');
   }
 };
 
 export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[]> => {
+  const cacheKey = `actor_credits:${actorId}`;
+  const now = Date.now();
+
+  // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
+  if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
+    console.log(`CACHE HIT: Returning actor credits ${actorId} from cache.`);
+    return cache.get(cacheKey);
+  }
+
+  console.log(`CACHE MISS: Fetching actor credits ${actorId} from API.`);
   try {
+    // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/person/${actorId}/combined_credits?api_key=${TMDB_API_KEY}&language=en-US`
     );
@@ -493,13 +576,19 @@ export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[
     console.log('Processed credits:', credits); // Debug log
     
     // Sort by popularity/vote average and release date
-    return credits.sort((a, b) => {
+    const sortedCredits = credits.sort((a, b) => {
       const aDate = new Date(a.release_date || a.first_air_date || '1900-01-01').getTime();
       const bDate = new Date(b.release_date || b.first_air_date || '1900-01-01').getTime();
       return bDate - aDate; // Most recent first
     });
+
+    // 3. Gelen veriyi ve şu anki zamanı önbelleğe kaydet
+    cache.set(cacheKey, sortedCredits);
+    cacheTimestamps.set(cacheKey, now);
+
+    return sortedCredits;
   } catch (error) {
-    console.error('Error fetching actor credits:', error);
+    console.error(`Error fetching actor credits for ID ${actorId}:`, error);
     throw new Error('Failed to load actor filmography. Please try again.');
   }
 };
