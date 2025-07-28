@@ -62,6 +62,25 @@ export interface TMDBActorCredit {
   media_type: 'movie' | 'tv';
 }
 
+export interface TMDBSearchResult {
+  id: number;
+  title?: string; // For movies
+  name?: string; // For TV shows/people
+  release_date?: string;
+  first_air_date?: string;
+  poster_path?: string;
+  profile_path?: string; // For people
+  vote_average?: number;
+  media_type: 'movie' | 'tv' | 'person';
+  known_for_department?: string; // For people
+}
+
+export interface TMDBMultiSearchResponse {
+  movies: TMDBSearchResult[];
+  series: TMDBSearchResult[];
+  persons: TMDBSearchResult[];
+}
+
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'your-api-key-here';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -88,6 +107,29 @@ export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> =>
     }));
   } catch (error) {
     console.error('Error searching movies:', error);
+    return [];
+  }
+};
+
+export const searchSeries = async (query: string): Promise<TMDBMovieResult[]> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to search series: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return (data.results || []).map((series: any) => ({
+      id: series.id,
+      title: series.name, // TV serileri için name kullanılır
+      release_date: series.first_air_date, // TV serileri için first_air_date kullanılır
+      poster_path: series.poster_path
+    }));
+  } catch (error) {
+    console.error('Error searching series:', error);
     return [];
   }
 };
@@ -132,10 +174,61 @@ export const getPopularMovies = async (): Promise<TMDBMovieResult[]> => {
     }
     
     const data = await response.json();
-    return data.results || [];
+    return (data.results || []).map((movie: any) => ({
+      id: movie.id,
+      title: movie.title,
+      release_date: movie.release_date,
+      poster_path: movie.poster_path
+    }));
   } catch (error) {
     console.error('Error fetching popular movies:', error);
     throw new Error('Failed to load popular movies. Please try again.');
+  }
+};
+
+export const getMoviesByGenre = async (genreId: number): Promise<TMDBMovieResult[]> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=1&sort_by=popularity.desc`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch movies by genre: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return (data.results || []).map((movie: any) => ({
+      id: movie.id,
+      title: movie.title,
+      release_date: movie.release_date,
+      poster_path: movie.poster_path
+    }));
+  } catch (error) {
+    console.error('Error fetching movies by genre:', error);
+    throw new Error('Failed to load movies by genre. Please try again.');
+  }
+};
+
+export const getSeriesByGenre = async (genreId: number): Promise<TMDBMovieResult[]> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=1&sort_by=popularity.desc`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch series by genre: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return (data.results || []).map((series: any) => ({
+      id: series.id,
+      title: series.name, // TV serileri için name kullanılır
+      release_date: series.first_air_date, // TV serileri için first_air_date kullanılır
+      poster_path: series.poster_path
+    }));
+  } catch (error) {
+    console.error('Error fetching series by genre:', error);
+    throw new Error('Failed to load series by genre. Please try again.');
   }
 };
 
@@ -391,5 +484,53 @@ export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[
   } catch (error) {
     console.error('Error fetching actor credits:', error);
     throw new Error('Failed to load actor filmography. Please try again.');
+  }
+};
+
+export const searchAll = async (query: string): Promise<TMDBMultiSearchResponse> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to search: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const results = data.results || [];
+    
+    // Sonuçları media_type'a göre ayır
+    const movies: TMDBSearchResult[] = [];
+    const series: TMDBSearchResult[] = [];
+    const persons: TMDBSearchResult[] = [];
+    
+    results.forEach((item: any) => {
+      const searchResult: TMDBSearchResult = {
+        id: item.id,
+        title: item.title,
+        name: item.name,
+        release_date: item.release_date,
+        first_air_date: item.first_air_date,
+        poster_path: item.poster_path,
+        profile_path: item.profile_path,
+        vote_average: item.vote_average,
+        media_type: item.media_type,
+        known_for_department: item.known_for_department
+      };
+      
+      if (item.media_type === 'movie') {
+        movies.push(searchResult);
+      } else if (item.media_type === 'tv') {
+        series.push(searchResult);
+      } else if (item.media_type === 'person') {
+        persons.push(searchResult);
+      }
+    });
+    
+    return { movies, series, persons };
+  } catch (error) {
+    console.error('Error searching:', error);
+    throw new Error('Failed to search. Please try again.');
   }
 };

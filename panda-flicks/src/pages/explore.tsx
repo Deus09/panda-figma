@@ -1,28 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
 import ExploreTabSegment from '../components/ExploreTabSegment';
-import MovieDetailModal from '../components/MovieDetailModal';
-import SeriesDetailModal from '../components/SeriesDetailModal';
+import SearchTabSegment from '../components/SearchTabSegment';
+import PersonCard from '../components/PersonCard';
+import CategoryChip from '../components/CategoryChip';
 import BottomNavBar from '../components/BottomNavBar';
 import SkeletonLoader from '../components/SkeletonLoader';
-import { getPopularMovies, getPopularSeries, TMDBMovieResult } from '../services/tmdb';
+import { getPopularMovies, getPopularSeries, searchAll, getMoviesByGenre, getSeriesByGenre, searchMovies, searchSeries, TMDBMovieResult, TMDBMultiSearchResponse, TMDBSearchResult } from '../services/tmdb';
+import { useModal } from '../context/ModalContext';
 import styles from './explore.module.css';
 
 const Explore: React.FC = () => {
+  const { openModal } = useModal();
   const [activeTab, setActiveTab] = useState<'flicks' | 'series'>('flicks');
   const [movies, setMovies] = useState<TMDBMovieResult[]>([]);
   const [series, setSeries] = useState<TMDBMovieResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  // Genre filtering states
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [genreResults, setGenreResults] = useState<TMDBMovieResult[]>([]);
+  const [genreLoading, setGenreLoading] = useState(false);
+  const [isGenreMode, setIsGenreMode] = useState(false);
+  
+  // Search states
+  const [searchResults, setSearchResults] = useState<TMDBMultiSearchResponse>({
+    movies: [],
+    series: [],
+    persons: []
+  });
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+  const [searchTab, setSearchTab] = useState<'all' | 'movies' | 'series' | 'persons'>('all');
 
-  // Movie modal states
-  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
-  const [showMovieDetail, setShowMovieDetail] = useState(false);
+  // Genre mapping
+  const GENRE_MAP: { [key: string]: number } = {
+    'Aksiyon': 28,
+    'Komedi': 35,
+    'Dram': 18,
+    'Korku': 27,
+    'Romantik': 10749,
+    'Bilim Kurgu': 878,
+  };
 
-  // Series modal states
-  const [selectedSeriesId, setSelectedSeriesId] = useState<number | null>(null);
-  const [showSeriesDetail, setShowSeriesDetail] = useState(false);
+  const categories = [
+    { label: 'Aksiyon', prefix: 'genre:Action', genreId: 28 },
+    { label: 'Komedi', prefix: 'genre:Comedy', genreId: 35 },
+    { label: 'Dram', prefix: 'genre:Drama', genreId: 18 },
+    { label: 'Korku', prefix: 'genre:Horror', genreId: 27 },
+    { label: 'Romantik', prefix: 'genre:Romance', genreId: 10749 },
+    { label: 'Bilim Kurgu', prefix: 'genre:Sci-Fi', genreId: 878 },
+  ];
 
   useEffect(() => {
     loadMovies();
@@ -33,6 +65,119 @@ const Explore: React.FC = () => {
       loadSeries();
     }
   }, [activeTab, series.length]);
+
+  // Sekme değiştiğinde genre araması varsa tekrar yap
+  useEffect(() => {
+    if (selectedGenre && isGenreMode) {
+      if (activeTab === 'flicks') {
+        loadMoviesByGenre(selectedGenre);
+      } else {
+        loadSeriesByGenre(selectedGenre);
+      }
+    }
+  }, [activeTab, selectedGenre, isGenreMode]);
+
+  // Search fonksiyonu
+  useEffect(() => {
+    if (search.trim()) {
+      // Eğer arama kutusu dolu ve genre modunda değilsek, normal arama yap
+      const genreName = Object.keys(GENRE_MAP).find(name => name === search.trim());
+      
+      if (!genreName) {
+        // Normal metin araması - genre filtresini temizle
+        if (selectedGenre || isGenreMode) {
+          setSelectedGenre(null);
+          setGenreResults([]);
+          setIsGenreMode(false);
+        }
+        
+        const timeoutId = setTimeout(() => {
+          performSearch(search.trim());
+        }, 500); // Debounce
+        return () => clearTimeout(timeoutId);
+      }
+    } else {
+      // Arama kutusu boş - tüm modları temizle
+      setIsSearchMode(false);
+      setIsGenreMode(false);
+      setSearchResults({ movies: [], series: [], persons: [] });
+      setSelectedGenre(null);
+      setGenreResults([]);
+      setSelectedCategory(null);
+    }
+  }, [search, selectedGenre, activeTab]);
+
+  const performSearch = async (query: string) => {
+    setSearchLoading(true);
+    setIsSearchMode(true);
+    try {
+      // Tüm kategorilerde arama yap (filmler, diziler ve oyuncular)
+      const results = await searchAll(query);
+      setSearchResults(results);
+    } catch (err) {
+      console.error('Search error:', err);
+      setSearchResults({ movies: [], series: [], persons: [] });
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const loadMoviesByGenre = async (genreId: number) => {
+    setGenreLoading(true);
+    setError(null);
+    try {
+      const data = await getMoviesByGenre(genreId);
+      setGenreResults(data);
+      setSelectedGenre(genreId);
+    } catch (err) {
+      setError('Failed to load movies by genre');
+      console.error('Error loading movies by genre:', err);
+    } finally {
+      setGenreLoading(false);
+    }
+  };
+
+  const loadSeriesByGenre = async (genreId: number) => {
+    setGenreLoading(true);
+    setError(null);
+    try {
+      const data = await getSeriesByGenre(genreId);
+      setGenreResults(data);
+      setSelectedGenre(genreId);
+    } catch (err) {
+      setError('Failed to load series by genre');
+      console.error('Error loading series by genre:', err);
+    } finally {
+      setGenreLoading(false);
+    }
+  };
+
+  const handleGenreClick = async (genreName: string) => {
+    // Tür adını arama kutusuna yaz
+    setSearch(genreName);
+    setSelectedCategory(`genre:${genreName}`);
+    
+    // Genre ID'yi bul
+    const genreId = GENRE_MAP[genreName];
+    if (!genreId) {
+      console.error('Genre ID not found for:', genreName);
+      return;
+    }
+
+    // Arama modunu temizle
+    setIsSearchMode(false);
+    setSearchResults({ movies: [], series: [], persons: [] });
+    
+    // Genre modunu aktif et
+    setIsGenreMode(true);
+    
+    // Aktif sekmeye göre API çağrısı yap
+    if (activeTab === 'flicks') {
+      await loadMoviesByGenre(genreId);
+    } else {
+      await loadSeriesByGenre(genreId);
+    }
+  };
 
   const loadMovies = async () => {
     setLoading(true);
@@ -62,26 +207,49 @@ const Explore: React.FC = () => {
     }
   };
 
-  const currentData = activeTab === 'flicks' ? movies : series;
-
   const handleMovieClick = (movieId: number) => {
-    setSelectedMovieId(movieId);
-    setShowMovieDetail(true);
+    openModal('movie', movieId);
   };
 
   const handleSeriesClick = (seriesId: number) => {
-    setSelectedSeriesId(seriesId);
-    setShowSeriesDetail(true);
+    // Dizi detay modalı için gerekli olduğunda eklenebilir
+    // openModal('series', seriesId);
   };
 
-  const handleCloseMovieModal = () => {
-    setShowMovieDetail(false);
-    setSelectedMovieId(null);
+  const handlePersonClick = (personId: number) => {
+    openModal('actor', personId);
   };
 
-  const handleCloseSeriesModal = () => {
-    setShowSeriesDetail(false);
-    setSelectedSeriesId(null);
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true);
+  };
+
+  const handleSearchBlur = () => {
+    setTimeout(() => setIsSearchFocused(false), 200);
+  };
+
+  const currentData = isGenreMode ? genreResults : (activeTab === 'flicks' ? movies : series);
+  const currentLoading = isGenreMode ? genreLoading : loading;
+
+  // Arama sonuçlarını filtrele
+  const getFilteredSearchResults = () => {
+    switch (searchTab) {
+      case 'movies':
+        return { movies: searchResults.movies, series: [], persons: [] };
+      case 'series':
+        return { movies: [], series: searchResults.series, persons: [] };
+      case 'persons':
+        return { movies: [], series: [], persons: searchResults.persons };
+      default:
+        return searchResults;
+    }
+  };
+
+  const filteredResults = getFilteredSearchResults();
+  const searchCounts = {
+    movies: searchResults.movies.length,
+    series: searchResults.series.length,
+    persons: searchResults.persons.length,
   };
 
   return (
@@ -90,6 +258,7 @@ const Explore: React.FC = () => {
         <div className="flex flex-col items-center w-full pt-6 pb-2 px-0">
           {/* Başlık */}
           <span className="block text-white font-bold text-[22px] leading-[33px] mb-2 font-poppins w-full max-w-[332px] text-left">Panda Explorer</span>
+          
           {/* Searchbar */}
           <div className="w-full max-w-[332px] flex flex-row items-center bg-[#EFEEEA] rounded-[12px] px-[15px] py-[4px] gap-[8px] mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#000" className="w-[14px] h-[14px]">
@@ -100,57 +269,155 @@ const Explore: React.FC = () => {
               placeholder="Fight Club"
               value={search}
               onChange={e => setSearch(e.target.value)}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
             />
+            {search && (
+              <button
+                onClick={() => {
+                  setSearch('');
+                  setSelectedCategory(null);
+                  setSelectedGenre(null);
+                  setGenreResults([]);
+                  setIsSearchMode(false);
+                  setIsGenreMode(false);
+                  setSearchResults({ movies: [], series: [], persons: [] });
+                }}
+                className="w-[16px] h-[16px] flex items-center justify-center rounded-full bg-[#A3ABB2] hover:bg-[#8B9399] transition-colors"
+                aria-label="Temizle"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#fff" className="w-[10px] h-[10px]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
-          {/* Segment */}
-          <div className="w-full max-w-[332px] flex justify-center mb-2">
-            <ExploreTabSegment activeTab={activeTab} onTabChange={setActiveTab} />
-          </div>
-        </div>
-        {/* Poster Grid */}
-        <div className="flex flex-col items-center">
-          {loading ? (
-            <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
-              {Array.from({ length: 9 }, (_, index) => (
-                <SkeletonLoader key={index} type="poster" />
-              ))}
+
+          {/* Kategori Etiketleri - Arama odaklandığında göster */}
+          {isSearchFocused && (
+            <div className="w-full max-w-[332px] mb-4">
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <CategoryChip
+                    key={category.prefix}
+                    label={category.label}
+                    prefix={category.prefix}
+                    onClick={() => handleGenreClick(category.label)}
+                    isSelected={selectedCategory === category.prefix}
+                  />
+                ))}
+              </div>
             </div>
-          ) : error ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="text-red-400 font-poppins">{error}</div>
+          )}
+
+          {/* Segmentler */}
+          {!isSearchMode ? (
+            <div className="w-full max-w-[332px] flex justify-center mb-2">
+              <ExploreTabSegment activeTab={activeTab} onTabChange={setActiveTab} />
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
-              {currentData.map((item) => (
-                <div
-                  key={item.id}
-                  className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
-                  onClick={() => activeTab === 'flicks' ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
-                >
-                  <img
-                    src={item.poster_path ? `https://image.tmdb.org/t/p/w185${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+            <div className="w-full max-w-[332px] flex justify-center mb-2">
+              <SearchTabSegment 
+                activeTab={searchTab} 
+                onTabChange={setSearchTab} 
+                counts={searchCounts}
+              />
             </div>
           )}
         </div>
 
-        {/* Movie Detail Modal */}
-        <MovieDetailModal
-          open={showMovieDetail}
-          onClose={handleCloseMovieModal}
-          movieId={selectedMovieId}
-        />
-
-        {/* Series Detail Modal */}
-        <SeriesDetailModal
-          open={showSeriesDetail}
-          onClose={handleCloseSeriesModal}
-          seriesId={selectedSeriesId}
-        />
+        {/* İçerik */}
+        <div className="flex flex-col items-center">
+          {!isSearchMode ? (
+            // Normal Keşif Modu veya Genre Filtresi
+            currentLoading ? (
+              <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
+                {Array.from({ length: 9 }, (_, index) => (
+                  <SkeletonLoader key={index} type="poster" />
+                ))}
+              </div>
+            ) : error ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-red-400 font-poppins">{error}</div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
+                {currentData.map((item) => (
+                  <div
+                    key={item.id}
+                    className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
+                    onClick={() => activeTab === 'flicks' || isGenreMode ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
+                  >
+                    <img
+                      src={item.poster_path ? `https://image.tmdb.org/t/p/w185${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )
+          ) : (
+            // Arama Sonuçları Modu
+            searchLoading ? (
+              <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
+                {Array.from({ length: 9 }, (_, index) => (
+                  <SkeletonLoader key={index} type="poster" />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
+                {/* Film Sonuçları */}
+                {filteredResults.movies.map((movie) => (
+                  <div
+                    key={`movie-${movie.id}`}
+                    className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
+                    onClick={() => handleMovieClick(movie.id)}
+                  >
+                    <img
+                      src={movie.poster_path ? `https://image.tmdb.org/t/p/w185${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                      alt={movie.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                
+                {/* Dizi Sonuçları */}
+                {filteredResults.series.map((series) => (
+                  <div
+                    key={`series-${series.id}`}
+                    className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
+                    onClick={() => handleSeriesClick(series.id)}
+                  >
+                    <img
+                      src={series.poster_path ? `https://image.tmdb.org/t/p/w185${series.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                      alt={series.name || series.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+                
+                {/* Oyuncu Sonuçları */}
+                {filteredResults.persons.map((person) => (
+                  <PersonCard
+                    key={`person-${person.id}`}
+                    person={person}
+                    onClick={handlePersonClick}
+                  />
+                ))}
+                
+                {/* Sonuç bulunamadı */}
+                {filteredResults.movies.length === 0 && 
+                 filteredResults.series.length === 0 && 
+                 filteredResults.persons.length === 0 && (
+                  <div className="col-span-3 text-center text-gray-400 py-8">
+                    <p className="font-poppins">Arama sonucu bulunamadı</p>
+                  </div>
+                )}
+              </div>
+            )
+          )}
+        </div>
         
         {/* Bottom Navigation */}
         <BottomNavBar className="rounded-t-[24px]" />
