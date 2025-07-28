@@ -60,7 +60,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent) => {
     if (isEditing) return;
     setIsDragging(false);
     
@@ -68,6 +68,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
     if (currentX > 40) {
       setIsSwiped(true);
       setCurrentX(120);
+      e.preventDefault(); // Swipe aktifse click'i engelle
     } else {
       setIsSwiped(false);
       setCurrentX(0);
@@ -97,13 +98,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent) => {
     if (isEditing) return;
     setIsDragging(false);
     
     if (currentX > 40) {
       setIsSwiped(true);
       setCurrentX(120);
+      e.preventDefault(); // Swipe aktifse click'i engelle
     } else {
       setIsSwiped(false);
       setCurrentX(0);
@@ -125,13 +127,15 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
     };
   }, []);
 
-  const handleEditClick = () => {
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Event'in parent'a geçmesini önle
     setIsEditing(true);
     setIsSwiped(false);
     setCurrentX(0);
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Event'in parent'a geçmesini önle
     if (onDelete) {
       onDelete();
     }
@@ -139,11 +143,22 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
     setCurrentX(0);
   };
 
+  // Ana kartın click handler'ı - swipe aktifse çalışmasın
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (isSwiped || isDragging || isEditing) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <div 
       ref={cardRef}
       className="relative w-[357px] min-w-[357px] overflow-hidden rounded-[16px]"
-      onClick={onClick}
     >
       {/* Action Buttons - Background */}
       <div className="absolute right-0 top-0 w-[120px] h-[158px] flex items-center justify-center">
@@ -181,6 +196,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
           transform: `translateX(-${currentX}px)`,
           cursor: isDragging ? 'grabbing' : (isEditing ? 'default' : 'grab')
         }}
+        onClick={handleCardClick} // Güvenli click handler'ı kullan
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
