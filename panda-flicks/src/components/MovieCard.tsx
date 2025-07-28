@@ -9,9 +9,10 @@ type MovieCardProps = {
   poster: string;
   onUpdate?: (updates: Partial<Omit<MovieLog, 'id' | 'createdAt'>>) => void;
   onDelete?: () => void;
+  onClick?: () => void;
 };
 
-const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, poster, onUpdate, onDelete }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, poster, onUpdate, onDelete, onClick }) => {
   const [expanded, setExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSwiped, setIsSwiped] = useState(false);
@@ -142,6 +143,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
     <div 
       ref={cardRef}
       className="relative w-[357px] min-w-[357px] overflow-hidden rounded-[16px]"
+      onClick={onClick}
     >
       {/* Action Buttons - Background */}
       <div className="absolute right-0 top-0 w-[120px] h-[158px] flex items-center justify-center">
@@ -294,4 +296,4 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
   );
 };
 
-export default MovieCard; 
+export default MovieCard;

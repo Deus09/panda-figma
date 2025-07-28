@@ -7,10 +7,12 @@ import fabAdd from '../assets/fab-add.svg';
 import React, { useState, useEffect } from 'react';
 import TabSegment from '../components/TabSegment';
 import LocalStorageService, { MovieLog } from '../services/localStorage';
+import { useModal } from '../context/ModalContext';
 
 // movies array ve mock MovieCard renderlarını kaldır
 
 const Home: React.FC = () => {
+  const { openModal } = useModal();
   const [activeTab, setActiveTab] = useState<'watched' | 'watchlist'>('watched');
   const [movieLogs, setMovieLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,6 +127,7 @@ const Home: React.FC = () => {
                   poster={movie.poster}
                   onUpdate={(updates) => handleUpdateMovieLog(movie.id, updates)}
                   onDelete={() => handleDeleteMovieLog(movie.id)}
+                  onClick={() => openModal('movie', movie.tmdbId)}
                 />
               ))
             ) : (
@@ -149,4 +152,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home; 
+export default Home;

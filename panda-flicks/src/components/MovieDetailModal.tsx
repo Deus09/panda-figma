@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import ActorDetailModal from './ActorDetailModal';
+import { useModal } from '../context/ModalContext';
 
 interface MovieDetailModalProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface MovieDetailModalProps {
 }
 
 const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movieId }) => {
+  const { openModal, closeModal } = useModal();
   const [movieDetails, setMovieDetails] = useState<TMDBMovieDetails | null>(null);
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
   const [loading, setLoading] = useState(false);
@@ -83,8 +85,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   };
 
   const handleActorClick = (actorId: number) => {
-    setSelectedActorId(actorId);
-    setActorModalOpen(true);
+    openModal('actor', actorId);
   };
 
   const handleActorModalClose = () => {
@@ -110,7 +111,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       <div className="w-full h-full bg-[#0C1117] overflow-y-auto">
         {/* Back Button */}
         <button
-          onClick={onClose}
+          onClick={closeModal}
           className="absolute top-4 left-4 z-10 w-6 h-6 flex items-center justify-center"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -272,4 +273,4 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   );
 };
 
-export default MovieDetailModal; 
+export default MovieDetailModal;

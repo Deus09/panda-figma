@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getActorDetails, getActorCredits, TMDBActorDetails, TMDBActorCredit } from '../services/tmdb';
 import FilmographyCard from './FilmographyCard';
+import { useModal } from '../context/ModalContext';
 
 interface ActorDetailModalProps {
   open: boolean;
@@ -19,6 +20,7 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
   onMovieClick,
   onSeriesClick
 }) => {
+  const { openModal, closeModal } = useModal();
   const [actorDetails, setActorDetails] = useState<TMDBActorDetails | null>(null);
   const [credits, setCredits] = useState<TMDBActorCredit[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,10 +99,10 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
   };
 
   const handleFilmographyCardClick = (id: number, mediaType: 'movie' | 'tv') => {
-    if (mediaType === 'movie' && onMovieClick) {
-      onMovieClick(id);
-    } else if (mediaType === 'tv' && onSeriesClick) {
-      onSeriesClick(id);
+    if (mediaType === 'movie') {
+      openModal('movie', id);
+    } else if (mediaType === 'tv') {
+      // İsterseniz dizi detay modalı ekleyebilirsiniz
     }
   };
 
@@ -111,7 +113,7 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
       <div className="w-full h-full bg-[#0C1117] overflow-y-auto">
         {/* Back Button */}
         <button
-          onClick={onClose}
+          onClick={closeModal}
           className="absolute top-4 left-4 z-10 w-6 h-6 flex items-center justify-center"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
