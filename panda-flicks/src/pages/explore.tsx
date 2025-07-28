@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
-import TabSegment from '../components/TabSegment';
+import ExploreTabSegment from '../components/ExploreTabSegment';
 import MovieDetailModal from '../components/MovieDetailModal';
 import SeriesDetailModal from '../components/SeriesDetailModal';
 import BottomNavBar from '../components/BottomNavBar';
+import SkeletonLoader from '../components/SkeletonLoader';
 import { getPopularMovies, getPopularSeries, TMDBMovieResult } from '../services/tmdb';
 import styles from './explore.module.css';
 
@@ -103,14 +104,16 @@ const Explore: React.FC = () => {
           </div>
           {/* Segment */}
           <div className="w-full max-w-[332px] flex justify-center mb-2">
-            <TabSegment activeTab={activeTab} onTabChange={setActiveTab} />
+            <ExploreTabSegment activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
         </div>
         {/* Poster Grid */}
         <div className="flex flex-col items-center">
           {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="text-white font-poppins">Loading...</div>
+            <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
+              {Array.from({ length: 9 }, (_, index) => (
+                <SkeletonLoader key={index} type="poster" />
+              ))}
             </div>
           ) : error ? (
             <div className="flex items-center justify-center h-64">

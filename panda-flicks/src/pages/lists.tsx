@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
 import BottomNavBar from '../components/BottomNavBar';
 import MovieDetailModal from '../components/MovieDetailModal';
+import SkeletonLoader from '../components/SkeletonLoader';
 import { searchMovies } from '../services/tmdb';
 import styles from './lists.module.css';
 
@@ -565,10 +566,12 @@ const Lists: React.FC = () => {
   const [showMovieDetail, setShowMovieDetail] = useState(false);
   const [filmData, setFilmData] = useState<Map<string, { id: number; posterPath?: string }>>(new Map());
   const [loadingPoster, setLoadingPoster] = useState<{ [key: string]: boolean }>({});
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Sayfa yüklendiğinde tüm listelerin poster verilerini yükle
   useEffect(() => {
     const loadAllPosters = async () => {
+      setIsInitialLoading(true);
       const newFilmData = new Map(filmData);
       
       for (const liste of filmListeleri.filmListeleri) {
@@ -590,6 +593,7 @@ const Lists: React.FC = () => {
         }
       }
       setFilmData(newFilmData);
+      setIsInitialLoading(false);
     };
 
     loadAllPosters();
@@ -675,44 +679,61 @@ const Lists: React.FC = () => {
           <div className="p-4 pb-24">
             <h1 className="text-white font-bold text-2xl mb-6 font-poppins">Film Listeleri</h1>
             
-            <div className="space-y-4">
-              {filmListeleri.filmListeleri.map((liste: Liste, index: number) => {
-                const posterPath = getListePoster(liste);
-                return (
-                  <div
-                    key={index}
-                    className="bg-gray-800 rounded-xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => handleListeClick(liste)}
-                  >
-                    {/* Poster Alanı */}
-                    <div className="h-48 bg-gray-700 relative">
-                      {posterPath ? (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w500${posterPath}`}
-                          alt={liste.listeAdi}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-                          <span className="text-white text-lg font-bold text-center px-4">{liste.listeAdi}</span>
-                        </div>
-                      )}
-                      
-                      {/* Film Sayısı Badge */}
-                      <div className="absolute top-3 right-3 bg-[#FE7743] text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
-                        {liste.filmSayisi} film
-                      </div>
-                    </div>
-                    
-                    {/* Liste Bilgileri */}
-                    <div className="p-4 bg-gray-800">
-                      <h3 className="text-white font-bold text-lg font-poppins mb-2">{liste.listeAdi}</h3>
-                      <p className="text-[#EFEEEA] text-sm font-poppins">{liste.aciklama}</p>
+            {isInitialLoading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 3 }, (_, index) => (
+                  <div key={index} className="bg-gray-800 rounded-xl overflow-hidden">
+                    {/* Poster Skeleton */}
+                    <div className="h-48 bg-gray-700 animate-pulse"></div>
+                    {/* Content Skeleton */}
+                    <div className="p-4 bg-gray-800 space-y-2">
+                      <SkeletonLoader type="text" width="w-3/4" height="h-6" />
+                      <SkeletonLoader type="text" width="w-full" height="h-4" />
+                      <SkeletonLoader type="text" width="w-2/3" height="h-4" />
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filmListeleri.filmListeleri.map((liste: Liste, index: number) => {
+                  const posterPath = getListePoster(liste);
+                  return (
+                    <div
+                      key={index}
+                      className="bg-gray-800 rounded-xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => handleListeClick(liste)}
+                    >
+                      {/* Poster Alanı */}
+                      <div className="h-48 bg-gray-700 relative">
+                        {posterPath ? (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+                            alt={liste.listeAdi}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                            <span className="text-white text-lg font-bold text-center px-4">{liste.listeAdi}</span>
+                          </div>
+                        )}
+                        
+                        {/* Film Sayısı Badge */}
+                        <div className="absolute top-3 right-3 bg-[#FE7743] text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
+                          {liste.filmSayisi} film
+                        </div>
+                      </div>
+                      
+                      {/* Liste Bilgileri */}
+                      <div className="p-4 bg-gray-800">
+                        <h3 className="text-white font-bold text-lg font-poppins mb-2">{liste.listeAdi}</h3>
+                        <p className="text-[#EFEEEA] text-sm font-poppins">{liste.aciklama}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         ) : (
           /* Liste Detay Görünümü */
