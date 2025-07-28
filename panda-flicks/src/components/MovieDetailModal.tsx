@@ -127,8 +127,8 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
             </div>
 
             {/* Content Container */}
-            <div className="relative -mt-16 px-[18px] pb-6">
-              <div className="bg-[#0C1117] rounded-t-[24px] p-4">
+            <div className="relative -mt-16 px-[18px] pb-20">
+              <div className="bg-[#0C1117] rounded-t-[24px] p-4 pb-8">
                 {/* Movie Title and Genres */}
                 <div className="flex items-center gap-2 mb-2">
                   <h1 className="text-[#F8F8FF] font-poppins font-extrabold text-2xl leading-6 drop-shadow-[0_4px_15px_rgba(255,255,255,0.7)]">
@@ -220,9 +220,9 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                 </div>
 
                 {/* Liked Others Section */}
-                <div>
+                <div className="mb-6">
                   <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">Liked others</h2>
-                  <div className="flex gap-3 overflow-x-auto">
+                  <div className="flex gap-3 overflow-x-auto pb-4">
                     {similarMovies.slice(0, 5).map((movie) => (
                       <div 
                         key={movie.id} 
