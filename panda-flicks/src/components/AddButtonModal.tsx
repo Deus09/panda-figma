@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IonDatetime, IonModal } from '@ionic/react';
-import { searchMovies, TMDBMovieResult, TMDBCastMember } from '../services/tmdb';
+import { IonDatetime, IonModal, IonItem, IonLabel, IonThumbnail, IonCheckbox, IonButton, IonList } from '@ionic/react';
+import { searchMovies, TMDBMovieResult, TMDBCastMember, getSeriesDetails, searchAll, TMDBMultiSearchResponse, TMDBSearchResult, getSeasonDetails } from '../services/tmdb';
 import { improveComment, chatWithCast } from '../services/gemini';
+import { TvSeriesDetails, SeasonDetails } from '../types/tmdb';
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
 
@@ -14,6 +15,14 @@ interface AddButtonModalProps {
 }
 
 const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect }) => {
+  // Modal view states
+  type ModalView = 'search' | 'seasons' | 'episodes';
+  const [view, setView] = useState<ModalView>('search');
+  
+  const [selectedSeries, setSelectedSeries] = useState<TvSeriesDetails | null>(null);
+  const [selectedSeason, setSelectedSeason] = useState<SeasonDetails | null>(null);
+  const [checkedEpisodes, setCheckedEpisodes] = useState<Set<number>>(new Set());
+
   const [watchList, setWatchList] = useState(false);
   const [date, setDate] = useState(() => {
     const today = new Date();
@@ -23,7 +32,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [search, setSearch] = useState('');
-  const [suggestions, setSuggestions] = useState<TMDBMovieResult[]>([]);
+  const [suggestions, setSuggestions] = useState<TMDBSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<TMDBMovieResult | null>(null);
   const [tmdbId, setTmdbId] = useState<number | null>(null);
@@ -46,6 +55,10 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
   React.useEffect(() => {
     if (open) {
+      setView('search');
+      setSelectedSeries(null);
+      setSelectedSeason(null);
+      setCheckedEpisodes(new Set());
       setSearch('');
       setSelectedMovie(null);
       setTmdbId(null);
@@ -66,8 +79,12 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   useEffect(() => {
     if (search.length >= 3) {
       setLoading(true);
-      searchMovies(search)
-        .then(res => setSuggestions(res))
+      searchAll(search)
+        .then(res => {
+          // Movies ve series'i birleştir
+          const combined = [...res.movies, ...res.series];
+          setSuggestions(combined);
+        })
         .catch(() => setSuggestions([]))
         .finally(() => setLoading(false));
     } else {
@@ -104,6 +121,77 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       // hata yönetimi eklenebilir
     } finally {
       setImproving(false);
+    }
+  };
+
+  // Dizi seçim fonksiyonu
+  const handleSeriesSelect = async (seriesId: number) => {
+    try {
+      console.log('Fetching series details for ID:', seriesId);
+      const seriesDetails = await getSeriesDetails(seriesId);
+      console.log('Received series details:', seriesDetails);
+      console.log('Seasons array:', seriesDetails.seasons);
+      
+      // Transform to TvSeriesDetails format
+      const transformedSeries: TvSeriesDetails = {
+        id: seriesDetails.id,
+        name: seriesDetails.name,
+        poster_path: seriesDetails.poster_path || null,
+        number_of_seasons: seriesDetails.number_of_seasons || 0,
+        seasons: seriesDetails.seasons?.map(season => ({
+          id: season.id,
+          season_number: season.season_number,
+          name: season.name,
+          poster_path: season.poster_path || null,
+          episode_count: season.episode_count
+        })) || []
+      };
+      
+      console.log('Transformed series:', transformedSeries);
+      setSelectedSeries(transformedSeries);
+      setView('seasons');
+    } catch (error) {
+      console.error('Error fetching series details:', error);
+    }
+  };
+
+  // Sezon seçim fonksiyonu
+  const handleSeasonSelect = async (seasonNumber: number) => {
+    if (!selectedSeries) return;
+    try {
+      const seasonDetails = await getSeasonDetails(selectedSeries.id, seasonNumber);
+      setSelectedSeason(seasonDetails);
+      setCheckedEpisodes(new Set()); // Reset checked episodes
+      setView('episodes');
+    } catch (error) {
+      console.error('Error fetching season details:', error);
+    }
+  };
+
+  // Episode checkbox toggle fonksiyonu
+  const handleEpisodeToggle = (episodeId: number) => {
+    setCheckedEpisodes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(episodeId)) {
+        newSet.delete(episodeId);
+      } else {
+        newSet.add(episodeId);
+      }
+      return newSet;
+    });
+  };
+
+  // Tümünü seç/bırak fonksiyonu
+  const handleSelectAllEpisodes = () => {
+    if (!selectedSeason || !selectedSeason.episodes) return;
+    
+    const allEpisodeIds = selectedSeason.episodes.map(ep => ep.id);
+    const areAllSelected = allEpisodeIds.every(id => checkedEpisodes.has(id));
+    
+    if (areAllSelected) {
+      setCheckedEpisodes(new Set());
+    } else {
+      setCheckedEpisodes(new Set(allEpisodeIds));
     }
   };
 
@@ -191,36 +279,49 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
               {search.length >= 3 && suggestions.length > 0 && !selectedMovie && (
                 <div ref={suggestionsRef} className="absolute left-0 top-[44px] w-full bg-white rounded-b-[12px] shadow-lg z-50 max-h-72 overflow-y-auto border border-[#FE7743]">
                   {loading && <div className="p-2 text-sm text-gray-400">Loading...</div>}
-                  {suggestions.map(movie => (
+                  {suggestions.map(item => (
                     <div
-                      key={movie.id}
+                      key={item.id}
                       className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#FE7743]/10"
                       onClick={() => {
-                        setSelectedMovie(movie);
-                        setTmdbId(movie.id);
-                        setSuggestions([]);
-                        setSearch(movie.title);
-                        if (onMovieSelect) onMovieSelect(movie, movie.id);
+                        if (item.media_type === 'movie') {
+                          // Film seçimi - mevcut davranış
+                          const movieItem = item as TMDBMovieResult;
+                          setSelectedMovie(movieItem);
+                          setTmdbId(item.id);
+                          setSuggestions([]);
+                          setSearch(item.title || '');
+                          if (onMovieSelect) onMovieSelect(movieItem, item.id);
+                        } else if (item.media_type === 'tv') {
+                          // Dizi seçimi - yeni davranış
+                          setSuggestions([]);
+                          setSearch(item.name || '');
+                          handleSeriesSelect(item.id);
+                        }
                       }}
                     >
                       <img
-                        src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://placehold.co/40x60?text=No+Image'}
-                        alt={movie.title}
+                        src={item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'https://placehold.co/40x60?text=No+Image'}
+                        alt={item.title || item.name}
                         className="w-10 h-16 object-cover rounded"
                       />
-                      <span className="text-black text-[15px] font-poppins">{movie.title}</span>
-                      <span className="text-xs text-gray-400 ml-auto">{movie.release_date?.slice(0,4) || ''}</span>
+                      <span className="text-black text-[15px] font-poppins">{item.title || item.name}</span>
+                      <span className="text-xs text-gray-400 ml-auto">{item.release_date?.slice(0,4) || item.first_air_date?.slice(0,4) || ''}</span>
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </div>
-          {/* Add Watch List Toggle */}
-          <div className="flex items-center justify-between mb-8">
-            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Add Watch List</span>
-            <button
-              type="button"
+          
+          {/* Search View - Default */}
+          {view === 'search' && (
+            <>
+              {/* Add Watch List Toggle */}
+              <div className="flex items-center justify-between mb-8">
+                <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Add Watch List</span>
+                <button
+                  type="button"
               aria-pressed={watchList}
               onClick={() => setWatchList(v => !v)}
               className={`w-12 h-7 rounded-full flex items-center transition-colors duration-300 focus:outline-none ${watchList ? 'bg-[#FE7743]' : 'bg-[#D9D9D9]'}`}
@@ -368,6 +469,111 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             <button onClick={handleCancel} className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md">Cancel</button>
             <button onClick={handleSave} className="w-[130px] h-[40px] rounded-[12px] bg-[#FE7743] text-[#F8F8FF] text-[16px] font-poppins font-semibold shadow-lg">Save</button>
           </div>
+          </>
+          )}
+          
+          {/* Seasons View */}
+          {view === 'seasons' && selectedSeries && (
+            <div>
+              <h2 className="text-xl font-bold mb-4 text-center text-[#F8F8FF]">{selectedSeries.name} - Sezon Seç</h2>
+              <IonList>
+                {selectedSeries?.seasons.map(season => (
+                  <IonItem button key={season.id} onClick={() => handleSeasonSelect(season.season_number)}>
+                    <IonThumbnail slot="start">
+                      {season.poster_path ? (
+                        <img src={`https://image.tmdb.org/t/p/w200${season.poster_path}`} alt={season.name} />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">No Image</div>
+                      )}
+                    </IonThumbnail>
+                    <IonLabel>
+                      <h3>{season.name}</h3>
+                      <p>{season.episode_count} Bölüm</p>
+                    </IonLabel>
+                  </IonItem>
+                ))}
+              </IonList>
+              <div className="flex justify-center gap-6 mt-6">
+                <button 
+                  onClick={() => setView('search')} 
+                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md"
+                >
+                  Back
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Episodes View */}
+          {view === 'episodes' && selectedSeason && (
+            <div>
+              <div className="text-center text-[#F8F8FF] text-[18px] font-poppins mb-6">
+                Season {selectedSeason.season_number} - Bölüm Seçin
+              </div>
+              
+              {/* Tümünü Seç Checkbox */}
+              <IonItem className="bg-[#333] rounded-lg mb-4 border border-[#444]">
+                <IonCheckbox 
+                  slot="start"
+                  checked={(selectedSeason.episodes?.length ?? 0) > 0 && selectedSeason.episodes?.every(ep => checkedEpisodes.has(ep.id)) === true}
+                  indeterminate={selectedSeason.episodes?.some(ep => checkedEpisodes.has(ep.id)) === true && selectedSeason.episodes?.every(ep => checkedEpisodes.has(ep.id)) !== true}
+                  onIonChange={handleSelectAllEpisodes}
+                />
+                <IonLabel className="text-[#F8F8FF]">
+                  <h2 className="text-[16px] font-poppins font-semibold">Tümünü Seç</h2>
+                  <p className="text-[14px] text-[#CCC]">{selectedSeason.episodes?.length ?? 0} bölüm</p>
+                </IonLabel>
+              </IonItem>
+
+              {/* Episode List */}
+              <div className="space-y-2 max-h-[300px] overflow-y-auto mb-6">
+                {selectedSeason.episodes?.map((episode) => (
+                  <IonItem 
+                    key={episode.id}
+                    className="bg-[#333] rounded-lg border border-[#444]"
+                  >
+                    <IonCheckbox 
+                      slot="start"
+                      checked={checkedEpisodes.has(episode.id)}
+                      onIonChange={() => handleEpisodeToggle(episode.id)}
+                    />
+                    <IonLabel className="text-[#F8F8FF]">
+                      <h2 className="text-[16px] font-poppins font-semibold">
+                        {episode.episode_number}. {episode.name}
+                      </h2>
+                      {episode.overview && (
+                        <p className="text-[12px] text-[#CCC] mt-1 line-clamp-2">
+                          {episode.overview}
+                        </p>
+                      )}
+                    </IonLabel>
+                  </IonItem>
+                )) ?? []}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-6 mt-6">
+                <button 
+                  onClick={() => setView('seasons')} 
+                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md"
+                >
+                  Back
+                </button>
+                <IonButton 
+                  fill="solid" 
+                  color="primary" 
+                  disabled={checkedEpisodes.size === 0}
+                  onClick={() => {
+                    console.log('Selected episodes:', Array.from(checkedEpisodes));
+                    // TODO: Navigate to rating/comment screen
+                  }}
+                  className="w-[130px] h-[40px]"
+                >
+                  Devam ({checkedEpisodes.size})
+                </IonButton>
+              </div>
+            </div>
+          )}
         </div>
         {actionSheetOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">

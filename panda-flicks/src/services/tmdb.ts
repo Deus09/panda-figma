@@ -1,3 +1,5 @@
+import { TvSeriesDetails, SeasonDetails } from '../types/tmdb';
+
 export interface TMDBMovieResult {
   id: number;
   title: string;
@@ -43,6 +45,14 @@ export interface TMDBSeriesDetails {
   number_of_episodes?: number;
   vote_average?: number;
   genres?: { id: number; name: string }[];
+  seasons?: Array<{
+    id: number;
+    season_number: number;
+    name: string;
+    poster_path?: string;
+    episode_count: number;
+    air_date?: string;
+  }>;
 }
 
 export interface TMDBActorDetails {
@@ -406,7 +416,8 @@ export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDeta
       number_of_seasons: data.number_of_seasons,
       number_of_episodes: data.number_of_episodes,
       vote_average: data.vote_average,
-      genres: data.genres || []
+      genres: data.genres || [],
+      seasons: data.seasons || []
     };
 
     // 3. Gelen veriyi ve şu anki zamanı önbelleğe kaydet
@@ -638,5 +649,23 @@ export const searchAll = async (query: string): Promise<TMDBMultiSearchResponse>
   } catch (error) {
     console.error('Error searching:', error);
     throw new Error('Failed to search. Please try again.');
+  }
+};
+
+export const getSeasonDetails = async (seriesId: number, seasonNumber: number): Promise<SeasonDetails> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/${seriesId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=en-US`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch season details: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(`Error fetching details for season ${seasonNumber} of series ID ${seriesId}:`, error);
+    throw error;
   }
 };
