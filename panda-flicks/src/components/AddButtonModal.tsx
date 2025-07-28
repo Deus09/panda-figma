@@ -512,7 +512,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
               </div>
               
               {/* Tümünü Seç Checkbox */}
-              <IonItem className="bg-[#333] rounded-lg mb-4 border border-[#444]">
+              <IonItem className="bg-muted rounded-lg mb-4">
                 <IonCheckbox 
                   slot="start"
                   checked={(selectedSeason.episodes?.length ?? 0) > 0 && selectedSeason.episodes?.every(ep => checkedEpisodes.has(ep.id)) === true}
@@ -521,28 +521,41 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                 />
                 <IonLabel className="text-[#F8F8FF]">
                   <h2 className="text-[16px] font-poppins font-semibold">Tümünü Seç</h2>
-                  <p className="text-[14px] text-[#CCC]">{selectedSeason.episodes?.length ?? 0} bölüm</p>
+                  <p className="text-sm text-muted-foreground">{selectedSeason.episodes?.length ?? 0} bölüm</p>
                 </IonLabel>
               </IonItem>
 
               {/* Episode List */}
-              <div className="space-y-2 max-h-[300px] overflow-y-auto mb-6">
+              <div className="space-y-2 max-h-[calc(95vh-300px)] overflow-y-auto mb-6 pr-1">
                 {selectedSeason.episodes?.map((episode) => (
                   <IonItem 
                     key={episode.id}
-                    className="bg-[#333] rounded-lg border border-[#444]"
+                    className="bg-card rounded-lg border-border"
                   >
                     <IonCheckbox 
                       slot="start"
                       checked={checkedEpisodes.has(episode.id)}
                       onIonChange={() => handleEpisodeToggle(episode.id)}
                     />
+                    <IonThumbnail slot="start" className="w-24 h-16 mr-2">
+                      {episode.still_path ? (
+                        <img 
+                          src={`https://image.tmdb.org/t/p/w200${episode.still_path}`} 
+                          alt={episode.name}
+                          className="rounded"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
+                          No Image
+                        </div>
+                      )}
+                    </IonThumbnail>
                     <IonLabel className="text-[#F8F8FF]">
-                      <h2 className="text-[16px] font-poppins font-semibold">
+                      <h3 className="font-semibold whitespace-normal">
                         {episode.episode_number}. {episode.name}
-                      </h2>
+                      </h3>
                       {episode.overview && (
-                        <p className="text-[12px] text-[#CCC] mt-1 line-clamp-2">
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 whitespace-normal">
                           {episode.overview}
                         </p>
                       )}
@@ -553,12 +566,13 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
               {/* Action Buttons */}
               <div className="flex justify-center gap-6 mt-6">
-                <button 
+                <IonButton 
+                  fill="outline"
                   onClick={() => setView('seasons')} 
-                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md"
+                  className="w-[130px] h-[40px]"
                 >
                   Back
-                </button>
+                </IonButton>
                 <IonButton 
                   fill="solid" 
                   color="primary" 
