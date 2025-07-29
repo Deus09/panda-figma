@@ -204,7 +204,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       date,
       rating: rating.toString(),
       review: comment,
-      poster: selectedMovie.poster_path ? `https://image.tmdb.org/t/p/w92${selectedMovie.poster_path}` : '',
+      poster: selectedMovie.poster_path ? `https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}` : '',
       type: watchList ? 'watchlist' : 'watched',
       mediaType: 'movie', // TMDB'den gelecek
       tmdbId: tmdbId ?? undefined,
@@ -235,8 +235,8 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           date,
           rating: rating.toString(),
           review: comment,
-          poster: episode.still_path ? `https://image.tmdb.org/t/p/w92${episode.still_path}` : 
-                 (selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w92${selectedSeries.poster_path}` : ''),
+          poster: episode.still_path ? `https://image.tmdb.org/t/p/w500${episode.still_path}` : 
+                 (selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` : ''),
           type: watchList ? 'watchlist' : 'watched',
           mediaType: 'tv',
           tmdbId: selectedSeries.id,
@@ -337,7 +337,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                       }}
                     >
                       <img
-                        src={item.poster_path ? `https://image.tmdb.org/t/p/w92${item.poster_path}` : 'https://placehold.co/40x60?text=No+Image'}
+                        src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/40x60?text=No+Image'}
                         alt={item.title || item.name}
                         className="w-10 h-16 object-cover rounded"
                       />

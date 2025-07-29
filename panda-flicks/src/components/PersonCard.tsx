@@ -59,7 +59,7 @@ const PersonCard: React.FC<PersonCardProps> = ({ person, onClick }) => {
       <div className="flex-1 overflow-hidden relative">
         {person.profile_path ? (
           <img
-            src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
+            src={`https://image.tmdb.org/t/p/w500${person.profile_path}`}
             alt={person.name}
             className="w-full h-full object-cover"
           />

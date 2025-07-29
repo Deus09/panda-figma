@@ -194,7 +194,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                       >
                         <div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-[#D9D9D9]">
                           <img
-                            src={member.profile_path ? `https://image.tmdb.org/t/p/w92${member.profile_path}` : 'https://placehold.co/50x50?text=?'}
+                            src={member.profile_path ? `https://image.tmdb.org/t/p/w500${member.profile_path}` : 'https://placehold.co/50x50?text=?'}
                             alt={member.name}
                             className="w-full h-full object-cover"
                           />
@@ -241,7 +241,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                         onClick={() => handleSimilarSeriesClick(series.id)}
                       >
                         <img
-                          src={series.poster_path ? `https://image.tmdb.org/t/p/w185${series.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                          src={series.poster_path ? `https://image.tmdb.org/t/p/w500${series.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
                           alt={series.title}
                           className="w-full h-full object-cover"
                         />

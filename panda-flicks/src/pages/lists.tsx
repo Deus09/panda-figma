@@ -769,7 +769,7 @@ const Lists: React.FC = () => {
                             <div className="w-full h-full bg-gray-700 animate-pulse" />
                           )}
                           <img
-                            src={`https://image.tmdb.org/t/p/w185${movieData.posterPath}`}
+                            src={`https://image.tmdb.org/t/p/w500${movieData.posterPath}`}
                             alt={film.filmAdi}
                             className={`w-full h-full object-cover ${isLoading ? 'hidden' : ''}`}
                             onLoad={() => handlePosterLoad(film.filmAdi)}

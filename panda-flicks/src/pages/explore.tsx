@@ -440,7 +440,7 @@ const Explore: React.FC = () => {
                       onClick={() => activeTab === 'flicks' || isGenreMode ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
                     >
                       <img
-                        src={item.poster_path ? `https://image.tmdb.org/t/p/w185${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                        src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
                         alt={item.title}
                         className="w-full h-full object-cover"
                       />
@@ -481,7 +481,7 @@ const Explore: React.FC = () => {
                     onClick={() => handleMovieClick(movie.id)}
                   >
                     <img
-                      src={movie.poster_path ? `https://image.tmdb.org/t/p/w185${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                      src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
                       alt={movie.title}
                       className="w-full h-full object-cover"
                     />
@@ -496,7 +496,7 @@ const Explore: React.FC = () => {
                     onClick={() => handleSeriesClick(series.id)}
                   >
                     <img
-                      src={series.poster_path ? `https://image.tmdb.org/t/p/w185${series.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                      src={series.poster_path ? `https://image.tmdb.org/t/p/w500${series.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
                       alt={series.name || series.title}
                       className="w-full h-full object-cover"
                     />

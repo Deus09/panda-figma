@@ -110,7 +110,7 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
             <div className="w-10 h-10 rounded-full overflow-hidden bg-[#555]">
               {castMember.profile_path ? (
                 <img
-                  src={`https://image.tmdb.org/t/p/w92${castMember.profile_path}`}
+                  src={`https://image.tmdb.org/t/p/w500${castMember.profile_path}`}
                   alt={castMember.name}
                   className="w-full h-full object-cover"
                 />

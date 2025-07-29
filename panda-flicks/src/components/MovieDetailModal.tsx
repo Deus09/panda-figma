@@ -201,7 +201,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                       >
                         <div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-[#D9D9D9]">
                           <img
-                            src={member.profile_path ? `https://image.tmdb.org/t/p/w92${member.profile_path}` : 'https://placehold.co/50x50?text=?'}
+                            src={member.profile_path ? `https://image.tmdb.org/t/p/w500${member.profile_path}` : 'https://placehold.co/50x50?text=?'}
                             alt={member.name}
                             className="w-full h-full object-cover"
                           />
@@ -248,7 +248,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                         onClick={() => handleSimilarMovieClick(movie.id)}
                       >
                         <img
-                          src={movie.poster_path ? `https://image.tmdb.org/t/p/w185${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                          src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
                           alt={movie.title}
                           className="w-full h-full object-cover"
                         />

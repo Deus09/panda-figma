@@ -89,7 +89,7 @@ const CastSelectionModal: React.FC<CastSelectionModalProps> = ({
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-[#555] flex-shrink-0">
                     {castMember.profile_path ? (
                       <img
-                        src={`https://image.tmdb.org/t/p/w92${castMember.profile_path}`}
+                        src={`https://image.tmdb.org/t/p/w500${castMember.profile_path}`}
                         alt={castMember.name}
                         className="w-full h-full object-cover"
                       />

@@ -238,7 +238,7 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
                         onClick={() => handleFilmographyCardClick(credit.id, credit.media_type)}
                       >
                         <img
-                          src={credit.poster_path ? `https://image.tmdb.org/t/p/w185${credit.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                          src={credit.poster_path ? `https://image.tmdb.org/t/p/w500${credit.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
                           alt={credit.title || credit.name}
                           className="w-full h-full object-cover"
                         />

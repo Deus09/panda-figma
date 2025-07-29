@@ -28,7 +28,7 @@ const FilmographyCard: React.FC<FilmographyCardProps> = ({ credit, onCardClick }
       {/* Poster */}
       <div className="w-12 h-[72px] bg-gray-800 rounded-md overflow-hidden flex-shrink-0">
         <img
-          src={credit.poster_path ? `https://image.tmdb.org/t/p/w92${credit.poster_path}` : 'https://placehold.co/48x72?text=No+Image'}
+          src={credit.poster_path ? `https://image.tmdb.org/t/p/w500${credit.poster_path}` : 'https://placehold.co/48x72?text=No+Image'}
           alt={getTitle()}
           className="w-full h-full object-cover"
         />
