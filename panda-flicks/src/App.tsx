@@ -15,6 +15,7 @@ import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
 import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
+import SeriesDetailModal from './components/SeriesDetailModal';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -64,6 +65,13 @@ const ModalRenderer: React.FC = () => {
     return (
       <IonModal isOpen={true} onDidDismiss={closeModal}>
         <ActorDetailModal open={true} onClose={closeModal} actorId={current.id} />
+      </IonModal>
+    );
+  }
+  if (current.type === 'series') {
+    return (
+      <IonModal isOpen={true} onDidDismiss={closeModal}>
+        <SeriesDetailModal open={true} onClose={closeModal} seriesId={current.id} />
       </IonModal>
     );
   }

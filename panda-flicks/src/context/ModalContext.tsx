@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-export type ModalType = 'movie' | 'actor';
+export type ModalType = 'movie' | 'actor' | 'series';
 export interface ModalStackItem {
   type: ModalType;
   id: number;

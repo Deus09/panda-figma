@@ -300,8 +300,7 @@ const Explore: React.FC = () => {
   };
 
   const handleSeriesClick = (seriesId: number) => {
-    // Dizi detay modalı için gerekli olduğunda eklenebilir
-    // openModal('series', seriesId);
+    openModal('series', seriesId);
   };
 
   const handlePersonClick = (personId: number) => {

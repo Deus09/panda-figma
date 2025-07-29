@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getSeriesDetails, getSeriesCast, getSeriesTrailerKey, getSimilarSeries, TMDBSeriesDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import ActorDetailModal from './ActorDetailModal';
+import { useModal } from '../context/ModalContext';
 
 interface SeriesDetailModalProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface SeriesDetailModalProps {
 }
 
 const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, seriesId }) => {
+  const { openModal, closeModal } = useModal();
   const [seriesDetails, setSeriesDetails] = useState<TMDBSeriesDetails | null>(null);
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
   const [loading, setLoading] = useState(false);
@@ -83,8 +85,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
   };
 
   const handleActorClick = (actorId: number) => {
-    setSelectedActorId(actorId);
-    setActorModalOpen(true);
+    openModal('actor', actorId);
   };
 
   const handleActorModalClose = () => {
@@ -104,7 +105,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
       <div className="w-full h-full bg-[#0C1117] overflow-y-auto">
         {/* Back Button */}
         <button
-          onClick={onClose}
+          onClick={closeModal}
           className="absolute top-4 left-4 z-10 w-6 h-6 flex items-center justify-center"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -156,7 +157,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                 {/* Seasons and Episodes */}
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[#F8F8FF] font-poppins font-semibold text-base drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]">
-                    {seriesDetails.number_of_seasons} seasons
+                    {seriesDetails.number_of_seasons} season{seriesDetails.number_of_seasons !== 1 ? 's' : ''}
                   </span>
                   <div className="w-2.5 h-2.5 bg-[#F8F8FF] rounded-full drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]"></div>
                   <span className="text-[#F8F8FF] font-poppins font-semibold text-base drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]">
@@ -165,7 +166,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                 </div>
 
                 {/* Rating */}
-                <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#FE7743] rounded-xl mb-2 drop-shadow-[0_4px_15px_rgba(239,238,234,0.5)]">
+                <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#FE7743] rounded-xl mb-2 drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">
                   <span className="text-[#F8F8FF] font-poppins text-xs">IMDB Rating:</span>
                   <div className="flex items-center gap-0.5">
                     <span className="text-[#F8F8FF] font-poppins text-sm">
@@ -230,9 +231,9 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                   )}
                 </div>
 
-                {/* Liked Others Section */}
+                {/* Similar Series Section */}
                 <div className="mb-6">
-                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">Liked others</h2>
+                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">You might also like</h2>
                   <div className="flex gap-3 overflow-x-auto pb-4">
                     {similarSeries.slice(0, 5).map((series) => (
                       <div 
@@ -253,14 +254,6 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
             </div>
           </>
         ) : null}
-
-        {/* Actor Detail Modal */}
-        <ActorDetailModal
-          open={actorModalOpen}
-          onClose={handleActorModalClose}
-          actorId={selectedActorId}
-          onSeriesClick={handleSimilarSeriesClick}
-        />
       </div>
     </div>
   );
