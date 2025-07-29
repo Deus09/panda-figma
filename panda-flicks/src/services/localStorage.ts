@@ -15,6 +15,11 @@ export interface MovieLog {
   seasonCount?: number;
   episodeCount?: number;
   runtime?: number; // dakika cinsinden
+  // Filtre sistemi için gerekli yeni alanlar
+  contentType: 'movie' | 'tv';
+  seriesId?: string;       // Dizi ID'si (Gruplama için kritik)
+  seriesTitle?: string;    // Dizi Adı (Gruplanmış kart başlığı için)
+  seriesPoster?: string;   // Dizinin Ana Poster Resmi (Gruplanmış kart görseli için)
   createdAt: string;
   updatedAt: string;
 }
@@ -84,9 +89,14 @@ export class LocalStorageService {
       return parsedLogs.map((log: any) => ({
         ...log,
         mediaType: log.mediaType || 'movie', // Varsayılan olarak movie
-        runtime: log.runtime || (log.mediaType === 'tv' ? 45 : 120), // TV için 45dk, film için 120dk
+        contentType: log.contentType || log.mediaType || 'movie', // contentType öncelik ver
+        runtime: log.runtime || (log.mediaType === 'tv' || log.contentType === 'tv' ? 45 : 120),
         seasonCount: log.seasonCount || undefined,
         episodeCount: log.episodeCount || undefined,
+        // Dizi için eksik alanları doldur
+        seriesId: log.seriesId || (log.contentType === 'tv' || log.mediaType === 'tv' ? log.tmdbId?.toString() : undefined),
+        seriesTitle: log.seriesTitle || (log.contentType === 'tv' || log.mediaType === 'tv' ? log.title : undefined),
+        seriesPoster: log.seriesPoster || undefined, // Bölüm poster'ini dizi poster'i olarak kullanma
       }));
     } catch (error) {
       console.error('Error reading movie logs from localStorage:', error);

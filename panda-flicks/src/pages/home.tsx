@@ -1,6 +1,7 @@
 import { IonContent, IonPage } from '@ionic/react';
 import TopHeaderBar from '../components/TopHeaderBar';
 import MovieCard from '../components/MovieCard';
+import SeriesGroupCard from '../components/SeriesGroupCard';
 import BottomNavBar from '../components/BottomNavBar';
 import FabAddButton from '../components/FabAddButton';
 import fabAdd from '../assets/fab-add.svg';
@@ -59,6 +60,27 @@ const Home: React.FC = () => {
   // Filtered movie logs
   const filteredMovies = movieLogs.filter((log: MovieLog) => log.type === activeTab);
 
+  // TV Series gruplama mantığı
+  const groupedSeries = filteredMovies
+    .filter(log => {
+      const logContentType = log.contentType || log.mediaType;
+      return logContentType === 'tv' && log.seriesId;
+    })
+    .reduce((groups: { [seriesId: string]: MovieLog[] }, log) => {
+      const seriesId = log.seriesId!;
+      if (!groups[seriesId]) {
+        groups[seriesId] = [];
+      }
+      groups[seriesId].push(log);
+      return groups;
+    }, {});
+
+  // Movies (sadece filmler)  
+  const movies = filteredMovies.filter(log => {
+    const logContentType = log.contentType || log.mediaType;
+    return logContentType === 'movie';
+  });
+
   if (isLoading) {
     return (
       <IonPage className="bg-background">
@@ -86,33 +108,69 @@ const Home: React.FC = () => {
               </svg>
             </button>
           </div>
-          {/* Movie List */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-28 w-full px-4">
-            {filteredMovies.length > 0 ? (
-              filteredMovies.map((movie: MovieLog) => (
-                <MovieCard 
-                  key={movie.id} 
-                  title={movie.title}
-                  date={movie.date}
-                  rating={movie.rating}
-                  review={movie.review}
-                  poster={movie.poster}
-                  onClick={() => openModal('movie', movie.tmdbId)}
-                />
-              ))
-            ) : (
-              <div className="text-center text-muted-foreground mt-12">
-                <p className="text-body">
-                  {activeTab === 'watched' 
-                    ? 'Henüz izlediğin film yok' 
-                    : 'İzleme listende film yok'
-                  }
-                </p>
-                <p className="text-sm mt-2">
-                  + butonuna tıklayarak film ekle
-                </p>
-              </div>
-            )}
+          {/* Content Rendering - Hybrid View */}
+          <div className="pb-28 w-full px-4">
+            <div className="space-y-6">
+              {/* TV Series Section */}
+              {Object.entries(groupedSeries).length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Diziler</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Object.entries(groupedSeries).map(([seriesId, episodes]) => {
+                      const firstEpisode = episodes[0];
+                      if (!firstEpisode) return null;
+                      
+                      return (
+                        <SeriesGroupCard
+                          key={seriesId}
+                          seriesInfo={{
+                            id: seriesId,
+                            title: firstEpisode.seriesTitle || firstEpisode.title,
+                            poster: firstEpisode.seriesPoster || undefined
+                          }}
+                          episodes={episodes}
+                        />
+                      );
+                    }).filter(Boolean)}
+                  </div>
+                </div>
+              )}
+
+              {/* Movies Section */}
+              {movies.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Filmler</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {movies.map((movie: MovieLog) => (
+                      <MovieCard 
+                        key={movie.id} 
+                        title={movie.title}
+                        date={movie.date}
+                        rating={movie.rating}
+                        review={movie.review}
+                        poster={movie.poster}
+                        onClick={() => openModal('movie', movie.tmdbId)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {Object.entries(groupedSeries).length === 0 && movies.length === 0 && (
+                <div className="text-center text-muted-foreground mt-12">
+                  <p className="text-body">
+                    {activeTab === 'watched' 
+                      ? 'Henüz izlediğin içerik yok' 
+                      : 'İzleme listende içerik yok'
+                    }
+                  </p>
+                  <p className="text-sm mt-2">
+                    + butonuna tıklayarak film/dizi ekle
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
           <FabAddButton onAddMovieLog={handleAddMovieLog} />
           <BottomNavBar />

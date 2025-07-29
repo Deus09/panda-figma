@@ -36,6 +36,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   const [loading, setLoading] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState<TMDBMovieResult | null>(null);
   const [tmdbId, setTmdbId] = useState<number | null>(null);
+  
+  // Yeni state'ler - Akıllı veri aktarımı için
+  const [title, setTitle] = useState('');
+  const [poster, setPoster] = useState('');
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const [comment, setComment] = useState('');
   const [improving, setImproving] = useState(false);
@@ -73,6 +78,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       setShowCastSelection(false);
       setShowCastChat(false);
       setSelectedCastMember(null);
+      
+      // Yeni state'leri de sıfırla
+      setTitle('');
+      setPoster('');
+      setSelectedItem(null);
     }
   }, [open]);
 
@@ -111,10 +121,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
   // Sparkle butonuna tıklama fonksiyonu
   const handleImprove = async () => {
-    if (!comment.trim() || !selectedMovie) return;
+    if (!comment.trim() || !selectedItem) return;
     setImproving(true);
     try {
-      const result = await improveComment(comment, selectedMovie.title);
+      const movieTitle = selectedItem.title || selectedItem.name || '';
+      const result = await improveComment(comment, movieTitle);
       setPendingImproved(result);
       setActionSheetOpen(true);
     } catch {
@@ -122,6 +133,34 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     } finally {
       setImproving(false);
     }
+  };
+
+  // Veri alma fonksiyonu - Bölüm seçim ekranından gelen veriyi işler
+  const handleItemSelected = (item: any) => {
+    console.log('Item selected:', item);
+    setSelectedItem(item);
+    setTitle(item.name || item.title || '');
+    setPoster(item.poster_path || item.poster || '');
+    setTmdbId(item.id || item.tmdbId);
+    
+    // Eğer film ise selectedMovie'yi de set et
+    if (item.media_type === 'movie' || item.mediaType === 'movie') {
+      setSelectedMovie(item);
+    }
+    
+    // Seçim yapıldıktan sonra search view'a dön ve form alanlarını aktif hale getir
+    setView('search');
+    setSuggestions([]);
+    setSearch('');
+    
+    // Form alanlarını sıfırla (yeni seçim için)
+    setRating(0);
+    setComment('');
+    setWatchList(false);
+    setDate(() => {
+      const today = new Date();
+      return today.toISOString().split('T')[0];
+    });
   };
 
   // Dizi seçim fonksiyonu
@@ -196,60 +235,107 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   };
 
   const handleSave = () => {
-    if (!selectedMovie) return;
-    console.log('handleSave called, selectedMovie:', selectedMovie.title);
+    if (!selectedItem) return;
+    console.log('handleSave called, selectedItem:', selectedItem);
     
-    const log = {
-      title: selectedMovie.title,
-      date,
-      rating: rating.toString(),
-      review: comment,
-      poster: selectedMovie.poster_path ? `https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}` : '',
-      type: watchList ? 'watchlist' : 'watched',
-      mediaType: 'movie', // TMDB'den gelecek
-      tmdbId: tmdbId ?? undefined,
-      runtime: 120 // TMDB'den gelecek
-    };
-    onAddMovieLog?.(log);
+    // Eğer birden fazla bölüm seçildiyse hepsini kaydet
+    if (selectedItem.allSelectedEpisodes && selectedItem.allSelectedEpisodes.length > 1) {
+      selectedItem.allSelectedEpisodes.forEach((episode: any) => {
+        const log = {
+          title: `${selectedItem.seriesTitle} - S${selectedItem.seasonNumber}E${episode.episode_number}: ${episode.name}`,
+          date,
+          rating: rating.toString(),
+          review: comment,
+          poster: episode.still_path ? `https://image.tmdb.org/t/p/w500${episode.still_path}` : selectedItem.poster,
+          type: watchList ? 'watchlist' : 'watched',
+          mediaType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
+          contentType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
+          tmdbId: selectedItem.tmdbId,
+          seriesId: selectedItem.seriesId,
+          seriesTitle: selectedItem.seriesTitle,
+          seriesPoster: selectedItem.seriesPoster,
+          seasonNumber: selectedItem.seasonNumber,
+          episodeNumber: episode.episode_number,
+          episodeId: episode.id,
+          runtime: selectedItem.runtime || (selectedItem.mediaType === 'tv' ? 45 : 120)
+        };
+        onAddMovieLog?.(log);
+      });
+    } else {
+      // Tek film/bölüm için normal kaydetme
+      const log = {
+        title: selectedItem.title || selectedItem.name,
+        date,
+        rating: rating.toString(),
+        review: comment,
+        poster: selectedItem.poster || (selectedItem.poster_path ? `https://image.tmdb.org/t/p/w500${selectedItem.poster_path}` : ''),
+        type: watchList ? 'watchlist' : 'watched',
+        mediaType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
+        contentType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
+        tmdbId: selectedItem.tmdbId || selectedItem.id,
+        seriesId: selectedItem.seriesId,
+        seriesTitle: selectedItem.seriesTitle,
+        seriesPoster: selectedItem.seriesPoster,
+        seasonNumber: selectedItem.seasonNumber,
+        episodeNumber: selectedItem.episodeNumber,
+        episodeId: selectedItem.episodeId,
+        runtime: selectedItem.runtime || (selectedItem.mediaType === 'tv' ? 45 : 120)
+      };
+      onAddMovieLog?.(log);
+    }
     
     // Modal'ı kapat
-    onSave({ selectedMovie, tmdbId: tmdbId ?? undefined });
+    onSave({ selectedMovie: selectedItem, tmdbId: selectedItem.tmdbId || selectedItem.id });
   };
 
-  // TV dizisi bölümlerini kaydetme fonksiyonu
-  const handleSaveEpisodes = () => {
+  // TV dizisi bölümlerini kaydetme fonksiyonu - Artık "İleri" butonu mantığı
+  const handleEpisodeForward = () => {
     if (!selectedSeries || !selectedSeason || checkedEpisodes.size === 0) return;
     
-    console.log('Saving TV series episodes:', {
+    console.log('Moving forward with selected episode(s):', {
       series: selectedSeries.name,
       season: selectedSeason.season_number,
       episodes: Array.from(checkedEpisodes)
     });
 
-    // Her seçilen bölüm için ayrı log oluştur
-    Array.from(checkedEpisodes).forEach(episodeId => {
-      const episode = selectedSeason.episodes?.find(ep => ep.id === episodeId);
-      if (episode) {
-        const log = {
-          title: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
-          date,
-          rating: rating.toString(),
-          review: comment,
-          poster: episode.still_path ? `https://image.tmdb.org/t/p/w500${episode.still_path}` : 
-                 (selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` : ''),
-          type: watchList ? 'watchlist' : 'watched',
-          mediaType: 'tv',
-          tmdbId: selectedSeries.id,
-          seasonNumber: selectedSeason.season_number,
-          episodeNumber: episode.episode_number,
-          episodeId: episode.id
-        };
-        onAddMovieLog?.(log);
-      }
-    });
-
-    // Modal'ı kapat
-    onSave();
+    // İlk seçilen bölümü ana forma aktar
+    const firstEpisodeId = Array.from(checkedEpisodes)[0];
+    const episode = selectedSeason.episodes?.find(ep => ep.id === firstEpisodeId);
+    
+    if (episode) {
+      const episodeItem = {
+        id: episode.id,
+        name: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
+        title: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
+        poster_path: episode.still_path || selectedSeries.poster_path,
+        poster: episode.still_path ? `https://image.tmdb.org/t/p/w500${episode.still_path}` : 
+               (selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` : ''),
+        media_type: 'tv',
+        mediaType: 'tv',
+        tmdbId: selectedSeries.id,
+        seriesId: selectedSeries.id.toString(),
+        seriesTitle: selectedSeries.name,
+        seriesPoster: selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` : undefined,
+        seasonNumber: selectedSeason.season_number,
+        episodeNumber: episode.episode_number,
+        episodeId: episode.id,
+        runtime: episode.runtime || 45,
+        // Eğer birden fazla bölüm seçildiyse onları da sakla
+        allSelectedEpisodes: Array.from(checkedEpisodes).map(episodeId => {
+          const ep = selectedSeason.episodes?.find(e => e.id === episodeId);
+          return ep ? {
+            id: ep.id,
+            name: ep.name,
+            episode_number: ep.episode_number,
+            still_path: ep.still_path,
+            runtime: ep.runtime
+          } : null;
+        }).filter(Boolean)
+      };
+      
+      // Ana forma veriyi aktar
+      handleItemSelected(episodeItem);
+    }
   };
 
   const handleChatWithCast = () => {
@@ -262,113 +348,154 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   };
 
   const handleSendMessage = async (message: string): Promise<string> => {
-    if (!selectedCastMember || !selectedMovie) {
-      throw new Error('No cast member or movie selected');
+    if (!selectedCastMember || !selectedItem) {
+      throw new Error('No cast member or content selected');
     }
     
-    return await chatWithCast(message, selectedCastMember, selectedMovie.title);
+    const title = selectedItem.title || selectedItem.name || '';
+    return await chatWithCast(message, selectedCastMember, title);
   };
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-40">
-        <div className="w-[393px] max-h-[95vh] h-[95vh] rounded-t-[54px] bg-[#222] pb-6 pt-6 px-4 shadow-2xl animate-slideInUp overflow-y-auto">
+      <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black bg-opacity-40">
+        <div className="w-[393px] max-h-[95vh] h-[95vh] rounded-t-[54px] bg-[#222] pb-6 pt-6 px-4 shadow-2xl animate-slideInUp overflow-y-auto relative z-[60]">
           {/* Modal Title */}
           <div className="flex justify-center mb-8">
             <span className="text-[24px] font-extrabold font-poppins text-[#F8F8FF] text-center drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">Add Flicks/Series</span>
           </div>
           {/* Search Bar */}
-          <div className="mb-8 relative">
-            <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">Search a flick/series</span>
-            <div className="relative">
-              <input
-                className="w-full h-[40px] rounded-[12px] bg-[#EFEEEA] pl-10 pr-10 text-black text-[16px] font-poppins font-semibold outline-none"
-                placeholder="Fight Club"
-                value={selectedMovie ? selectedMovie.title : search}
-                onChange={e => {
-                  setSearch(e.target.value);
-                  setSelectedMovie(null);
-                  setTmdbId(null);
-                }}
-                onFocus={() => setSuggestions(search.length >= 3 ? suggestions : [])}
-              />
-              {/* X butonu */}
-              {(search.length > 0 || selectedMovie) && (
+          {!selectedItem ? (
+            <div className="mb-8 relative">
+              <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">Search a flick/series</span>
+              <div className="relative">
+                <input
+                  className="w-full h-[40px] rounded-[12px] bg-[#EFEEEA] pl-10 pr-10 text-black text-[16px] font-poppins font-semibold outline-none"
+                  placeholder="Fight Club"
+                  value={search}
+                  onChange={e => {
+                    setSearch(e.target.value);
+                  }}
+                  onFocus={() => setSuggestions(search.length >= 3 ? suggestions : [])}
+                />
+                {/* X butonu */}
+                {search.length > 0 && (
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-[#FE7743] focus:outline-none"
+                    aria-label="Clear search"
+                    onClick={() => {
+                      setSearch('');
+                    }}
+                  >
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                      <path fillRule="evenodd" d="M10 8.586l4.95-4.95a1 1 0 111.414 1.414L11.414 10l4.95 4.95a1 1 0 01-1.414 1.414L10 11.414l-4.95 4.95a1 1 0 01-1.414-1.414L8.586 10l-4.95-4.95A1 1 0 115.05 3.636L10 8.586z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                )}
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" fill="none" stroke="#000" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.6 10.6z" />
+                </svg>
+                {search.length >= 3 && suggestions.length > 0 && (
+                  <div ref={suggestionsRef} className="absolute left-0 top-[44px] w-full bg-white rounded-b-[12px] shadow-lg z-50 max-h-72 overflow-y-auto border border-[#FE7743]">
+                    {loading && <div className="p-2 text-sm text-gray-400">Loading...</div>}
+                    {suggestions.map(item => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#FE7743]/10"
+                        onClick={() => {
+                          if (item.media_type === 'movie') {
+                            // Film seçimi - artık direkt ana forma aktar
+                            const movieItem = {
+                              id: item.id,
+                              title: item.title,
+                              name: item.title,
+                              poster_path: item.poster_path,
+                              poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '',
+                              media_type: 'movie',
+                              mediaType: 'movie',
+                              tmdbId: item.id,
+                              runtime: 120 // varsayılan
+                            };
+                            handleItemSelected(movieItem);
+                          } else if (item.media_type === 'tv') {
+                            // Dizi seçimi - sezon/bölüm seçim ekranına git
+                            setSuggestions([]);
+                            setSearch(item.name || '');
+                            handleSeriesSelect(item.id);
+                          }
+                        }}
+                      >
+                        <img
+                          src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/40x60?text=No+Image'}
+                          alt={item.title || item.name}
+                          className="w-10 h-16 object-cover rounded"
+                        />
+                        <span className="text-black text-[15px] font-poppins">{item.title || item.name}</span>
+                        <span className="text-xs text-gray-400 ml-auto">{item.release_date?.slice(0,4) || item.first_air_date?.slice(0,4) || ''}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            // Seçim yapıldıktan sonra seçilen içeriği göster
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF]">Selected Content</span>
                 <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center text-gray-400 hover:text-[#FE7743] focus:outline-none"
-                  aria-label="Clear search"
                   onClick={() => {
-                    setSearch('');
+                    setSelectedItem(null);
+                    setTitle('');
+                    setPoster('');
                     setSelectedMovie(null);
                     setTmdbId(null);
                   }}
+                  className="text-[#FE7743] text-sm font-medium hover:text-[#FE7743]/80"
                 >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                    <path fillRule="evenodd" d="M10 8.586l4.95-4.95a1 1 0 111.414 1.414L11.414 10l4.95 4.95a1 1 0 01-1.414 1.414L10 11.414l-4.95 4.95a1 1 0 01-1.414-1.414L8.586 10l-4.95-4.95A1 1 0 115.05 3.636L10 8.586z" clipRule="evenodd" />
-                  </svg>
+                  Change
                 </button>
-              )}
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" fill="none" stroke="#000" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.6 10.6z" />
-              </svg>
-              {search.length >= 3 && suggestions.length > 0 && !selectedMovie && (
-                <div ref={suggestionsRef} className="absolute left-0 top-[44px] w-full bg-white rounded-b-[12px] shadow-lg z-50 max-h-72 overflow-y-auto border border-[#FE7743]">
-                  {loading && <div className="p-2 text-sm text-gray-400">Loading...</div>}
-                  {suggestions.map(item => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-[#FE7743]/10"
-                      onClick={() => {
-                        if (item.media_type === 'movie') {
-                          // Film seçimi - mevcut davranış
-                          const movieItem = item as TMDBMovieResult;
-                          setSelectedMovie(movieItem);
-                          setTmdbId(item.id);
-                          setSuggestions([]);
-                          setSearch(item.title || '');
-                          if (onMovieSelect) onMovieSelect(movieItem, item.id);
-                        } else if (item.media_type === 'tv') {
-                          // Dizi seçimi - yeni davranış
-                          setSuggestions([]);
-                          setSearch(item.name || '');
-                          handleSeriesSelect(item.id);
-                        }
-                      }}
-                    >
-                      <img
-                        src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/40x60?text=No+Image'}
-                        alt={item.title || item.name}
-                        className="w-10 h-16 object-cover rounded"
-                      />
-                      <span className="text-black text-[15px] font-poppins">{item.title || item.name}</span>
-                      <span className="text-xs text-gray-400 ml-auto">{item.release_date?.slice(0,4) || item.first_air_date?.slice(0,4) || ''}</span>
-                    </div>
-                  ))}
+              </div>
+              <div className="flex items-center gap-4 p-3 bg-[#333] rounded-lg">
+                {poster && (
+                  <img
+                    src={poster}
+                    alt={title}
+                    className="w-16 h-24 object-cover rounded"
+                  />
+                )}
+                <div className="flex-1">
+                  <h3 className="text-[#F8F8FF] font-semibold text-[16px] leading-5">{title}</h3>
+                  <p className="text-[#B0B0B0] text-sm mt-1">
+                    {selectedItem?.mediaType === 'tv' ? 'TV Series Episode' : 'Movie'}
+                  </p>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
+          )}
           
           {/* Search View - Default */}
           {view === 'search' && (
             <>
-              {/* Add Watch List Toggle */}
-              <div className="flex items-center justify-between mb-8">
-                <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Add Watch List</span>
-                <button
-                  type="button"
+          {/* Add Watch List Toggle */}
+          <div className="flex items-center justify-between mb-8">
+            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Add Watch List</span>
+            <button
+              type="button"
               aria-pressed={watchList}
-              onClick={() => setWatchList(v => !v)}
-              className={`w-12 h-7 rounded-full flex items-center transition-colors duration-300 focus:outline-none ${watchList ? 'bg-[#FE7743]' : 'bg-[#D9D9D9]'}`}
+              onClick={() => selectedItem && setWatchList(v => !v)}
+              disabled={!selectedItem}
+              className={`w-12 h-7 rounded-full flex items-center transition-colors duration-300 focus:outline-none ${
+                !selectedItem ? 'bg-gray-400 opacity-50 cursor-not-allowed' :
+                watchList ? 'bg-[#FE7743]' : 'bg-[#D9D9D9]'
+              }`}
             >
               <span
                 className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${watchList ? 'translate-x-5' : 'translate-x-1'}`}
               />
             </button>
-          </div>
-
-          {/* Additional fields for TV shows - Geçici olarak kaldırıldı, TMDB'den gelecek */}
+          </div>          {/* Additional fields for TV shows - Geçici olarak kaldırıldı, TMDB'den gelecek */}
           {/* TV dizileri için sezon/bölüm bilgileri TMDB API'sinden otomatik olarak gelecek */}
 
           {/* Runtime - Kaldırıldı, TMDB'den gelecek */}
@@ -379,9 +506,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Date Watched</span>
             <button
               type="button"
-              className={`w-[130px] h-[40px] rounded-[12px] bg-[#D9D9D9] flex items-center justify-center text-[#000] text-[16px] font-poppins font-semibold relative ${watchList ? 'opacity-50 pointer-events-none' : ''}`}
-              onClick={() => !watchList && setShowDatePicker(true)}
-              disabled={watchList}
+              className={`w-[130px] h-[40px] rounded-[12px] bg-[#D9D9D9] flex items-center justify-center text-[#000] text-[16px] font-poppins font-semibold relative ${
+                (watchList || !selectedItem) ? 'opacity-50 pointer-events-none' : ''
+              }`}
+              onClick={() => !watchList && selectedItem && setShowDatePicker(true)}
+              disabled={watchList || !selectedItem}
             >
               {date === new Date().toISOString().split('T')[0] ? 'Today' : date}
             </button>
@@ -411,7 +540,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           {/* Rating */}
           <div className="flex items-center justify-between mb-8">
             <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Rating</span>
-            <div className={`flex gap-1 ${watchList ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div className={`flex gap-1 ${(watchList || !selectedItem) ? 'opacity-50 pointer-events-none' : ''}`}>
               {[1,2,3,4,5].map(i => {
                 const value = i;
                 const displayValue = hoverRating !== null ? hoverRating : rating;
@@ -422,27 +551,27 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                   <svg
                     key={i}
                     width="35" height="33" viewBox="0 0 35 33" fill="none"
-                    onMouseMove={watchList ? undefined : e => {
+                    onMouseMove={(watchList || !selectedItem) ? undefined : e => {
                       const { left, width } = (e.target as SVGElement).getBoundingClientRect();
                       const x = e.clientX - left;
                       if (x < width / 2) setHoverRating(value - 0.5);
                       else setHoverRating(value);
                     }}
-                    onMouseLeave={watchList ? undefined : () => setHoverRating(null)}
-                    onClick={watchList ? undefined : e => {
+                    onMouseLeave={(watchList || !selectedItem) ? undefined : () => setHoverRating(null)}
+                    onClick={(watchList || !selectedItem) ? undefined : e => {
                       const { left, width } = (e.target as SVGElement).getBoundingClientRect();
                       const x = e.clientX - left;
                       if (x < width / 2) setRating(value - 0.5);
                       else setRating(value);
                     }}
-                    onTouchStart={watchList ? undefined : e => {
+                    onTouchStart={(watchList || !selectedItem) ? undefined : e => {
                       const touch = e.touches[0];
                       const { left, width } = (e.target as SVGElement).getBoundingClientRect();
                       const x = touch.clientX - left;
                       if (x < width / 2) setHoverRating(value - 0.5);
                       else setHoverRating(value);
                     }}
-                    onTouchEnd={watchList ? undefined : e => {
+                    onTouchEnd={(watchList || !selectedItem) ? undefined : e => {
                       const touch = e.changedTouches[0];
                       const { left, width } = (e.target as SVGElement).getBoundingClientRect();
                       const x = touch.clientX - left;
@@ -450,7 +579,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                       else setRating(value);
                       setHoverRating(null);
                     }}
-                    style={{ cursor: watchList ? 'not-allowed' : 'pointer', transition: 'fill 0.2s' }}
+                    style={{ cursor: (watchList || !selectedItem) ? 'not-allowed' : 'pointer', transition: 'fill 0.2s' }}
                   >
                     <defs>
                       <linearGradient id="half-star" x1="0" y1="0" x2="1" y2="0">
@@ -474,11 +603,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">Add a comment</span>
             <div className="relative">
               <textarea
-                className={`w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-[#D9D9D9] p-3 pr-10 text-black text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto ${watchList ? 'opacity-50 pointer-events-none' : ''}`}
+                className={`w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-[#D9D9D9] p-3 pr-10 text-black text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto ${(watchList || !selectedItem) ? 'opacity-50 pointer-events-none' : ''}`}
                 placeholder="Write your comment..."
                 value={comment}
                 onChange={e => setComment(e.target.value)}
-                disabled={watchList}
+                disabled={watchList || !selectedItem}
                 style={{ height: 'auto', maxHeight: 250, minHeight: 150 }}
                 onInput={e => {
                   const target = e.target as HTMLTextAreaElement;
@@ -491,7 +620,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                 className="absolute bottom-2 right-2 w-7 h-7 flex items-center justify-center bg-transparent p-0 m-0 focus:outline-none"
                 tabIndex={-1}
                 aria-label="Sparkle"
-                disabled={watchList || improving || !selectedMovie}
+                disabled={watchList || improving || !selectedItem}
                 onClick={handleImprove}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="22" height="22" viewBox="0 0 50 50">
@@ -501,9 +630,19 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             </div>
           </div>
           {/* Action Buttons */}
-          <div className="flex justify-center gap-6 mt-6">
-            <button onClick={handleCancel} className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md">Cancel</button>
-            <button onClick={handleSave} className="w-[130px] h-[40px] rounded-[12px] bg-[#FE7743] text-[#F8F8FF] text-[16px] font-poppins font-semibold shadow-lg">Save</button>
+          <div className="flex justify-center gap-6 mt-6 relative z-[60]">
+            <button onClick={handleCancel} className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md relative z-[60]">Cancel</button>
+            <button 
+              onClick={handleSave} 
+              disabled={!selectedItem}
+              className={`w-[130px] h-[40px] rounded-[12px] text-[16px] font-poppins font-semibold shadow-lg relative z-[60] ${
+                !selectedItem 
+                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                  : 'bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90'
+              }`}
+            >
+              Save
+            </button>
           </div>
           </>
           )}
@@ -529,10 +668,10 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                   </IonItem>
                 ))}
               </IonList>
-              <div className="flex justify-center gap-6 mt-6">
+              <div className="flex justify-center gap-6 mt-6 relative z-[60]">
                 <button 
                   onClick={() => setView('search')} 
-                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md"
+                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md relative z-[60]"
                 >
                   Back
                 </button>
@@ -594,23 +733,23 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-center gap-6 mt-6">
+              <div className="flex justify-center gap-6 mt-6 relative z-[60]">
                 <button 
                   onClick={() => setView('seasons')} 
-                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md"
+                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md relative z-[60]"
                 >
                   Back
                 </button>
                 <button 
-                  onClick={handleSaveEpisodes}
+                  onClick={handleEpisodeForward}
                   disabled={checkedEpisodes.size === 0}
-                  className={`w-[130px] h-[40px] rounded-[12px] text-[16px] font-poppins font-semibold shadow-lg ${
+                  className={`w-[130px] h-[40px] rounded-[12px] text-[16px] font-poppins font-semibold shadow-lg relative z-[60] ${
                     checkedEpisodes.size === 0 
                       ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
                       : 'bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90'
                   }`}
                 >
-                  Save ({checkedEpisodes.size})
+                  İleri ({checkedEpisodes.size})
                 </button>
               </div>
             </div>
@@ -637,7 +776,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           setShowCastSelection(false);
         }}
         movieId={tmdbId || 0}
-        movieTitle={selectedMovie?.title || ''}
+        movieTitle={selectedItem?.title || selectedItem?.name || ''}
         onCastSelect={handleCastSelect}
       />
 
@@ -652,7 +791,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             onSave();
           }}
           castMember={selectedCastMember}
-          movieTitle={selectedMovie?.title || ''}
+          movieTitle={selectedItem?.title || selectedItem?.name || ''}
           onSendMessage={handleSendMessage}
         />
       )}

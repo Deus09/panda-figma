@@ -10,6 +10,7 @@ import Home from './pages/home';
 import Explore from './pages/explore';
 import Lists from './pages/lists';
 import Profile from './pages/profile';
+import SeriesDetailPage from './pages/SeriesDetailPage';
 import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
 import MovieDetailModal from './components/MovieDetailModal';
@@ -98,6 +99,9 @@ const App: React.FC = () => {
           </Route>
           <Route exact path="/profile">
             <Profile />
+          </Route>
+          <Route exact path="/series/:seriesId">
+            <SeriesDetailPage />
           </Route>
           <Route exact path="/">
             <Redirect to="/home" />
