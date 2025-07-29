@@ -140,7 +140,21 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     console.log('Item selected:', item);
     setSelectedItem(item);
     setTitle(item.name || item.title || '');
-    setPoster(item.poster_path || item.poster || '');
+    
+    // Poster belirleme mantığını düzelt
+    let posterUrl = '';
+    if (item.poster) {
+      // Tam URL varsa direkt kullan
+      posterUrl = item.poster;
+    } else if (item.poster_path) {
+      // TMDB path varsa tam URL'e çevir
+      posterUrl = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
+    } else if (item.seriesPoster) {
+      // Dizi posteri varsa onu kullan
+      posterUrl = item.seriesPoster;
+    }
+    
+    setPoster(posterUrl);
     setTmdbId(item.id || item.tmdbId);
     
     // Eğer film ise selectedMovie'yi de set et
@@ -308,8 +322,12 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
         name: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
         title: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
         poster_path: episode.still_path || selectedSeries.poster_path,
-        poster: episode.still_path ? `https://image.tmdb.org/t/p/w500${episode.still_path}` : 
-               (selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` : ''),
+        // Poster URL'ini doğru şekilde oluştur - öncelik sırası: episode still > series poster
+        poster: episode.still_path 
+          ? `https://image.tmdb.org/t/p/w500${episode.still_path}` 
+          : (selectedSeries.poster_path 
+            ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` 
+            : ''),
         media_type: 'tv',
         mediaType: 'tv',
         tmdbId: selectedSeries.id,
