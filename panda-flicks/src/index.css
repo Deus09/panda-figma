@@ -41,4 +41,37 @@ html, body {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Filter Modal Custom Styling */
+.filter-modal {
+  --backdrop-opacity: 0.4;
+}
+
+.filter-modal ion-backdrop {
+  background: rgba(0, 0, 0, var(--backdrop-opacity));
+}
+
+.filter-modal .modal-wrapper {
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+}
+
+/* Override Ionic default styles for the filter modal */
+.filter-modal ion-modal {
+  --background: transparent;
+}
+
+.filter-modal ion-content {
+  --background: transparent;
+  --color: #F8F8FF;
+}
+
+.filter-modal ion-header {
+  background: transparent;
+}
+
+.filter-modal ion-toolbar {
+  --background: transparent;
+  --color: #F8F8FF;
 } 
