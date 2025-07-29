@@ -19,19 +19,19 @@ const BottomNavBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const location = useLocation();
 
   return (
-    <nav className={`fixed bottom-0 left-0 w-full bg-[#222] flex flex-row justify-between items-center px-[10px] py-[8px] z-50 border-t border-[#333] rounded-t-[27px] h-[85px] ${className}`} style={{ minHeight: 85 }}>
+    <nav className={`fixed bottom-0 left-0 w-full bg-background border-t border-border flex flex-row justify-between items-center px-[10px] py-[8px] z-50 rounded-t-[27px] h-[85px] ${className}`} style={{ minHeight: 85 }}>
       {navItems.map((item, idx) => {
         const isActive = item.path && location.pathname.startsWith(item.path);
         return (
           <button
             key={item.label}
-            className={`flex flex-col items-center flex-1 focus:outline-none transition-all duration-200 ${isActive ? 'text-[#FE7743] bg-[#fff] rounded-[27px]' : 'text-[#A3ABB2] bg-transparent'} h-[69px] mx-[2px]`}
+            className={`flex flex-col items-center flex-1 focus:outline-none transition-colors hover:bg-muted ${isActive ? 'text-primary bg-white rounded-[27px]' : 'text-foreground bg-transparent'} h-[69px] mx-[2px]`}
             onClick={() => item.path && history.push(item.path)}
             disabled={!item.path}
             style={{ cursor: item.path ? 'pointer' : 'default', background: 'none', border: 'none' }}
           >
             <img src={item.icon} alt={item.label} className={`w-[32px] h-[32px] mb-1 ${isActive ? '' : 'opacity-70'}`} />
-            <span className={`text-[12px] font-medium font-poppins ${isActive ? 'text-[#FE7743]' : 'text-[#A3ABB2]'}`}>{item.label}</span>
+            <span className={`text-tiny font-medium ${isActive ? 'text-primary' : 'text-foreground'}`}>{item.label}</span>
           </button>
         );
       })}

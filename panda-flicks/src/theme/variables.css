@@ -1,29 +1,29 @@
 /* YENİ TEMA KODU BAŞLANGICI */
 :root {
-  --background: oklch(1.0000 0 0);
-  --foreground: oklch(0.2686 0 0);
-  --card: oklch(1.0000 0 0);
-  --card-foreground: oklch(0.2686 0 0);
-  --popover: oklch(1.0000 0 0);
-  --popover-foreground: oklch(0.2686 0 0);
-  --primary: oklch(0.7857 0.1716 68.5720); /* Ana Turuncu/Sarı Renk */
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.9665 0.0045 258.3247);
-  --secondary-foreground: oklch(0.4419 0.0375 257.2811);
-  --muted: oklch(0.9846 0.0017 247.8389);
-  --muted-foreground: oklch(0.5471 0.0321 263.2921);
-  --accent: oklch(0.9869 0.0214 95.2774);
-  --accent-foreground: oklch(0.4910 0.1442 43.4774);
-  --destructive: oklch(0.6496 0.2362 26.9032); /* Kırmızı/Hata Rengi */
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.9271 0.0075 260.7315);
-  --input: oklch(0.9271 0.0075 260.7315);
-  --ring: oklch(0.7857 0.1716 68.5720);
-  --chart-1: oklch(0.7857 0.1716 68.5720);
-  --chart-2: oklch(0.6739 0.1633 56.8909);
-  --chart-3: oklch(0.5673 0.1563 47.2384);
-  --chart-4: oklch(0.4910 0.1442 43.4774);
-  --chart-5: oklch(0.4320 0.1284 42.8029);
+  --background: 0 0% 100%;           /* Beyaz */
+  --foreground: 0 0% 15%;            /* Koyu gri */
+  --card: 0 0% 100%;                 /* Beyaz */
+  --card-foreground: 0 0% 15%;       /* Koyu gri */
+  --popover: 0 0% 100%;              /* Beyaz */
+  --popover-foreground: 0 0% 15%;    /* Koyu gri */
+  --primary: 22 93% 64%;             /* Ana Turuncu/Sarı Renk */
+  --primary-foreground: 0 0% 0%;     /* Siyah */
+  --secondary: 210 40% 95%;          /* Açık gri */
+  --secondary-foreground: 220 13% 26%; /* Koyu gri */
+  --muted: 210 40% 98%;              /* Çok açık gri */
+  --muted-foreground: 215 16% 47%;   /* Orta gri */
+  --accent: 50 50% 95%;              /* Açık sarı */
+  --accent-foreground: 30 66% 32%;   /* Koyu turuncu */
+  --destructive: 0 84% 60%;          /* Kırmızı/Hata Rengi */
+  --destructive-foreground: 0 0% 100%; /* Beyaz */
+  --border: 214 32% 91%;             /* Açık gri kenarlık */
+  --input: 214 32% 91%;              /* Açık gri input */
+  --ring: 22 93% 64%;                /* Ana turuncu */
+  --chart-1: 22 93% 64%;
+  --chart-2: 40 82% 55%;
+  --chart-3: 35 77% 49%;
+  --chart-4: 30 66% 32%;
+  --chart-5: 28 60% 28%;
   --font-sans: Poppins, ui-sans-serif, sans-serif, system-ui;
   --font-serif: "Source Serif 4", serif;
   --font-mono: Cousine, ui-monospace, monospace;
@@ -31,29 +31,29 @@
 }
 
 .dark {
-  --background: oklch(0.2046 0 0);
-  --foreground: oklch(0.9219 0 0);
-  --card: oklch(0.2686 0 0);
-  --card-foreground: oklch(0.9219 0 0);
-  --popover: oklch(0.2686 0 0);
-  --popover-foreground: oklch(0.9219 0 0);
-  --primary: oklch(0.7857 0.1716 68.5720);
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.2686 0 0);
-  --secondary-foreground: oklch(0.9219 0 0);
-  --muted: oklch(0.2686 0 0);
-  --muted-foreground: oklch(0.7155 0 0);
-  --accent: oklch(0.4910 0.1442 43.4774);
-  --accent-foreground: oklch(0.9277 0.1183 95.5956);
-  --destructive: oklch(0.6496 0.2362 26.9032);
-  --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.3715 0 0);
-  --input: oklch(0.3715 0 0);
-  --ring: oklch(0.7857 0.1716 68.5720);
-  --chart-1: oklch(0.8447 0.1675 84.1157);
-  --chart-2: oklch(0.6739 0.1633 56.8909);
-  --chart-3: oklch(0.4910 0.1442 43.4774);
-  --chart-4: oklch(0.5673 0.1563 47.2384);
-  --chart-5: oklch(0.4910 0.1442 43.4774);
+  --background: 0 0% 9%;             /* Çok koyu gri */
+  --foreground: 0 0% 95%;            /* Açık gri */
+  --card: 0 0% 14%;                  /* Koyu gri */
+  --card-foreground: 0 0% 95%;       /* Açık gri */
+  --popover: 0 0% 14%;               /* Koyu gri */
+  --popover-foreground: 0 0% 95%;    /* Açık gri */
+  --primary: 22 93% 64%;             /* Ana turuncu */
+  --primary-foreground: 0 0% 0%;     /* Siyah */
+  --secondary: 0 0% 14%;             /* Koyu gri */
+  --secondary-foreground: 0 0% 95%;  /* Açık gri */
+  --muted: 0 0% 14%;                 /* Koyu gri */
+  --muted-foreground: 0 0% 65%;      /* Orta gri */
+  --accent: 30 66% 32%;              /* Koyu turuncu */
+  --accent-foreground: 50 50% 85%;   /* Açık sarı */
+  --destructive: 0 84% 60%;          /* Kırmızı */
+  --destructive-foreground: 0 0% 100%; /* Beyaz */
+  --border: 0 0% 24%;                /* Koyu gri kenarlık */
+  --input: 0 0% 24%;                 /* Koyu gri input */
+  --ring: 22 93% 64%;                /* Ana turuncu */
+  --chart-1: 45 80% 75%;
+  --chart-2: 40 82% 55%;
+  --chart-3: 30 66% 32%;
+  --chart-4: 35 77% 49%;
+  --chart-5: 30 66% 32%;
 }
 /* YENİ TEMA KODU BİTİŞİ */

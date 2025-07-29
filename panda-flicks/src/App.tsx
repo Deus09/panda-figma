@@ -7,8 +7,6 @@ import {
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/home';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
 import Explore from './pages/explore';
 import Lists from './pages/lists';
 import Profile from './pages/profile';
@@ -91,12 +89,6 @@ const App: React.FC = () => {
         <IonReactRouter>
           <Route exact path="/home">
             <Home />
-          </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
-          <Route path="/tab3">
-            <Tab3 />
           </Route>
           <Route exact path="/explore">
             <Explore />

@@ -56,66 +56,38 @@ const Home: React.FC = () => {
     }
   };
 
-  // Film log'unu güncelle
-  const handleUpdateMovieLog = (id: string, updates: Partial<Omit<MovieLog, 'id' | 'createdAt'>>) => {
-    try {
-      const updatedLog = LocalStorageService.updateMovieLog(id, updates);
-      if (updatedLog) {
-        setMovieLogs(prev => prev.map(log => log.id === id ? updatedLog : log));
-        // Profil istatistiklerini güncelle
-        LocalStorageService.updateProfileStats();
-      }
-    } catch (error) {
-      console.error('Error updating movie log:', error);
-    }
-  };
-
-  // Film log'unu sil
-  const handleDeleteMovieLog = (id: string) => {
-    try {
-      const success = LocalStorageService.deleteMovieLog(id);
-      if (success) {
-        setMovieLogs(prev => prev.filter(log => log.id !== id));
-        // Profil istatistiklerini güncelle
-        LocalStorageService.updateProfileStats();
-      }
-    } catch (error) {
-      console.error('Error deleting movie log:', error);
-    }
-  };
-
   // Filtered movie logs
   const filteredMovies = movieLogs.filter((log: MovieLog) => log.type === activeTab);
 
   if (isLoading) {
     return (
-      <IonPage className="bg-[#121212]">
-        <IonContent fullscreen className="bg-[#121212]">
+      <IonPage className="bg-background">
+        <IonContent fullscreen className="bg-background">
           <div className="flex items-center justify-center h-full">
-            <div className="text-white">Yükleniyor...</div>
+            <div className="text-foreground">Yükleniyor...</div>
           </div>
         </IonContent>
       </IonPage>
     );
   }
   return (
-    <IonPage className="bg-[#121212]">
-      <IonContent fullscreen className="bg-[#121212] relative">
-        <div className="bg-[#121212] min-h-screen flex flex-col items-center">
+    <IonPage className="bg-background">
+      <IonContent fullscreen className="bg-background relative">
+        <div className="bg-background min-h-screen flex flex-col items-center">
           <TopHeaderBar />
           {/* Tab Segment + Filter */}
-          <div className="flex w-full justify-between items-center pt-[24px] pb-[20px] px-[16px]">
+          <div className="flex w-full justify-between items-center pt-6 pb-5 px-4">
             <div className="flex-1 flex justify-center">
               <TabSegment activeTab={activeTab} onTabChange={handleTabChange} />
             </div>
-            <button className="w-[28px] h-[28px] rounded-full bg-white flex items-center justify-center transition-colors p-0 shadow-none border-none ml-[12px]" aria-label="Filter">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" strokeWidth={2} stroke="#FE7743" className="w-[18px] h-[18px]">
+                        <button className="w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-colors p-0 ml-3" aria-label="Filter">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" strokeWidth={2} className="w-[18px] h-[18px] stroke-primary">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3.75h13.5m-12.375 0A1.125 1.125 0 0 0 2.25 4.875v1.687c0 .311.126.608.33.826l4.162 4.426c.21.224.33.525.33.826v2.36a1.125 1.125 0 0 0 1.125 1.125h2.25a1.125 1.125 0 0 0 1.125-1.125v-2.36c0-.301.12-.602.33-.826l4.162-4.426A1.125 1.125 0 0 0 15.75 6.562V4.875a1.125 1.125 0 0 0-1.125-1.125H2.25z" />
               </svg>
             </button>
           </div>
           {/* Movie List */}
-          <div className="flex flex-col gap-[12px] items-center pb-[110px] w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-28 w-full px-4">
             {filteredMovies.length > 0 ? (
               filteredMovies.map((movie: MovieLog) => (
                 <MovieCard 
@@ -125,20 +97,18 @@ const Home: React.FC = () => {
                   rating={movie.rating}
                   review={movie.review}
                   poster={movie.poster}
-                  onUpdate={(updates) => handleUpdateMovieLog(movie.id, updates)}
-                  onDelete={() => handleDeleteMovieLog(movie.id)}
                   onClick={() => openModal('movie', movie.tmdbId)}
                 />
               ))
             ) : (
-              <div className="text-center text-gray-400 mt-12">
-                <p className="text-lg font-poppins">
+              <div className="text-center text-muted-foreground mt-12">
+                <p className="text-body">
                   {activeTab === 'watched' 
                     ? 'Henüz izlediğin film yok' 
                     : 'İzleme listende film yok'
                   }
                 </p>
-                <p className="text-sm mt-2 font-poppins">
+                <p className="text-sm mt-2">
                   + butonuna tıklayarak film ekle
                 </p>
               </div>
