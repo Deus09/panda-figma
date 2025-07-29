@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MovieLog } from '../services/localStorage';
 
 type MovieCardProps = {
@@ -11,6 +11,7 @@ type MovieCardProps = {
 };
 
 const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, poster, onClick }) => {
+  const [isReviewExpanded, setIsReviewExpanded] = useState(false);
   return (
     <div 
       className="w-full max-w-sm flex items-center p-2 rounded-2xl bg-card border border-border gap-4 hover:shadow-lg transition-shadow cursor-pointer"
@@ -44,7 +45,28 @@ const MovieCard: React.FC<MovieCardProps> = ({ title, date, rating, review, post
         
         {/* Review */}
         {review && (
-          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{review}</p>
+          <div>
+            <p 
+              className={`text-xs text-muted-foreground mt-2 cursor-pointer ${!isReviewExpanded ? 'line-clamp-2' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation(); // Ana kart onClick'ini tetiklememek için
+                setIsReviewExpanded(prev => !prev);
+              }}
+            >
+              {review}
+            </p>
+            {review.length > 100 && !isReviewExpanded && (
+              <span 
+                className="text-xs text-primary font-semibold mt-1 inline-block cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation(); // Ana kart onClick'ini tetiklememek için
+                  setIsReviewExpanded(true);
+                }}
+              >
+                ...devamını oku
+              </span>
+            )}
+          </div>
         )}
       </div>
     </div>
