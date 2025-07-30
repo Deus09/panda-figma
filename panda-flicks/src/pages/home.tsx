@@ -5,6 +5,7 @@ import SeriesGroupCard from '../components/SeriesGroupCard';
 import BottomNavBar from '../components/BottomNavBar';
 import FabAddButton from '../components/FabAddButton';
 import FilterModal from '../components/FilterModal';
+import DetailViewModal from '../components/DetailViewModal';  // 🎯 YENİ IMPORT
 import fabAdd from '../assets/fab-add.svg';
 import React, { useState, useEffect, useMemo } from 'react';
 import TabSegment from '../components/TabSegment';
@@ -27,12 +28,106 @@ const Home: React.FC = () => {
   const [movieLogs, setMovieLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
+  // 🎯 YENİ: DetailViewModal state'leri
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{
+    itemId: string;
+    itemType: 'movie' | 'tv';
+  } | null>(null);
+  
   // Filtre modalı state'leri
   const [isFilterModalOpen, setFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     contentType: 'all',  // 'all', 'movie', 'tv'
     sortBy: 'date_desc'  // 'date_desc', 'rating_desc', 'alpha_asc'
   });
+
+  // 🎯 YENİ: Poster Kütüphanesi için Veri İşleme
+  const posterLibraryData = useMemo(() => {
+    // Aktif tab'a göre filtreleme
+    const filteredLogs = movieLogs.filter(log => log.type === activeTab);
+    
+    // 📊 VERI GRUPLAMA - Diziler
+    const seriesGroups = filteredLogs
+      .filter(log => log.contentType === 'tv')
+      .reduce((acc, log) => {
+        const seriesId = log.seriesId || log.tmdbId?.toString() || 'unknown';
+        if (!acc[seriesId]) {
+          acc[seriesId] = {
+            type: 'series' as const,
+            id: seriesId,
+            title: log.seriesTitle || log.title,
+            poster: log.seriesPoster || log.poster,
+            episodes: []
+          };
+        }
+        acc[seriesId].episodes.push(log);
+        return acc;
+      }, {} as Record<string, {
+        type: 'series';
+        id: string;
+        title: string;
+        poster: string;
+        episodes: MovieLog[];
+      }>);
+    
+    // 🎬 VERI GRUPLAMA - Filmler
+    const movies = filteredLogs
+      .filter(log => log.contentType === 'movie')
+      .map(log => ({
+        type: 'movie' as const,
+        id: log.id,
+        title: log.title,
+        poster: log.poster,
+        movieData: log
+      }));
+    
+    // 🎯 BİRLEŞİK POSTER KÜTÜPHANESİ
+    const combinedLibrary = [
+      ...Object.values(seriesGroups),
+      ...movies
+    ];
+    
+    // Filtre uygulama
+    let filtered = combinedLibrary;
+    if (filters.contentType !== 'all') {
+      filtered = filtered.filter(item => 
+        filters.contentType === 'movie' ? item.type === 'movie' : item.type === 'series'
+      );
+    }
+    
+    // Sıralama
+    filtered.sort((a, b) => {
+      switch (filters.sortBy) {
+        case 'alpha_asc':
+          return a.title.localeCompare(b.title);
+        case 'rating_desc':
+          // TODO: Rating sıralaması eklenebilir
+          return 0;
+        case 'date_desc':
+        default:
+          return 0; // Şimdilik tarih sıralaması yok
+      }
+    });
+    
+    return filtered;
+  }, [movieLogs, activeTab, filters]);
+
+  // 🎯 YENİ: Poster Tıklama Handler'ı
+  const handlePosterClick = (item: typeof posterLibraryData[0]) => {
+    if (item.type === 'movie') {
+      setSelectedItem({
+        itemId: item.id,
+        itemType: 'movie'
+      });
+    } else {
+      setSelectedItem({
+        itemId: item.id,
+        itemType: 'tv'
+      });
+    }
+    setIsDetailModalOpen(true);
+  };
 
   // Modal'dan gelen filtreleri ana state'e uygulayacak fonksiyon
   const handleApplyFilters = (newFilters: FilterOptions) => {
@@ -79,62 +174,6 @@ const Home: React.FC = () => {
     }
   };
 
-  // Filtered ve sorted movie logs - Performance optimizasyonu ile useMemo
-  const { filteredMovies, groupedSeries, movies } = useMemo(() => {
-    // Önce tab'a göre filtrele
-    const tabFiltered = movieLogs.filter((log: MovieLog) => log.type === activeTab);
-    
-    // Sonra content type'a göre filtrele
-    const contentFiltered = tabFiltered.filter(log => {
-      if (filters.contentType === 'all') return true;
-      const logContentType = log.contentType || log.mediaType;
-      return logContentType === filters.contentType;
-    });
-
-    // Sıralama uygula
-    const sorted = [...contentFiltered].sort((a, b) => {
-      switch (filters.sortBy) {
-        case 'date_desc':
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
-        case 'rating_desc':
-          const ratingA = parseFloat(a.rating) || 0;
-          const ratingB = parseFloat(b.rating) || 0;
-          return ratingB - ratingA;
-        case 'alpha_asc':
-          return a.title.localeCompare(b.title);
-        default:
-          return 0;
-      }
-    });
-
-    // TV Series gruplama mantığı
-    const seriesGroups = sorted
-      .filter(log => {
-        const logContentType = log.contentType || log.mediaType;
-        return logContentType === 'tv' && log.seriesId;
-      })
-      .reduce((groups: { [seriesId: string]: MovieLog[] }, log) => {
-        const seriesId = log.seriesId!;
-        if (!groups[seriesId]) {
-          groups[seriesId] = [];
-        }
-        groups[seriesId].push(log);
-        return groups;
-      }, {});
-
-    // Movies (sadece filmler)  
-    const moviesList = sorted.filter(log => {
-      const logContentType = log.contentType || log.mediaType;
-      return logContentType === 'movie';
-    });
-
-    return {
-      filteredMovies: sorted,
-      groupedSeries: seriesGroups,
-      movies: moviesList
-    };
-  }, [movieLogs, activeTab, filters]);
-
   if (isLoading) {
     return (
       <IonPage className="bg-background">
@@ -166,85 +205,54 @@ const Home: React.FC = () => {
               </svg>
             </button>
           </div>
-          {/* Content Rendering - Hybrid View */}
+          {/* 🎯 YENİ POSTER KÜTÜPHANESİ LAYOUT */}
           <div className="pb-28 w-full px-4">
-            <div className="space-y-6">
-              {/* TV Series Section */}
-              {Object.entries(groupedSeries).length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Diziler</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(groupedSeries).map(([seriesId, episodes]) => {
-                      const firstEpisode = episodes[0];
-                      if (!firstEpisode) return null;
-                      
-                      // 🐛 DEBUG: SeriesGroupCard verisini logla
-                      console.log('🏠 Home SeriesGroupCard data:', { 
-                        seriesId, 
-                        firstEpisodeSeriesId: firstEpisode.seriesId,
-                        firstEpisodeTmdbId: firstEpisode.tmdbId,
-                        episodeCount: episodes.length,
-                        title: firstEpisode.seriesTitle || firstEpisode.title
-                      });
-                      
-                      // ⚡ FİKS: Navigation için doğru ID'yi kullan
-                      const navigationId = firstEpisode.seriesId || firstEpisode.tmdbId || seriesId;
-                      
-                      return (
-                        <SeriesGroupCard
-                          key={seriesId}
-                          seriesInfo={{
-                            id: navigationId, // ⚡ Düzeltildi
-                            title: firstEpisode.seriesTitle || firstEpisode.title,
-                            poster: firstEpisode.seriesPoster || undefined
-                          }}
-                          episodes={episodes}
-                          onClick={() => {
-                            console.log('🚀 Navigating to series:', navigationId);
-                            history.push(`/series/${navigationId}`);
-                          }}
-                        />
-                      );
-                    }).filter(Boolean)}
+            {posterLibraryData.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  {activeTab === 'watched' ? 'Henüz izlediğin bir içerik yok.' : 'İzleme listeniz boş.'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {posterLibraryData.map((item, index) => (
+                  <div
+                    key={`${item.type}-${item.id}-${index}`}
+                    className="relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer group"
+                    onClick={() => handlePosterClick(item)}
+                  >
+                    {/* Poster Image */}
+                    <img
+                      src={item.poster || '/placeholder-poster.jpg'}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-poster.jpg';
+                      }}
+                    />
+                    
+                    {/* Overlay for series episode count */}
+                    {item.type === 'series' && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                        <p className="text-white text-xs font-medium">
+                          {item.episodes.length} bölüm
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Hover overlay with title */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
+                      <div className="p-3 w-full">
+                        <h3 className="text-white text-sm font-medium line-clamp-2">
+                          {item.title}
+                        </h3>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* Movies Section */}
-              {movies.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-4">Filmler</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {movies.map((movie: MovieLog) => (
-                      <MovieCard 
-                        key={movie.id} 
-                        title={movie.title}
-                        date={movie.date}
-                        rating={movie.rating}
-                        review={movie.review}
-                        poster={movie.poster}
-                        onClick={() => openModal('movie', movie.tmdbId)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Empty State */}
-              {Object.entries(groupedSeries).length === 0 && movies.length === 0 && (
-                <div className="text-center text-muted-foreground mt-12">
-                  <p className="text-body">
-                    {activeTab === 'watched' 
-                      ? 'Henüz izlediğin içerik yok' 
-                      : 'İzleme listende içerik yok'
-                    }
-                  </p>
-                  <p className="text-sm mt-2">
-                    + butonuna tıklayarak film/dizi ekle
-                  </p>
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
           <FabAddButton onAddMovieLog={handleAddMovieLog} />
           <BottomNavBar />
@@ -257,6 +265,14 @@ const Home: React.FC = () => {
         onDidDismiss={() => setFilterModalOpen(false)}
         initialFilters={filters}
         onApplyFilters={handleApplyFilters}
+      />
+      
+      {/* 🎯 YENİ: DetailViewModal */}
+      <DetailViewModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        itemId={selectedItem?.itemId || null}
+        itemType={selectedItem?.itemType || null}
       />
     </IonPage>
   );

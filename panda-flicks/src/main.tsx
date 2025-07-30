@@ -16,19 +16,21 @@ if (import.meta.env.DEV) {
     createTestSeriesEpisodeData();
   }
   
-  // Tüm dizi verilerini analiz et
-  console.log('🔍 GLOBAL ANALİZ başlatılıyor...');
-  const { problemLogs } = analyzeAllSeriesData();
-  
-  // Mahsun J için özel debug
-  const mahsunDebug = debugSpecificSeries('mahsun-j');
-  console.log('🎬 Mahsun J debug sonuçları:', mahsunDebug);
-  
-  // Eksik tmdbId'leri düzelt
-  if (problemLogs.length > 0) {
-    console.log('🔧 tmdbId eksikliklerini düzeltiliyor...');
-    fixMissingTmdbIds();
-    console.log('✅ Düzeltme tamamlandı, sayfayı yenileyin.');
+  // 🎯 Sadece gerektiğinde debug analizi yap
+  if (window.location.search.includes('debug=true')) {
+    console.log('🔍 GLOBAL ANALİZ başlatılıyor...');
+    const { problemLogs } = analyzeAllSeriesData();
+    
+    // Mahsun J için özel debug
+    const mahsunDebug = debugSpecificSeries('mahsun-j');
+    console.log('🎬 Mahsun J debug sonuçları:', mahsunDebug);
+    
+    // Eksik tmdbId'leri düzelt
+    if (problemLogs.length > 0) {
+      console.log('🔧 tmdbId eksikliklerini düzeltiliyor...');
+      fixMissingTmdbIds();
+      console.log('✅ Düzeltme tamamlandı, sayfayı yenileyin.');
+    }
   }
   
   logCurrentStorageData();

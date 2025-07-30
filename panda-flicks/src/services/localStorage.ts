@@ -14,6 +14,7 @@ export interface MovieLog {
   // Dizi için ekstra alanlar
   seasonCount?: number;
   episodeCount?: number;
+  seasonNumber?: number;   // Sezon numarası (bölüm kaydetme için)
   runtime?: number; // dakika cinsinden
   // Filtre sistemi için gerekli yeni alanlar
   contentType: 'movie' | 'tv';
