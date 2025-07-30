@@ -165,6 +165,219 @@ const Profile: React.FC = () => {
       .slice(0, 5);
   };
 
+  // Ortalama puan hesaplama
+  const getAverageRating = () => {
+    if (!profile) return { average: 0, total: 0 };
+    const logs = LocalStorageService.getMovieLogs();
+    const watchedLogs = logs.filter(log => log.type === 'watched' && log.rating);
+    
+    if (watchedLogs.length === 0) return { average: 0, total: 0 };
+    
+    const totalRating = watchedLogs.reduce((sum, log) => {
+      const rating = parseFloat(log.rating);
+      return sum + (isNaN(rating) ? 0 : rating);
+    }, 0);
+    
+    const average = totalRating / watchedLogs.length;
+    return { average: Math.round(average * 10) / 10, total: watchedLogs.length };
+  };
+
+  // Bu ay izlenen film sayısı
+  const getThisMonthWatched = () => {
+    if (!profile) return { count: 0, trend: 0 };
+    const logs = LocalStorageService.getMovieLogs();
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Bu ay izlenenler
+    const thisMonthLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      return log.type === 'watched' && 
+             logDate.getMonth() === currentMonth && 
+             logDate.getFullYear() === currentYear;
+    });
+    
+    // Geçen ay izlenenler
+    const lastMonthLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+      return log.type === 'watched' && 
+             logDate.getMonth() === lastMonth && 
+             logDate.getFullYear() === lastYear;
+    });
+    
+    const trend = thisMonthLogs.length - lastMonthLogs.length;
+    return { count: thisMonthLogs.length, trend };
+  };
+
+  // En çok izlenen tür
+  const getFavoriteGenre = () => {
+    if (!profile) return 'Henüz Yok';
+    const logs = LocalStorageService.getMovieLogs();
+    const watchedLogs = logs.filter(log => log.type === 'watched' && log.genres);
+    
+    if (watchedLogs.length === 0) return 'Henüz Yok';
+    
+    const genreCounts: { [key: string]: number } = {};
+    
+    watchedLogs.forEach(log => {
+      if (log.genres) {
+        log.genres.forEach(genre => {
+          const normalizedGenre = genre.toLowerCase();
+          genreCounts[normalizedGenre] = (genreCounts[normalizedGenre] || 0) + 1;
+        });
+      }
+    });
+    
+    if (Object.keys(genreCounts).length === 0) return 'Henüz Yok';
+    
+    const favoriteGenre = Object.entries(genreCounts)
+      .sort(([,a], [,b]) => b - a)[0][0];
+    
+    // Türkçe karşılıkları
+    const genreTranslations: { [key: string]: string } = {
+      'drama': 'Drama',
+      'comedy': 'Komedi',
+      'komedi': 'Komedi',
+      'action': 'Aksiyon',
+      'aksiyon': 'Aksiyon',
+      'thriller': 'Gerilim',
+      'horror': 'Korku',
+      'korku': 'Korku',
+      'romance': 'Romantik',
+      'romantik': 'Romantik',
+      'sci-fi': 'Bilim Kurgu',
+      'science fiction': 'Bilim Kurgu',
+      'fantasy': 'Fantastik',
+      'fantastik': 'Fantastik',
+      'adventure': 'Macera',
+      'macera': 'Macera',
+      'crime': 'Suç',
+      'suç': 'Suç',
+      'mystery': 'Gizem',
+      'gizem': 'Gizem',
+      'animation': 'Animasyon',
+      'animasyon': 'Animasyon',
+      'documentary': 'Belgesel',
+      'belgesel': 'Belgesel'
+    };
+    
+    return genreTranslations[favoriteGenre] || favoriteGenre.charAt(0).toUpperCase() + favoriteGenre.slice(1);
+  };
+
+  // Zaman tüneli hesaplama
+  const getTimeTimeline = () => {
+    if (!profile) return { progress: 0, era: '2020\'ler' };
+    const logs = LocalStorageService.getMovieLogs();
+    const watchedLogs = logs.filter(log => log.type === 'watched' && log.releaseYear);
+    
+    if (watchedLogs.length === 0) return { progress: 0, era: '2020\'ler' };
+    
+    const years = watchedLogs.map(log => log.releaseYear!).sort((a, b) => a - b);
+    const oldestYear = years[0];
+    const newestYear = years[years.length - 1];
+    
+    // Hangi dönemde daha çok film var
+    const eraCounts = {
+      '90s': years.filter(year => year >= 1990 && year < 2000).length,
+      '2000s': years.filter(year => year >= 2000 && year < 2010).length,
+      '2010s': years.filter(year => year >= 2010 && year < 2020).length,
+      '2020s': years.filter(year => year >= 2020).length
+    };
+    
+    const dominantEra = Object.entries(eraCounts)
+      .sort(([,a], [,b]) => b - a)[0][0];
+    
+    // Progress hesaplama (yıl aralığına göre)
+    const totalRange = newestYear - oldestYear;
+    const currentYear = new Date().getFullYear();
+    const progress = totalRange > 0 ? Math.min(((currentYear - oldestYear) / totalRange) * 100, 100) : 0;
+    
+    const eraLabels = {
+      '90s': '90\'lar',
+      '2000s': '2000\'ler', 
+      '2010s': '2010\'lar',
+      '2020s': '2020\'ler'
+    };
+    
+    return { progress: Math.round(progress), era: eraLabels[dominantEra as keyof typeof eraLabels] };
+  };
+
+  // Bu ay izlenen film sayısı (ayrı fonksiyon)
+  const getThisMonthMovies = () => {
+    if (!profile) return { count: 0, trend: 0 };
+    const logs = LocalStorageService.getMovieLogs();
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Bu ay izlenen filmler
+    const thisMonthLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      return log.type === 'watched' && 
+             log.mediaType === 'movie' &&
+             logDate.getMonth() === currentMonth && 
+             logDate.getFullYear() === currentYear;
+    });
+    
+    // Geçen ay izlenen filmler
+    const lastMonthLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+      return log.type === 'watched' && 
+             log.mediaType === 'movie' &&
+             logDate.getMonth() === lastMonth && 
+             logDate.getFullYear() === lastYear;
+    });
+    
+    const trend = thisMonthLogs.length - lastMonthLogs.length;
+    return { count: thisMonthLogs.length, trend };
+  };
+
+  // Bu ay izlenen dizi sayısı
+  const getThisMonthTvShows = () => {
+    if (!profile) return { count: 0, trend: 0 };
+    const logs = LocalStorageService.getMovieLogs();
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    // Bu ay izlenen diziler
+    const thisMonthLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      return log.type === 'watched' && 
+             log.mediaType === 'tv' &&
+             logDate.getMonth() === currentMonth && 
+             logDate.getFullYear() === currentYear;
+    });
+    
+    // Geçen ay izlenen diziler
+    const lastMonthLogs = logs.filter(log => {
+      const logDate = new Date(log.date);
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const lastYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+      return log.type === 'watched' && 
+             log.mediaType === 'tv' &&
+             logDate.getMonth() === lastMonth && 
+             logDate.getFullYear() === lastYear;
+    });
+    
+    const trend = thisMonthLogs.length - lastMonthLogs.length;
+    return { count: thisMonthLogs.length, trend };
+  };
+
+  // Günlük ortalama izleme süresi
+  const getDailyAverageWatchTime = () => {
+    if (!profile) return 0;
+    const joinDate = new Date(profile.joinDate);
+    const now = new Date();
+    const daysSinceJoin = Math.max(1, Math.floor((now.getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24)));
+    return Math.round(profile.totalWatchTimeMinutes / daysSinceJoin);
+  };
+
   const getCurrentAvatar = () => {
     if (avatarPreview) return avatarPreview;
     if (profile?.avatar) return profile.avatar;
@@ -569,7 +782,12 @@ const Profile: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-poppins">Bu Ay</p>
-                    <p className="text-xs text-[#4CAF50] font-poppins">+2</p>
+                    <p className={`text-xs font-poppins ${
+                      getThisMonthMovies().trend > 0 ? 'text-[#4CAF50]' : 
+                      getThisMonthMovies().trend < 0 ? 'text-[#FF6B6B]' : 'text-white'
+                    }`}>
+                      {getThisMonthMovies().trend > 0 ? '+' : ''}{getThisMonthMovies().trend}
+                    </p>
                   </div>
                 </div>
                 <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{profile.watchedMovieCount}</p>
@@ -600,7 +818,12 @@ const Profile: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-poppins">Bu Ay</p>
-                    <p className="text-xs text-[#4CAF50] font-poppins">+1</p>
+                    <p className={`text-xs font-poppins ${
+                      getThisMonthTvShows().trend > 0 ? 'text-[#4CAF50]' : 
+                      getThisMonthTvShows().trend < 0 ? 'text-[#FF6B6B]' : 'text-white'
+                    }`}>
+                      {getThisMonthTvShows().trend > 0 ? '+' : ''}{getThisMonthTvShows().trend}
+                    </p>
                   </div>
                 </div>
                 <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{profile.watchedTvCount}</p>
@@ -664,7 +887,7 @@ const Profile: React.FC = () => {
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-poppins">Günlük</p>
                     <p className="text-xs text-white font-poppins">
-                      {Math.round(profile.totalWatchTimeMinutes / Math.max(1, Math.floor((Date.now() - new Date(profile.joinDate).getTime()) / (1000 * 60 * 60 * 24))))}dk
+                      {getDailyAverageWatchTime()}dk
                     </p>
                   </div>
                 </div>
@@ -705,18 +928,23 @@ const Profile: React.FC = () => {
                       stroke="#FE7743"
                       strokeWidth="2"
                       fill="none"
-                      strokeDasharray={`${85 * 0.88} 88`}
+                      strokeDasharray={`${(getAverageRating().average / 10) * 88} 88`}
                       strokeLinecap="round"
                       className="transition-all duration-1000"
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">8.5</span>
+                    <span className="text-white font-bold text-sm">{getAverageRating().average || '0'}</span>
                   </div>
                 </div>
                 <div>
                   <p className="text-gray-300 text-sm font-poppins">Ortalama Puan</p>
-                  <p className="text-white font-semibold font-poppins">Mükemmel</p>
+                  <p className="text-white font-semibold font-poppins">
+                    {getAverageRating().average >= 8 ? 'Mükemmel' : 
+                     getAverageRating().average >= 7 ? 'Çok İyi' : 
+                     getAverageRating().average >= 6 ? 'İyi' : 
+                     getAverageRating().average >= 5 ? 'Orta' : 'Geliştirilebilir'}
+                  </p>
                 </div>
               </div>
 
@@ -730,7 +958,7 @@ const Profile: React.FC = () => {
                 <div>
                   <p className="text-gray-300 text-sm font-poppins">Favori Tür</p>
                   <span className={`${styles.chipComponent} inline-block bg-[#4ECDC4] text-white px-3 py-1 rounded-full text-sm font-medium`}>
-                    {profile.favoriteGenres[0] || 'Henüz Yok'}
+                    {getFavoriteGenre()}
                   </span>
                 </div>
               </div>
@@ -745,10 +973,16 @@ const Profile: React.FC = () => {
                 <div>
                   <p className="text-gray-300 text-sm font-poppins">Bu Ay İzlenen</p>
                   <div className="flex items-center space-x-2">
-                    <span className="text-white font-semibold font-poppins">12 Film</span>
-                    <span className={`${styles.trendIndicator} text-[#4CAF50] text-xs font-medium bg-[#4CAF50]/20 px-2 py-1 rounded-full`}>
-                      +2 ↗
-                    </span>
+                    <span className="text-white font-semibold font-poppins">{getThisMonthWatched().count} Film</span>
+                    {getThisMonthWatched().trend !== 0 && (
+                      <span className={`${styles.trendIndicator} text-xs font-medium px-2 py-1 rounded-full ${
+                        getThisMonthWatched().trend > 0 
+                          ? 'text-[#4CAF50] bg-[#4CAF50]/20' 
+                          : 'text-[#FF6B6B] bg-[#FF6B6B]/20'
+                      }`}>
+                        {getThisMonthWatched().trend > 0 ? '+' : ''}{getThisMonthWatched().trend} {getThisMonthWatched().trend > 0 ? '↗' : '↘'}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -764,7 +998,7 @@ const Profile: React.FC = () => {
                   <p className="text-gray-300 text-sm font-poppins mb-2">Zaman Tüneli</p>
                   <div className="flex space-x-1">
                     <div className={`${styles.timelineProgress} flex-1 bg-[#333] rounded-full h-2`}>
-                      <div className="bg-gradient-to-r from-[#FF6B6B] to-[#FE7743] h-2 rounded-full" style={{width: '30%'}}></div>
+                      <div className="bg-gradient-to-r from-[#FF6B6B] to-[#FE7743] h-2 rounded-full" style={{width: `${getTimeTimeline().progress}%`}}></div>
                     </div>
                   </div>
                   <div className="flex justify-between text-xs text-gray-400 mt-1">
