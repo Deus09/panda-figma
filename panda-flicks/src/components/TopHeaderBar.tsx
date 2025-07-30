@@ -4,6 +4,8 @@ import logo from '../assets/logo.png';
 interface TopHeaderBarProps {
   title?: string;
   showBackButton?: boolean;
+  showLogo?: boolean;
+  showSettings?: boolean;
   onBackClick?: () => void;
   onSettingsClick?: () => void;
 }
@@ -11,6 +13,8 @@ interface TopHeaderBarProps {
 const TopHeaderBar: React.FC<TopHeaderBarProps> = ({ 
   title = "Pandaflicks", 
   showBackButton = false, 
+  showLogo = true,
+  showSettings = true,
   onBackClick,
   onSettingsClick 
 }) => (
@@ -26,13 +30,15 @@ const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
           </svg>
         </button>
       )}
-      <img src={logo} alt="Logo" className="w-[40px] h-[40px] rounded-full bg-muted" />
+      {showLogo && (
+        <img src={logo} alt="Logo" className="w-[40px] h-[40px] rounded-full bg-muted" />
+      )}
       <span className="text-h2 font-bold text-foreground truncate">
         {title}
       </span>
     </div>
     
-    {onSettingsClick && (
+    {showSettings && onSettingsClick && (
       <button 
         onClick={onSettingsClick}
         className="text-foreground hover:text-primary hover:bg-muted transition-colors p-2 rounded"

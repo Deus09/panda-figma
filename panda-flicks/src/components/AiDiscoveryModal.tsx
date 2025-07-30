@@ -1,25 +1,15 @@
 import React, { useState } from 'react';
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonModal,
-  IonTextarea,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
-  IonIcon,
-  IonSpinner
-} from '@ionic/react';
-import { close } from 'ionicons/icons';
+import { IonTextarea, IonModal } from '@ionic/react';
 import { getMovieSuggestions, MovieSuggestion } from '../services/geminiService';
+import TopHeaderBar from './TopHeaderBar';
 
 interface AiDiscoveryModalProps {
   open: boolean;
   onClose: () => void;
+  onMovieSelect?: (movie: MovieSuggestion) => void;
 }
 
-const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose }) => {
+const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMovieSelect }) => {
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [suggestedMovies, setSuggestedMovies] = useState<MovieSuggestion[]>([]);
@@ -52,10 +42,15 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose }) =>
     setSuggestedMovies([]);
   };
 
+  const handleMovieSelect = (movie: MovieSuggestion) => {
+    onMovieSelect?.(movie);
+    onClose();
+  };
+
   return (
     <IonModal 
       isOpen={open} 
-      onDidDismiss={onClose} 
+      onDidDismiss={onClose}
       breakpoints={[0, 0.95]} 
       initialBreakpoint={0.95}
       className="ai-discovery-modal"
@@ -64,181 +59,153 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose }) =>
         '--max-height': '95vh'
       }}
     >
-      <IonHeader>
-        <IonToolbar className="bg-background border-b border-gray-800">
-          <IonTitle className="text-foreground font-poppins text-lg font-semibold">
-            Hayalindeki Filmi Tarif Et
-          </IonTitle>
-          <IonButtons slot="end">
-            <IonButton 
-              fill="clear" 
-              onClick={onClose}
-              className="text-foreground"
-            >
-              <IonIcon icon={close} />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
-      
-      <IonContent className="bg-background">
-        <div className="p-6 space-y-6">
-          {/* Açıklama Metni */}
-          <div className="text-center space-y-2">
-            <div className="text-4xl mb-4">🧠✨</div>
-            <p className="text-gray-400 font-poppins text-sm leading-relaxed">
-              {suggestedMovies.length === 0 
-                ? "Aklındaki filmi tarif et, yapay zeka sana en uygun önerileri getirsin!"
-                : "İşte sana özel seçtiklerim! 🎬"
-              }
-            </p>
-          </div>
-
-          {/* Koşullu İçerik */}
-          {suggestedMovies.length === 0 ? (
-            /* Film önerisi alınmamışsa - Input ve butonları göster */
-            !isLoading ? (
-              <>
-                {/* Metin Alanı */}
-                <div className="space-y-3">
-                  <label className="block text-foreground font-poppins text-sm font-medium">
-                    Film Açıklaması
-                  </label>
-                  <IonTextarea
-                    value={description}
-                    onIonInput={(e) => setDescription(e.detail.value!)}
-                    placeholder="Örnek: Uzayda geçen, robotları olan ve aşk hikayesi bulunan animasyon film..."
-                    rows={6}
-                    className="bg-gray-800/50 rounded-lg border border-gray-700 text-foreground placeholder:text-gray-500"
-                    fill="outline"
-                  />
-                </div>
-
-                {/* Butonlar */}
-                <div className="space-y-3">
-                  <IonButton
-                    expand="block"
-                    onClick={handleFindMovies}
-                    disabled={!description.trim()}
-                    className="h-12 rounded-xl font-poppins font-semibold"
-                    style={{
-                      '--background': '#FE7743',
-                      '--background-hover': '#e66a3a',
-                      '--color': 'white'
-                    }}
-                  >
-                    <span className="flex items-center gap-2">
-                      🎬 Film Bul
-                    </span>
-                  </IonButton>
-
-                  <IonButton
-                    expand="block"
-                    fill="outline"
-                    onClick={handleReset}
-                    disabled={!description.trim()}
-                    className="h-12 rounded-xl font-poppins font-medium"
-                    style={{
-                      '--border-color': '#FE7743',
-                      '--color': '#FE7743'
-                    }}
-                  >
-                    Temizle
-                  </IonButton>
-
-                  <IonButton
-                    expand="block"
-                    fill="clear"
-                    onClick={onClose}
-                    className="h-12 rounded-xl font-poppins font-medium text-gray-400"
-                  >
-                    Kapat
-                  </IonButton>
-                </div>
-              </>
-            ) : (
-              /* Loading durumu */
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <IonSpinner 
-                  name="dots" 
-                  className="w-12 h-12 text-[#FE7743]"
-                />
-                <div className="text-center space-y-2">
-                  <p className="text-foreground font-poppins font-medium">
-                    Yapay Zeka Çalışıyor...
-                  </p>
-                  <p className="text-gray-400 font-poppins text-sm">
-                    Senin için en uygun filmleri arıyorum ✨
-                  </p>
-                </div>
+      <div className="w-full h-full bg-[#222] rounded-t-[54px] overflow-hidden">
+        {/* Header Bar */}
+        <div className="flex items-center justify-center bg-background w-full h-[60px] p-4">
+          <span className="text-h2 font-bold text-foreground">
+            AI Film Discovery
+          </span>
+        </div>
+        
+        {/* Modal Content */}
+        <div className="px-4 pb-6 pt-6 overflow-y-auto h-full">
+              {/* Açıklama Metni */}
+              <div className="text-center mb-8">
+                <div className="text-4xl mb-4">🧠✨</div>
+                <p className="text-[#CCC] font-poppins text-[14px] leading-relaxed">
+                  {suggestedMovies.length === 0 
+                    ? "Aklındaki filmi tarif et, yapay zeka sana en uygun önerileri getirsin!"
+                    : "İşte sana özel seçtiklerim! 🎬"
+                  }
+                </p>
               </div>
-            )
-          ) : (
-            /* Film önerileri alınmışsa - Poster grid'ini göster */
-            <>
-              {/* Film Posterleri Grid */}
-              <div className="grid grid-cols-3 gap-2">
-                {suggestedMovies.map((movie, index) => (
-                  <div
-                    key={`${movie.tmdbId}-${index}`}
-                    className="relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
-                    onClick={() => {
-                      // TODO: Modal açma işlemi sonraki adımda eklenecek
-                      console.log('Film seçildi:', movie);
-                    }}
-                  >
-                    <img
-                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                      alt={movie.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Poster yüklenemezse placeholder göster
-                        const target = e.target as HTMLImageElement;
-                        target.src = 'https://placehold.co/200x300/374151/9CA3AF?text=No+Image';
-                      }}
-                    />
-                    {/* Film başlığı overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                      <p className="text-white text-xs font-poppins font-medium truncate">
-                        {movie.title}
+
+              {/* Koşullu İçerik */}
+              {suggestedMovies.length === 0 ? (
+                /* Film önerisi alınmamışsa - Input ve butonları göster */
+                !isLoading ? (
+                  <>
+                    {/* Metin Alanı */}
+                    <div className="mb-8">
+                      <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-3">
+                        Film Açıklaması
+                      </span>
+                      <div className="relative">
+                        <IonTextarea
+                          value={description}
+                          onIonInput={(e) => setDescription(e.detail.value!)}
+                          placeholder="Örnek: Uzayda geçen, robotları olan ve aşk hikayesi bulunan animasyon film..."
+                          rows={6}
+                          className="w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-[#D9D9D9] p-3 pr-10 text-black text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto border-0"
+                          fill="solid"
+                          style={{ height: 'auto', maxHeight: 250, minHeight: 150 }}
+                          onInput={e => {
+                            const target = e.target as HTMLTextAreaElement;
+                            target.style.height = 'auto';
+                            target.style.height = Math.min(target.scrollHeight, 250) + 'px';
+                          }}
+                        />
+                        {/* X Butonu - Textarea içinde sağ alt köşe */}
+                        {description.length > 0 && (
+                          <button
+                            type="button"
+                            className="absolute bottom-3 right-3 w-6 h-6 flex items-center justify-center bg-[#D9D9D9] text-black hover:bg-gray-300 transition-all duration-200"
+                            onClick={() => setDescription('')}
+                            aria-label="Clear text"
+                            style={{ 
+                              zIndex: 9999,
+                              pointerEvents: 'auto'
+                            }}
+                          >
+                            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                              <path fillRule="evenodd" d="M10 8.586l4.95-4.95a1 1 0 111.414 1.414L11.414 10l4.95 4.95a1 1 0 01-1.414 1.414L10 11.414l-4.95 4.95a1 1 0 01-1.414-1.414L8.586 10l-4.95-4.95A1 1 0 115.05 3.636L10 8.586z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Film Bul Butonu */}
+                    <div className="space-y-4">
+                      <button
+                        onClick={handleFindMovies}
+                        disabled={!description.trim()}
+                        className={`w-full h-[48px] rounded-[12px] text-[16px] font-poppins font-semibold shadow-lg transition-all duration-200 ${
+                          !description.trim() 
+                            ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                            : 'bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90 active:scale-95'
+                        }`}
+                      >
+                        <span className="flex items-center justify-center gap-2">
+                          🎬 Film Bul
+                        </span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  /* Loading durumu */
+                  <div className="flex flex-col items-center justify-center py-12 space-y-6">
+                    <div className="relative">
+                      <div className="w-16 h-16 border-4 border-[#333] border-t-[#FE7743] rounded-full animate-spin"></div>
+                    </div>
+                    <div className="text-center space-y-2">
+                      <p className="text-[#F8F8FF] font-poppins font-semibold text-[18px]">
+                        Yapay Zeka Çalışıyor...
                       </p>
-                      <p className="text-gray-300 text-xs">
-                        {movie.year}
+                      <p className="text-[#CCC] font-poppins text-[14px]">
+                        Senin için en uygun filmleri arıyorum ✨
                       </p>
                     </div>
                   </div>
-                ))}
-              </div>
+                )
+              ) : (
+                /* Film önerileri alınmışsa - Poster grid'ini göster */
+                <>
+                  {/* Film Posterleri Grid */}
+                  <div className="grid grid-cols-3 gap-3 mb-8">
+                    {suggestedMovies.map((movie, index) => (
+                      <div
+                        key={`${movie.tmdbId}-${index}`}
+                        className="relative aspect-[2/3] rounded-[12px] overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-200 bg-[#333] hover:scale-105 active:scale-95"
+                        onClick={() => handleMovieSelect(movie)}
+                      >
+                        <img
+                          src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                          alt={movie.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            // Poster yüklenemezse placeholder göster
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'https://placehold.co/200x300/374151/9CA3AF?text=No+Image';
+                          }}
+                        />
+                        {/* Film başlığı overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3">
+                          <p className="text-white text-[12px] font-poppins font-semibold truncate leading-tight">
+                            {movie.title}
+                          </p>
+                          <p className="text-[#CCC] text-[10px] mt-1">
+                            {movie.year}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-              {/* Yeniden Dene Butonu */}
-              <div className="space-y-3">
-                <IonButton
-                  expand="block"
-                  fill="outline"
-                  onClick={handleTryAgain}
-                  className="h-12 rounded-xl font-poppins font-medium"
-                  style={{
-                    '--border-color': '#FE7743',
-                    '--color': '#FE7743'
-                  }}
-                >
-                  🔄 Yeniden Dene
-                </IonButton>
-
-                <IonButton
-                  expand="block"
-                  fill="clear"
-                  onClick={onClose}
-                  className="h-12 rounded-xl font-poppins font-medium text-gray-400"
-                >
-                  Kapat
-                </IonButton>
-              </div>
-            </>
-          )}
-        </div>
-      </IonContent>
-    </IonModal>
+                  {/* Yeniden Dene Butonu */}
+                  <div className="space-y-4">
+                    <button
+                      onClick={handleTryAgain}
+                      className="w-full h-[48px] rounded-[12px] text-[16px] font-poppins font-medium border-2 border-[#FE7743] text-[#FE7743] hover:bg-[#FE7743]/10 active:scale-95 transition-all duration-200"
+                    >
+                      🔄 Yeniden Dene
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </IonModal>
   );
 };
 
