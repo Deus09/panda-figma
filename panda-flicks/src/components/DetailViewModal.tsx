@@ -283,6 +283,7 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
                       seasonNumber={season.season_number}
                       episodes={season.episodes || []}
                       watchedEpisodeIds={watchedEpisodeIds}
+                      watchedEpisodes={watchedEpisodes}
                       onEpisodeToggle={handleEpisodeToggle}
                     />
                   );

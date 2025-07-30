@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Temizleme Aracı</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #222; color: white; }
+        .container { max-width: 600px; margin: 0 auto; }
+        button { padding: 10px 20px; margin: 10px; background: #FE7743; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #e56530; }
+        .log { background: #333; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        pre { overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Panda Flicks - LocalStorage Temizleme</h1>
+        
+        <h2>Mevcut Veriler:</h2>
+        <div id="currentData" class="log">Veriler yükleniyor...</div>
+        
+        <button onclick="showMahsunLogs()">Mahsun Kayıtlarını Göster</button>
+        <button onclick="clearAllData()">Tüm Verileri Temizle</button>
+        <button onclick="clearOnlyTvData()">Sadece TV Verilerini Temizle</button>
+        
+        <h2>Sonuçlar:</h2>
+        <div id="results" class="log"></div>
+    </div>
+
+    <script>
+        function loadCurrentData() {
+            try {
+                const logs = JSON.parse(localStorage.getItem('panda-flicks-movie-logs') || '[]');
+                const tvLogs = logs.filter(log => log.mediaType === 'tv' || log.contentType === 'tv');
+                
+                document.getElementById('currentData').innerHTML = `
+                    <strong>Toplam kayıt:</strong> ${logs.length}<br>
+                    <strong>TV kayıtları:</strong> ${tvLogs.length}<br>
+                    <strong>Movie kayıtları:</strong> ${logs.length - tvLogs.length}
+                `;
+                
+                return { logs, tvLogs };
+            } catch (e) {
+                document.getElementById('currentData').innerHTML = 'Veri yüklenirken hata: ' + e.message;
+                return { logs: [], tvLogs: [] };
+            }
+        }
+        
+        function showMahsunLogs() {
+            const { logs } = loadCurrentData();
+            const mahsunLogs = logs.filter(log => 
+                log.title && log.title.toLowerCase().includes('mahsun')
+            );
+            
+            document.getElementById('results').innerHTML = `
+                <strong>Mahsun J kayıtları (${mahsunLogs.length} adet):</strong><br>
+                <pre>${JSON.stringify(mahsunLogs.map(log => ({
+                    title: log.title,
+                    tmdbId: log.tmdbId,
+                    seriesId: log.seriesId,
+                    mediaType: log.mediaType
+                })), null, 2)}</pre>
+            `;
+        }
+        
+        function clearAllData() {
+            if (confirm('Tüm movie log verilerini silmek istediğinizden emin misiniz?')) {
+                localStorage.removeItem('panda-flicks-movie-logs');
+                document.getElementById('results').innerHTML = '<strong style="color: #4CAF50;">✅ Tüm veriler temizlendi!</strong>';
+                loadCurrentData();
+            }
+        }
+        
+        function clearOnlyTvData() {
+            if (confirm('Sadece TV dizi verilerini silmek istediğinizden emin misiniz?')) {
+                const logs = JSON.parse(localStorage.getItem('panda-flicks-movie-logs') || '[]');
+                const movieLogs = logs.filter(log => log.mediaType === 'movie' && log.contentType === 'movie');
+                localStorage.setItem('panda-flicks-movie-logs', JSON.stringify(movieLogs));
+                document.getElementById('results').innerHTML = '<strong style="color: #4CAF50;">✅ TV verileri temizlendi, film verileri korundu!</strong>';
+                loadCurrentData();
+            }
+        }
+        
+        // Sayfa yüklendiğinde verileri göster
+        loadCurrentData();
+    </script>
+</body>
+</html>

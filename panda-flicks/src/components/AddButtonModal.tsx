@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IonDatetime, IonModal, IonItem, IonLabel, IonThumbnail, IonCheckbox, IonButton, IonList } from '@ionic/react';
-import { searchMovies, TMDBMovieResult, TMDBCastMember, getSeriesDetails, searchAll, TMDBMultiSearchResponse, TMDBSearchResult, getSeasonDetails } from '../services/tmdb';
+import { searchMovies, TMDBMovieResult, TMDBCastMember, getSeriesDetails, searchAll, TMDBMultiSearchResponse, TMDBSearchResult, getSeasonDetails, SeasonDetails as TMDBSeasonDetails } from '../services/tmdb';
 import { improveComment, chatWithCast } from '../services/gemini';
-import { TvSeriesDetails, SeasonDetails } from '../types/tmdb';
+import { TvSeriesDetails } from '../types/tmdb';
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
 
@@ -16,11 +16,12 @@ interface AddButtonModalProps {
 
 const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect }) => {
   // Modal view states
-  type ModalView = 'search' | 'seasons' | 'episodes';
+  type ModalView = 'search' | 'episodes';
   const [view, setView] = useState<ModalView>('search');
   
   const [selectedSeries, setSelectedSeries] = useState<TvSeriesDetails | null>(null);
-  const [selectedSeason, setSelectedSeason] = useState<SeasonDetails | null>(null);
+  const [selectedSeason, setSelectedSeason] = useState<number>(1);
+  const [seasonDetails, setSeasonDetails] = useState<TMDBSeasonDetails | null>(null);
   const [checkedEpisodes, setCheckedEpisodes] = useState<Set<number>>(new Set());
 
   const [watchList, setWatchList] = useState(false);
@@ -177,7 +178,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     });
   };
 
-  // Dizi seçim fonksiyonu
+  // Dizi seçim fonksiyonu - OPTIMIZE EDİLDİ: Doğrudan bölüm seçimine gider
   const handleSeriesSelect = async (seriesId: number) => {
     try {
       console.log('Fetching series details for ID:', seriesId);
@@ -202,20 +203,39 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       
       console.log('Transformed series:', transformedSeries);
       setSelectedSeries(transformedSeries);
-      setView('seasons');
+      
+      // 🚀 YENİ: Otomatik olarak ilk sezonu seç ve doğrudan episodes'a git
+      if (transformedSeries.seasons && transformedSeries.seasons.length > 0) {
+        const firstSeason = transformedSeries.seasons[0];
+        console.log('Auto-selecting first season:', firstSeason.season_number);
+        
+        // İlk sezonun detaylarını çek
+        const seasonDetailsData = await getSeasonDetails(transformedSeries.id, firstSeason.season_number);
+        setSelectedSeason(firstSeason.season_number);
+        setSeasonDetails(seasonDetailsData);
+        setCheckedEpisodes(new Set()); // Reset checked episodes
+        setView('episodes'); // 🎯 Doğrudan bölüm seçimine git!
+      } else {
+        // Sezon yoksa search'e geri dön
+        setView('search');
+      }
     } catch (error) {
       console.error('Error fetching series details:', error);
+      // Hata durumunda search'e geri dön
+      setView('search');
     }
   };
 
-  // Sezon seçim fonksiyonu
-  const handleSeasonSelect = async (seasonNumber: number) => {
+  // Season change handler
+  const handleSeasonChange = async (seasonNumber: number) => {
     if (!selectedSeries) return;
+    
+    setSelectedSeason(seasonNumber);
+    setCheckedEpisodes(new Set()); // Clear selected episodes
+    
     try {
-      const seasonDetails = await getSeasonDetails(selectedSeries.id, seasonNumber);
-      setSelectedSeason(seasonDetails);
-      setCheckedEpisodes(new Set()); // Reset checked episodes
-      setView('episodes');
+      const seasonDetailsData = await getSeasonDetails(selectedSeries.id, seasonNumber);
+      setSeasonDetails(seasonDetailsData);
     } catch (error) {
       console.error('Error fetching season details:', error);
     }
@@ -236,9 +256,9 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
   // Tümünü seç/bırak fonksiyonu
   const handleSelectAllEpisodes = () => {
-    if (!selectedSeason || !selectedSeason.episodes) return;
+    if (!seasonDetails || !seasonDetails.episodes) return;
     
-    const allEpisodeIds = selectedSeason.episodes.map(ep => ep.id);
+    const allEpisodeIds = seasonDetails.episodes.map(ep => ep.id);
     const areAllSelected = allEpisodeIds.every(id => checkedEpisodes.has(id));
     
     if (areAllSelected) {
@@ -264,7 +284,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           type: watchList ? 'watchlist' : 'watched',
           mediaType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
           contentType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
-          tmdbId: selectedItem.tmdbId,
+          tmdbId: episode.id, // ✅ DÜZELTİLDİ: Episode ID'si kullanılıyor, series ID'si değil
           seriesId: selectedItem.seriesId,
           seriesTitle: selectedItem.seriesTitle,
           seriesPoster: selectedItem.seriesPoster,
@@ -304,23 +324,23 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
   // TV dizisi bölümlerini kaydetme fonksiyonu - Artık "İleri" butonu mantığı
   const handleEpisodeForward = () => {
-    if (!selectedSeries || !selectedSeason || checkedEpisodes.size === 0) return;
+    if (!selectedSeries || !seasonDetails || checkedEpisodes.size === 0) return;
     
     console.log('Moving forward with selected episode(s):', {
       series: selectedSeries.name,
-      season: selectedSeason.season_number,
+      season: selectedSeason,
       episodes: Array.from(checkedEpisodes)
     });
 
     // İlk seçilen bölümü ana forma aktar
     const firstEpisodeId = Array.from(checkedEpisodes)[0];
-    const episode = selectedSeason.episodes?.find(ep => ep.id === firstEpisodeId);
+    const episode = seasonDetails.episodes?.find(ep => ep.id === firstEpisodeId);
     
     if (episode) {
       const episodeItem = {
         id: episode.id,
-        name: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
-        title: `${selectedSeries.name} - S${selectedSeason.season_number}E${episode.episode_number}: ${episode.name}`,
+        name: `${selectedSeries.name} - S${selectedSeason}E${episode.episode_number}: ${episode.name}`,
+        title: `${selectedSeries.name} - S${selectedSeason}E${episode.episode_number}: ${episode.name}`,
         poster_path: episode.still_path || selectedSeries.poster_path,
         // Poster URL'ini doğru şekilde oluştur - öncelik sırası: episode still > series poster
         poster: episode.still_path 
@@ -330,17 +350,17 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             : ''),
         media_type: 'tv',
         mediaType: 'tv',
-        tmdbId: selectedSeries.id,
+        tmdbId: episode.id, // ✅ DÜZELTİLDİ: Episode ID'si kullanılıyor, series ID'si değil
         seriesId: selectedSeries.id.toString(),
         seriesTitle: selectedSeries.name,
         seriesPoster: selectedSeries.poster_path ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` : undefined,
-        seasonNumber: selectedSeason.season_number,
+        seasonNumber: selectedSeason,
         episodeNumber: episode.episode_number,
         episodeId: episode.id,
         runtime: episode.runtime || 45,
         // Eğer birden fazla bölüm seçildiyse onları da sakla
         allSelectedEpisodes: Array.from(checkedEpisodes).map(episodeId => {
-          const ep = selectedSeason.episodes?.find(e => e.id === episodeId);
+          const ep = seasonDetails.episodes?.find(e => e.id === episodeId);
           return ep ? {
             id: ep.id,
             name: ep.name,
@@ -665,62 +685,30 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           </>
           )}
           
-          {/* Seasons View */}
-          {view === 'seasons' && selectedSeries && (
-            <div>
-              <h2 className="text-xl font-bold mb-4 text-center text-[#F8F8FF]">{selectedSeries.name} - Sezon Seç</h2>
-              <IonList>
-                {selectedSeries?.seasons.map(season => (
-                  <IonItem button key={season.id} onClick={() => handleSeasonSelect(season.season_number)}>
-                    <IonThumbnail slot="start">
-                      {season.poster_path ? (
-                        <img src={`https://image.tmdb.org/t/p/w200${season.poster_path}`} alt={season.name} />
-                      ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">No Image</div>
-                      )}
-                    </IonThumbnail>
-                    <IonLabel>
-                      <h3>{season.name}</h3>
-                      <p>{season.episode_count} Bölüm</p>
-                    </IonLabel>
-                  </IonItem>
-                ))}
-              </IonList>
-              <div className="flex justify-center gap-6 mt-6 relative z-[60]">
-                <button 
-                  onClick={() => setView('search')} 
-                  className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md relative z-[60]"
-                >
-                  Back
-                </button>
-              </div>
-            </div>
-          )}
-          
           {/* Episodes View */}
-          {view === 'episodes' && selectedSeason && (
+          {view === 'episodes' && seasonDetails && (
             <div>
               <div className="text-center text-[#F8F8FF] text-[18px] font-poppins mb-6">
-                Season {selectedSeason.season_number} - Bölüm Seçin
+                Season {selectedSeason} - Bölüm Seçin
               </div>
               
               {/* Tümünü Seç Checkbox */}
               <IonItem className="bg-muted rounded-lg mb-4">
                 <IonCheckbox 
                   slot="start"
-                  checked={(selectedSeason.episodes?.length ?? 0) > 0 && selectedSeason.episodes?.every(ep => checkedEpisodes.has(ep.id)) === true}
-                  indeterminate={selectedSeason.episodes?.some(ep => checkedEpisodes.has(ep.id)) === true && selectedSeason.episodes?.every(ep => checkedEpisodes.has(ep.id)) !== true}
+                  checked={(seasonDetails.episodes?.length ?? 0) > 0 && seasonDetails.episodes?.every(ep => checkedEpisodes.has(ep.id)) === true}
+                  indeterminate={seasonDetails.episodes?.some(ep => checkedEpisodes.has(ep.id)) === true && seasonDetails.episodes?.every(ep => checkedEpisodes.has(ep.id)) !== true}
                   onIonChange={handleSelectAllEpisodes}
                 />
                 <IonLabel className="text-[#F8F8FF]">
                   <h2 className="text-[16px] font-poppins font-semibold">Tümünü Seç</h2>
-                  <p className="text-sm text-muted-foreground">{selectedSeason.episodes?.length ?? 0} bölüm</p>
+                  <p className="text-sm text-muted-foreground">{seasonDetails.episodes?.length ?? 0} bölüm</p>
                 </IonLabel>
               </IonItem>
 
               {/* Episode List */}
               <div className="space-y-2 max-h-[400px] overflow-y-auto mb-6 pr-1">
-                {selectedSeason.episodes?.map((episode) => (
+                {seasonDetails.episodes?.map((episode) => (
                   <div 
                     key={episode.id}
                     className="flex items-center p-3 bg-card rounded-lg border border-border"
@@ -752,12 +740,17 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
               {/* Action Buttons */}
               <div className="flex justify-center gap-6 mt-6 relative z-[60]">
-                <button 
-                  onClick={() => setView('seasons')} 
+                <select
+                  value={selectedSeason}
+                  onChange={(e) => handleSeasonChange(Number(e.target.value))}
                   className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md relative z-[60]"
                 >
-                  Back
-                </button>
+                  {selectedSeries?.seasons?.map((season) => (
+                    <option key={season.season_number} value={season.season_number}>
+                      {season.season_number === 0 ? 'Özel' : `Sezon ${season.season_number}`}
+                    </option>
+                  ))}
+                </select>
                 <button 
                   onClick={handleEpisodeForward}
                   disabled={checkedEpisodes.size === 0}

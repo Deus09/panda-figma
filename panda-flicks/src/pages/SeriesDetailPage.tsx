@@ -43,48 +43,66 @@ const SeriesDetailPage: React.FC = () => {
 
         const allLogs = LocalStorageService.getMovieLogs();
         
-        // --- YENİ TEŞHİS KODLARI ---
-        console.log('URL\'den gelen seriesId:', seriesId, '| Tipi:', typeof seriesId);
-        console.log('LocalStorage\'daki ilk kaydın seriesId\'si:', allLogs.length > 0 ? allLogs[0].seriesId : 'Kayıt yok', '| Tipi:', allLogs.length > 0 ? typeof allLogs[0].seriesId : 'Kayıt yok');
-        console.log('Tüm Kayıtlar (Filtresiz):', allLogs);
-        // --- TEŞHİS KODLARI BİTİŞİ ---
+        // 🔍 KRİTİK HATA ARAŞTIRMASI
+        console.log('=== MAHSUN J HATA ANALİZİ ===');
+        console.log('URL seriesId:', seriesId, typeof seriesId);
+        console.log('Series details:', seriesDetails.name, 'ID:', seriesDetails.id);
+        
+        const tvLogs = allLogs.filter(log => log.mediaType === 'tv' || log.contentType === 'tv');
+        console.log('TV logs toplam:', tvLogs.length);
+        
+        // Mahsun J ile ilgili tüm kayıtları bul
+        const mahsunLogs = allLogs.filter(log => 
+          log.title && log.title.toLowerCase().includes('mahsun')
+        );
+        console.log('Mahsun kayıtları:', mahsunLogs.map(log => ({
+          title: log.title,
+          tmdbId: log.tmdbId,
+          seriesId: log.seriesId,
+          mediaType: log.mediaType
+        })));
 
-        // ⚡ FLEXIBLE MATCHING - Önce tam eşleşme dene, sonra fallback'leri kullan
+        // Sezon bölümlerinin ID'lerini logla
+        const allEpisodes = seasonsWithEpisodes.flatMap(s => s.episodes || []);
+        console.log('Tüm bölüm ID\'leri:', allEpisodes.map(ep => ep.id));
+
+        // FLEXIBLE MATCHING - Ana filtre
         let seriesEpisodes = allLogs.filter(log => 
-          log.seriesId && // Önce seriesId'nin var olduğundan emin ol
+          log.seriesId && 
           String(log.seriesId) === seriesId && 
           (log.contentType === 'tv' || log.mediaType === 'tv')
         );
         
-        console.log('🎯 Tam eşleşme sonucu:', seriesEpisodes.length, 'bölüm');
+        console.log('SeriesId match sonucu:', seriesEpisodes.length);
         
-        // Eğer tam eşleşme yoksa, title'da series adı geçen kayıtları ara
+        // Fallback 1: Title match
         if (seriesEpisodes.length === 0 && seriesDetails) {
-          console.log('🔄 Fallback arama yapılıyor...');
           seriesEpisodes = allLogs.filter(log => {
             const titleMatch = log.title && 
               log.title.toLowerCase().includes(seriesDetails.name.toLowerCase());
             const isTvContent = log.contentType === 'tv' || log.mediaType === 'tv';
             return titleMatch && isTvContent;
           });
-          console.log('🔄 Fallback sonucu:', seriesEpisodes.length, 'bölüm bulundu');
+          console.log('Title match sonucu:', seriesEpisodes.length);
         }
         
-        // Eğer hala bulunamadıysa, seriesTitle field'ında ara
+        // Fallback 2: SeriesTitle match
         if (seriesEpisodes.length === 0 && seriesDetails) {
-          console.log('🔄 SeriesTitle arama yapılıyor...');
           seriesEpisodes = allLogs.filter(log => {
             const seriesTitleMatch = log.seriesTitle && 
               log.seriesTitle.toLowerCase().includes(seriesDetails.name.toLowerCase());
             const isTvContent = log.contentType === 'tv' || log.mediaType === 'tv';
             return seriesTitleMatch && isTvContent;
           });
-          console.log('🔄 SeriesTitle sonucu:', seriesEpisodes.length, 'bölüm bulundu');
+          console.log('SeriesTitle match sonucu:', seriesEpisodes.length);
         }
 
-        // --- YENİ SONUÇ KODU ---
-        console.log('✅ Filtreleme Sonucu Bulunan Bölümler:', seriesEpisodes);
-        // --- SONUÇ KODU BİTİŞİ ---
+        console.log('FINAL bulunan bölümler:', seriesEpisodes.map(ep => ({
+          title: ep.title,
+          tmdbId: ep.tmdbId,
+          seriesId: ep.seriesId
+        })));
+        console.log('=== ANALİZ BİTİŞ ===');
 
         setWatchedLogs(seriesEpisodes);
 
@@ -277,6 +295,7 @@ const SeriesDetailPage: React.FC = () => {
                     seasonNumber={season.season_number}
                     episodes={season.episodes || []}
                     watchedEpisodeIds={watchedEpisodeIds}
+                    watchedEpisodes={watchedLogs}
                     onEpisodeToggle={handleEpisodeToggle}
                 />
             ))}
