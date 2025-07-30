@@ -27,27 +27,31 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       loadMovieDetails();
       loadTrailer();
       loadSimilarMovies();
+    } else if (!open) {
+      // Modal kapandığında state'leri temizle
+      setMovieDetails(null);
+      setCast([]);
+      setTrailerKey(null);
+      setSimilarMovies([]);
+      setError(null);
+      setLoading(false);
+      setSelectedMovieId(null);
     }
   }, [open, movieId]);
 
-  useEffect(() => {
-    if (selectedMovieId) {
-      loadMovieDetails();
-      loadTrailer();
-      loadSimilarMovies();
-    }
-  }, [selectedMovieId]);
+
 
   const loadMovieDetails = async () => {
-    if (!selectedMovieId) return;
+    const movieIdToLoad = selectedMovieId || movieId;
+    if (!movieIdToLoad) return;
     
     setLoading(true);
     setError(null);
     
     try {
       const [details, castData] = await Promise.all([
-        getMovieDetails(selectedMovieId),
-        getMovieCast(selectedMovieId)
+        getMovieDetails(movieIdToLoad),
+        getMovieCast(movieIdToLoad)
       ]);
       
       setMovieDetails(details);
@@ -61,14 +65,16 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   };
 
   const loadTrailer = async () => {
-    if (!selectedMovieId) return;
-    const key = await getMovieTrailerKey(selectedMovieId);
+    const movieIdToLoad = selectedMovieId || movieId;
+    if (!movieIdToLoad) return;
+    const key = await getMovieTrailerKey(movieIdToLoad);
     setTrailerKey(key);
   };
 
   const loadSimilarMovies = async () => {
-    if (!selectedMovieId) return;
-    const movies = await getSimilarMovies(selectedMovieId);
+    const movieIdToLoad = selectedMovieId || movieId;
+    if (!movieIdToLoad) return;
+    const movies = await getSimilarMovies(movieIdToLoad);
     setSimilarMovies(movies);
   };
 
@@ -80,8 +86,12 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
     setSimilarMovies([]);
     setError(null);
     setLoading(true);
-    // Set new movie ID - this will trigger useEffect
+    // Set new movie ID and trigger loading
     setSelectedMovieId(newMovieId);
+    // Load new movie data
+    loadMovieDetails();
+    loadTrailer();
+    loadSimilarMovies();
   };
 
   const handleActorClick = (actorId: number) => {
@@ -111,7 +121,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       <div className="w-full h-full bg-[#0C1117] overflow-y-auto">
         {/* Back Button */}
         <button
-          onClick={closeModal}
+          onClick={onClose}
           className="absolute top-4 left-4 z-10 w-6 h-6 flex items-center justify-center"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">

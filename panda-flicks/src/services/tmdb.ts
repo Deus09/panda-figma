@@ -152,6 +152,16 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> => {
   try {
+    // Check cache first
+    const cacheKey = `search_movies_${query.toLowerCase().trim()}`;
+    const cached = cache.get(cacheKey);
+    const timestamp = cacheTimestamps.get(cacheKey);
+    
+    if (cached && timestamp && Date.now() - timestamp < CACHE_DURATION_MS) {
+      console.log(`Cache hit for: ${query}`);
+      return cached;
+    }
+
     const response = await fetch(
       `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
@@ -161,12 +171,19 @@ export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> =>
     }
     
     const data = await response.json();
-    return (data.results || []).map((movie: any) => ({
+    const results = (data.results || []).map((movie: any) => ({
       id: movie.id,
       title: movie.title,
       release_date: movie.release_date,
       poster_path: movie.poster_path
     }));
+
+    // Cache the result
+    cache.set(cacheKey, results);
+    cacheTimestamps.set(cacheKey, Date.now());
+    console.log(`Cached search result for: ${query}`);
+
+    return results;
   } catch (error) {
     console.error('Error searching movies:', error);
     return [];

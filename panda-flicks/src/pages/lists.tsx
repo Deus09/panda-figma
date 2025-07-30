@@ -569,60 +569,113 @@ const Lists: React.FC = () => {
   const [loadingPoster, setLoadingPoster] = useState<{ [key: string]: boolean }>({});
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  // Sayfa yüklendiğinde tüm listelerin poster verilerini yükle
+  // Sayfa yüklendiğinde tüm listelerin poster verilerini yükle (OPTIMIZED)
   useEffect(() => {
     const loadAllPosters = async () => {
       setIsInitialLoading(true);
       const newFilmData = new Map(filmData);
       
-      for (const liste of filmListeleri.filmListeleri) {
-        for (const film of liste.filmler) {
-          if (!newFilmData.has(film.filmAdi)) {
-            try {
-              const searchResults = await searchMovies(film.filmAdi);
-              if (searchResults.length > 0) {
-                const firstResult = searchResults[0];
-                newFilmData.set(film.filmAdi, {
-                  id: firstResult.id,
-                  posterPath: firstResult.poster_path
-                });
-              }
-            } catch (error) {
-              console.error(`Error finding movie ID for ${film.filmAdi}:`, error);
-            }
-          }
-        }
+      // Tüm filmleri topla
+      const allFilms = (filmListeleri.filmListeleri as any[]).flatMap(liste => liste.filmler);
+      const uniqueFilms = allFilms.filter((film: any, index: number, self: any[]) => 
+        index === self.findIndex((f: any) => f.filmAdi === film.filmAdi)
+      );
+      
+      // Cache'de olmayan filmleri filtrele
+      const uncachedFilms = uniqueFilms.filter((film: any) => !newFilmData.has(film.filmAdi));
+      
+      if (uncachedFilms.length === 0) {
+        console.log('All films already cached on initial load');
+        setIsInitialLoading(false);
+        return;
       }
+
+      console.log(`Initial loading: ${uncachedFilms.length} unique films in parallel...`);
+      
+      // Paralel API çağrıları
+      const searchPromises = uncachedFilms.map(async (film: any) => {
+        try {
+          const searchResults = await searchMovies(film.filmAdi);
+          if (searchResults.length > 0) {
+            const firstResult = searchResults[0];
+            return {
+              filmAdi: film.filmAdi,
+              data: {
+                id: firstResult.id,
+                posterPath: firstResult.poster_path
+              }
+            };
+          }
+        } catch (error) {
+          console.error(`Error finding movie ID for ${film.filmAdi}:`, error);
+        }
+        return null;
+      });
+
+      // Tüm sonuçları bekle
+      const results = await Promise.all(searchPromises);
+      
+      // Sonuçları Map'e ekle
+      results.forEach((result: any) => {
+        if (result) {
+          newFilmData.set(result.filmAdi, result.data);
+        }
+      });
+      
       setFilmData(newFilmData);
       setIsInitialLoading(false);
+      console.log(`Initial load completed: ${newFilmData.size} films cached`);
     };
 
     loadAllPosters();
   }, []);
 
-  // Film adlarından TMDB ID'lerini bul
+  // Film adlarından TMDB ID'lerini bul (PARALEL)
   const findMovieIds = async (liste: Liste) => {
     const newFilmData = new Map(filmData);
     
-    for (const film of liste.filmler) {
-      if (!newFilmData.has(film.filmAdi)) {
-        try {
-          const searchResults = await searchMovies(film.filmAdi);
-          if (searchResults.length > 0) {
-            // İlk sonucu al (en uygun olanı)
-            const firstResult = searchResults[0];
-            newFilmData.set(film.filmAdi, {
+    // Sadece cache'de olmayan filmleri filtrele
+    const uncachedFilms = liste.filmler.filter(film => !newFilmData.has(film.filmAdi));
+    
+    if (uncachedFilms.length === 0) {
+      console.log('All films already cached');
+      return;
+    }
+
+    console.log(`Loading ${uncachedFilms.length} films in parallel...`);
+    
+    // Paralel API çağrıları
+    const searchPromises = uncachedFilms.map(async (film) => {
+      try {
+        const searchResults = await searchMovies(film.filmAdi);
+        if (searchResults.length > 0) {
+          const firstResult = searchResults[0];
+          return {
+            filmAdi: film.filmAdi,
+            data: {
               id: firstResult.id,
               posterPath: firstResult.poster_path
-            });
-          }
-        } catch (error) {
-          console.error(`Error finding movie ID for ${film.filmAdi}:`, error);
+            }
+          };
         }
+      } catch (error) {
+        console.error(`Error finding movie ID for ${film.filmAdi}:`, error);
       }
-    }
+      return null;
+    });
+
+    // Tüm sonuçları bekle
+    const results = await Promise.all(searchPromises);
+    
+    // Sonuçları Map'e ekle
+    results.forEach(result => {
+      if (result) {
+        newFilmData.set(result.filmAdi, result.data);
+      }
+    });
     
     setFilmData(newFilmData);
+    console.log(`Loaded ${results.filter(r => r !== null).length} films successfully`);
   };
 
   // Poster yüklenince skeleton'u kaldır
