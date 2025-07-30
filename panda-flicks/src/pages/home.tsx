@@ -191,19 +191,23 @@ const Home: React.FC = () => {
         <div className="bg-background min-h-screen flex flex-col items-center">
           <TopHeaderBar />
           {/* Tab Segment + Filter */}
-          <div className="flex w-full justify-between items-center pt-6 pb-5 px-4">
-            <div className="flex-1 flex justify-center">
+          <div className="relative w-full pt-6 pb-5 px-4">
+            {/* TabSegment centered absolutely */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <TabSegment activeTab={activeTab} onTabChange={handleTabChange} />
             </div>
-                        <button 
-              className="w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-colors p-0 ml-3" 
-              aria-label="Filter"
-              onClick={() => setFilterModalOpen(true)}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" strokeWidth={2} className="w-[18px] h-[18px] stroke-primary">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3.75h13.5m-12.375 0A1.125 1.125 0 0 0 2.25 4.875v1.687c0 .311.126.608.33.826l4.162 4.426c.21.224.33.525.33.826v2.36a1.125 1.125 0 0 0 1.125 1.125h2.25a1.125 1.125 0 0 0 1.125-1.125v-2.36c0-.301.12-.602.33-.826l4.162-4.426A1.125 1.125 0 0 0 15.75 6.562V4.875a1.125 1.125 0 0 0-1.125-1.125H2.25z" />
-              </svg>
-            </button>
+            {/* Filter button positioned on the right */}
+            <div className="flex justify-end">
+              <button 
+                className="w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-colors p-0" 
+                aria-label="Filter"
+                onClick={() => setFilterModalOpen(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18" strokeWidth={2} className="w-[18px] h-[18px] stroke-primary">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3.75h13.5m-12.375 0A1.125 1.125 0 0 0 2.25 4.875v1.687c0 .311.126.608.33.826l4.162 4.426c.21.224.33.525.33.826v2.36a1.125 1.125 0 0 0 1.125 1.125h2.25a1.125 1.125 0 0 0 1.125-1.125v-2.36c0-.301.12-.602.33-.826l4.162-4.426A1.125 1.125 0 0 0 15.75 6.562V4.875a1.125 1.125 0 0 0-1.125-1.125H2.25z" />
+                </svg>
+              </button>
+            </div>
           </div>
           {/* 🎯 YENİ POSTER KÜTÜPHANESİ LAYOUT */}
           <div className="pb-28 w-full px-4">
