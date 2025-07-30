@@ -15,7 +15,6 @@ import { checkmark, play, time, chevronBack } from 'ionicons/icons';
 import { LocalStorageService, MovieLog } from '../services/localStorage';
 import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, Episode } from '../services/tmdb';
 import SeasonAccordion from '../components/SeasonAccordion';
-import { debugSpecificSeries } from '../utils/globalSeriesAnalyzer';
 
 const SeriesDetailPage: React.FC = () => {
   const { seriesId } = useParams<{ seriesId: string }>();
@@ -28,10 +27,6 @@ const SeriesDetailPage: React.FC = () => {
       if (!seriesId) return;
       setIsLoading(true);
       try {
-        // ⚡ YENİ DEBUG KODU - Başlangıçta seriesId'yi analiz et
-        console.log('🔍 CURRENT SERIES ID:', seriesId);
-        debugSpecificSeries(seriesId);
-        
         const seriesDetails = await getSeriesDetails(parseInt(seriesId));
         
         const seasonsWithEpisodes = await Promise.all(
