@@ -23,8 +23,8 @@ const SeriesGroupCard: React.FC<SeriesGroupCardProps> = ({ seriesInfo, episodes 
   const totalCount = episodes.length;
 
   const handleSeriesClick = () => {
-    // Dizi detay sayfasına yönlendir
-    history.push(`/series/${seriesInfo.id}`);
+    // TODO: Dizi detay sayfası modal olarak açılacak.
+    console.log("Diziye tıklandı:", seriesInfo.title);
   };
 
   const handleToggleExpanded = (e: React.MouseEvent) => {
