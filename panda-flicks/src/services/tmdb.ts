@@ -215,6 +215,11 @@ export const searchSeries = async (query: string): Promise<TMDBMovieResult[]> =>
 
 export const getMovieCast = async (movieId: number): Promise<TMDBCastMember[]> => {
   try {
+    // Validate movieId
+    if (!movieId || isNaN(movieId) || movieId <= 0) {
+      throw new Error('Invalid movie ID provided');
+    }
+
     // Check cache first
     const cached = castCache.get(movieId);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
@@ -226,6 +231,9 @@ export const getMovieCast = async (movieId: number): Promise<TMDBCastMember[]> =
     );
     
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(`Movie with ID ${movieId} not found`);
+      }
       throw new Error(`Failed to fetch cast: ${response.status}`);
     }
     

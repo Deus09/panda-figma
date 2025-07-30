@@ -781,15 +781,17 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       </div>
       
       {/* Cast Selection Modal */}
-      <CastSelectionModal
-        open={showCastSelection}
-        onClose={() => {
-          setShowCastSelection(false);
-        }}
-        movieId={tmdbId || 0}
-        movieTitle={selectedItem?.title || selectedItem?.name || ''}
-        onCastSelect={handleCastSelect}
-      />
+      {tmdbId && tmdbId > 0 && (
+        <CastSelectionModal
+          open={showCastSelection}
+          onClose={() => {
+            setShowCastSelection(false);
+          }}
+          movieId={tmdbId}
+          movieTitle={selectedItem?.title || selectedItem?.name || ''}
+          onCastSelect={handleCastSelect}
+        />
+      )}
 
       {/* Cast Chat Modal */}
       {selectedCastMember && (

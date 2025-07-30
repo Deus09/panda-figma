@@ -12,8 +12,10 @@ import {
 } from '@ionic/react';
 import { close, star, calendar, chatbubbles, play } from 'ionicons/icons';
 import { LocalStorageService, MovieLog } from '../services/localStorage';
-import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails } from '../services/tmdb';
+import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, getMovieCast, TMDBCastMember } from '../services/tmdb';
 import SeasonAccordion from './SeasonAccordion';
+import CastChatModal from './CastChatModal';
+import CastSelectionModal from './CastSelectionModal';
 
 interface DetailViewModalProps {
   isOpen: boolean;
@@ -39,6 +41,12 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
     avgRating: number;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Cast Chat Modal States
+  const [castChatOpen, setCastChatOpen] = useState(false);
+  const [castSelectionOpen, setCastSelectionOpen] = useState(false);
+  const [selectedCastMember, setSelectedCastMember] = useState<TMDBCastMember | null>(null);
+  const [movieCast, setMovieCast] = useState<TMDBCastMember[]>([]);
 
   // Data fetching effect
   useEffect(() => {
@@ -52,6 +60,21 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
           const allLogs = LocalStorageService.getMovieLogs();
           const movieLog = allLogs.find(log => log.id === itemId);
           setLogDetails(movieLog || null);
+          
+          // Get movie cast for chat functionality
+          try {
+            // Use tmdbId from the movie log instead of itemId
+            if (movieLog && movieLog.tmdbId) {
+              const cast = await getMovieCast(movieLog.tmdbId);
+              setMovieCast(cast);
+            } else {
+              console.warn('No TMDB ID found for movie:', movieLog?.title);
+              setMovieCast([]);
+            }
+          } catch (error) {
+            console.error('Error fetching movie cast:', error);
+            setMovieCast([]);
+          }
           
         } else if (itemType === 'tv') {
           // 📺 TV SERIES DATA FETCHING - Step 1: Get watched episodes from localStorage
@@ -128,6 +151,49 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
     // TODO: Add real toggle logic here
   };
 
+  // Cast Chat Functions
+  const handleCastChatClick = () => {
+    if (movieCast.length > 0) {
+      // Open cast selection modal first
+      setCastSelectionOpen(true);
+    }
+  };
+
+  const handleCastSelectionClose = () => {
+    setCastSelectionOpen(false);
+  };
+
+  const handleCastSelect = (castMember: TMDBCastMember) => {
+    setSelectedCastMember(castMember);
+    setCastSelectionOpen(false);
+    setCastChatOpen(true);
+  };
+
+  const handleCastChatClose = () => {
+    setCastChatOpen(false);
+    setSelectedCastMember(null);
+  };
+
+  const handleSendMessage = async (message: string): Promise<string> => {
+    if (!selectedCastMember || !logDetails) {
+      return "Sorry, I'm not available right now.";
+    }
+
+    // Simulate AI response based on cast member and movie
+    const responses = [
+      `As ${selectedCastMember.character} in "${logDetails.title}", I can tell you that ${message.toLowerCase().includes('character') ? 'my character was one of the most challenging roles I\'ve ever played.' : 'this movie was a fantastic experience to work on.'}`,
+      `Playing ${selectedCastMember.character} was incredible. ${message.toLowerCase().includes('scene') ? 'There were so many memorable scenes, especially the ones with the other cast members.' : 'The director really helped me understand the character\'s motivations.'}`,
+      `Thank you for asking about "${logDetails.title}"! ${message.toLowerCase().includes('movie') ? 'It was one of the most rewarding projects I\'ve been part of.' : 'Working with such a talented cast and crew was amazing.'}`,
+      `As ${selectedCastMember.character}, I can say that ${message.toLowerCase().includes('story') ? 'the story really resonated with audiences around the world.' : 'the chemistry between the cast members was natural and authentic.'}`,
+      `Being part of "${logDetails.title}" was special. ${message.toLowerCase().includes('experience') ? 'The whole experience from pre-production to release was unforgettable.' : 'I learned so much about my craft through this role.'}`
+    ];
+
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    
+    return responses[Math.floor(Math.random() * responses.length)];
+  };
+
   if (isLoading) {
     return (
       <IonModal isOpen={isOpen} onDidDismiss={onClose}>
@@ -202,9 +268,11 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
                 expand="block" 
                 size="large"
                 className="mt-6"
+                onClick={handleCastChatClick}
+                disabled={!logDetails?.tmdbId || movieCast.length === 0}
               >
                 <IonIcon icon={chatbubbles} slot="start" />
-                Oyuncularla Chat
+                {!logDetails?.tmdbId ? 'TMDB ID Bulunamadı' : movieCast.length === 0 ? 'Oyuncu Bilgisi Yükleniyor...' : 'Oyuncularla Chat'}
               </IonButton>
             </div>
           </div>
@@ -344,6 +412,28 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
           </div>
         )}
       </IonContent>
+      
+      {/* Cast Selection Modal */}
+      {logDetails?.tmdbId && movieCast.length > 0 && (
+        <CastSelectionModal
+          open={castSelectionOpen}
+          onClose={handleCastSelectionClose}
+          movieId={logDetails.tmdbId}
+          movieTitle={logDetails.title}
+          onCastSelect={handleCastSelect}
+        />
+      )}
+
+      {/* Cast Chat Modal */}
+      {selectedCastMember && logDetails && (
+        <CastChatModal
+          open={castChatOpen}
+          onClose={handleCastChatClose}
+          castMember={selectedCastMember}
+          movieTitle={logDetails.title}
+          onSendMessage={handleSendMessage}
+        />
+      )}
     </IonModal>
   );
 };

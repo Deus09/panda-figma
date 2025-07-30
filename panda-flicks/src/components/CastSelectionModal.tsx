@@ -21,12 +21,18 @@ const CastSelectionModal: React.FC<CastSelectionModalProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open && movieId) {
+    if (open && movieId && movieId > 0) {
       fetchCast();
     }
   }, [open, movieId]);
 
   const fetchCast = async () => {
+    if (!movieId || movieId <= 0) {
+      setError('Invalid movie ID');
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     try {

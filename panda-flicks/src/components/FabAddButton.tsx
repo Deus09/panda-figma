@@ -121,13 +121,15 @@ const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
         </div>
       )}
       {/* Cast Selection Modal */}
-      <CastSelectionModal
-        open={showCastSelection}
-        onClose={handleCloseCastSelection}
-        movieId={tmdbId || 0}
-        movieTitle={selectedMovie?.title || ''}
-        onCastSelect={handleCastSelect}
-      />
+      {tmdbId && tmdbId > 0 && (
+        <CastSelectionModal
+          open={showCastSelection}
+          onClose={handleCloseCastSelection}
+          movieId={tmdbId}
+          movieTitle={selectedMovie?.title || ''}
+          onCastSelect={handleCastSelect}
+        />
+      )}
       {/* Cast Chat Modal */}
       {selectedCastMember && (
         <CastChatModal
