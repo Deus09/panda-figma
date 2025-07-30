@@ -1,178 +1,62 @@
 import React, { useState } from 'react';
 import { IonIcon } from '@ionic/react';
-import { chevronDown, chevronUp, checkmark, time } from 'ionicons/icons';
-import { MovieLog } from '../services/localStorage';
-
-interface Episode {
-  id: number;
-  name: string;
-  episode_number: number;
-  overview?: string;
-  still_path?: string;
-  runtime?: number;
-  air_date?: string;
-}
+import { chevronDown, chevronUp, checkmark } from 'ionicons/icons';
+import { Episode } from '../services/tmdb';
 
 interface SeasonAccordionProps {
   seasonNumber: number;
   episodes: Episode[];
-  watchedEpisodes: MovieLog[]; // İzlenmiş bölümler
-  onEpisodeToggle?: (episode: Episode, isWatched: boolean) => void;
+  watchedEpisodeIds: Set<number>;
+  onEpisodeToggle: (episodeId: number, isWatched: boolean) => void;
 }
 
-const SeasonAccordion: React.FC<SeasonAccordionProps> = ({ 
-  seasonNumber, 
-  episodes, 
-  watchedEpisodes,
-  onEpisodeToggle 
-}) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const SeasonAccordion: React.FC<SeasonAccordionProps> = ({ seasonNumber, episodes, watchedEpisodeIds, onEpisodeToggle }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const isEpisodeWatched = (episodeId: number): boolean => {
-    return watchedEpisodes.some(log => log.tmdbId === episodeId);
-  };
-
-  const watchedCount = episodes.filter(ep => isEpisodeWatched(ep.id)).length;
+  const watchedCount = episodes.filter(ep => watchedEpisodeIds.has(ep.id)).length;
   const totalCount = episodes.length;
-  const progressPercentage = totalCount > 0 ? (watchedCount / totalCount) * 100 : 0;
+  const isSeasonCompleted = watchedCount === totalCount;
 
   return (
-    <div className="w-full bg-card/90 backdrop-blur-sm rounded-2xl border border-border/50 overflow-hidden">
-      {/* Sezon Header */}
+    <div className="bg-card/80 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 mb-4">
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-4 flex items-center justify-between hover:bg-muted/20 transition-colors"
+        className="w-full p-4 flex justify-between items-center text-left"
+        onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex items-center gap-4">
-          <div className="text-left">
-            <h3 className="text-lg font-semibold text-foreground">
-              Sezon {seasonNumber}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {watchedCount}/{totalCount} bölüm izlendi
-            </p>
-          </div>
+        <div>
+          <h3 className="font-semibold text-lg text-white">Sezon {seasonNumber}</h3>
+          <span className="text-sm text-white/70">{watchedCount} / {totalCount} bölüm izlendi</span>
         </div>
-
-        <div className="flex items-center gap-3">
-          {/* Progress Ring */}
-          <div className="relative w-12 h-12">
-            <svg
-              className="w-12 h-12 transform -rotate-90"
-              viewBox="0 0 48 48"
-            >
-              <circle
-                cx="24"
-                cy="24"
-                r="20"
-                stroke="currentColor"
-                strokeWidth="4"
-                fill="none"
-                className="text-muted"
-              />
-              <circle
-                cx="24"
-                cy="24"
-                r="20"
-                stroke="currentColor"
-                strokeWidth="4"
-                fill="none"
-                strokeDasharray={`${2 * Math.PI * 20}`}
-                strokeDashoffset={`${2 * Math.PI * 20 * (1 - progressPercentage / 100)}`}
-                className="text-primary transition-all duration-500"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-bold text-foreground">
-                {Math.round(progressPercentage)}%
-              </span>
-            </div>
-          </div>
-
-          {/* Expand Icon */}
-          <IonIcon 
-            icon={isExpanded ? chevronUp : chevronDown}
-            className="text-xl text-muted-foreground"
-          />
+        <div className="flex items-center gap-2">
+            {isSeasonCompleted && <IonIcon icon={checkmark} color="primary" className="text-2xl" />}
+            <IonIcon icon={isOpen ? chevronUp : chevronDown} className="text-2xl text-white/80" />
         </div>
       </button>
-
-      {/* Episodes List */}
-      {isExpanded && (
-        <div className="border-t border-border/30">
-          <div className="max-h-96 overflow-y-auto">
-            {episodes.map((episode) => {
-              const isWatched = isEpisodeWatched(episode.id);
-              
+      {isOpen && (
+        <div className="px-4 pb-4">
+          <ul className="space-y-2">
+            {episodes.map(episode => {
+              const isWatched = watchedEpisodeIds.has(episode.id);
               return (
-                <div
+                <li
                   key={episode.id}
-                  className={`flex items-center gap-4 p-4 border-b border-border/20 last:border-b-0 hover:bg-muted/10 transition-colors ${
-                    isWatched ? 'bg-primary/5' : ''
+                  className={`flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer ${
+                    isWatched ? 'bg-black/30 opacity-60' : 'bg-black/20 hover:bg-black/40'
                   }`}
+                  onClick={() => onEpisodeToggle(episode.id, !isWatched)}
                 >
-                  {/* Episode Image */}
-                  <div className="w-16 h-10 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
-                    <img
-                      src={
-                        episode.still_path
-                          ? `https://image.tmdb.org/t/p/w300${episode.still_path}`
-                          : 'https://placehold.co/160x90?text=No+Image'
-                      }
-                      alt={episode.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="flex items-center gap-3">
+                    <span className="text-white/80 font-mono text-sm w-6 text-center">{episode.episode_number}</span>
+                    <span className="text-white font-medium">{episode.name}</span>
                   </div>
-
-                  {/* Episode Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        E{episode.episode_number}
-                      </span>
-                      <h4 className="font-semibold text-foreground truncate">
-                        {episode.name}
-                      </h4>
-                    </div>
-                    
-                    {episode.overview && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                        {episode.overview}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      {episode.runtime && (
-                        <div className="flex items-center gap-1">
-                          <IonIcon icon={time} />
-                          <span>{episode.runtime}dk</span>
-                        </div>
-                      )}
-                      {episode.air_date && (
-                        <span>{new Date(episode.air_date).toLocaleDateString('tr-TR')}</span>
-                      )}
-                    </div>
+                  <div className="flex items-center gap-3">
+                    {episode.runtime && <span className="text-xs text-white/60">{episode.runtime} dk</span>}
+                    {isWatched && <IonIcon icon={checkmark} color="primary" />}
                   </div>
-
-                  {/* Watch Status */}
-                  <button
-                    onClick={() => onEpisodeToggle?.(episode, !isWatched)}
-                    className={`p-2 rounded-full transition-colors ${
-                      isWatched
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted hover:bg-muted-foreground/10'
-                    }`}
-                  >
-                    <IonIcon 
-                      icon={checkmark} 
-                      className={`text-lg ${isWatched ? 'text-primary-foreground' : 'text-muted-foreground'}`}
-                    />
-                  </button>
-                </div>
+                </li>
               );
             })}
-          </div>
+          </ul>
         </div>
       )}
     </div>

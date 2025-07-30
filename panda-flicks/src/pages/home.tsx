@@ -10,6 +10,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import TabSegment from '../components/TabSegment';
 import LocalStorageService, { MovieLog } from '../services/localStorage';
 import { useModal } from '../context/ModalContext';
+import { useHistory } from 'react-router-dom';
 
 // FilterOptions type'ını tanımla
 export type FilterOptions = {
@@ -21,6 +22,7 @@ export type FilterOptions = {
 
 const Home: React.FC = () => {
   const { openModal } = useModal();
+  const history = useHistory();
   const [activeTab, setActiveTab] = useState<'watched' | 'watchlist'>('watched');
   const [movieLogs, setMovieLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -185,6 +187,7 @@ const Home: React.FC = () => {
                             poster: firstEpisode.seriesPoster || undefined
                           }}
                           episodes={episodes}
+                          onClick={() => history.push(`/series/${seriesId}`)}
                         />
                       );
                     }).filter(Boolean)}

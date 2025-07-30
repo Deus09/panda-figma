@@ -1,4 +1,4 @@
-import { TvSeriesDetails, SeasonDetails } from '../types/tmdb';
+
 
 export interface TMDBMovieResult {
   id: number;
@@ -52,7 +52,26 @@ export interface TMDBSeriesDetails {
     poster_path?: string;
     episode_count: number;
     air_date?: string;
+    episodes?: Episode[];
   }>;
+}
+
+export interface Episode {
+  id: number;
+  episode_number: number;
+  name: string;
+  runtime?: number;
+}
+
+export interface SeasonDetails {
+  _id: string;
+  air_date: string;
+  episodes: Episode[];
+  name: string;
+  overview: string;
+  id: number;
+  poster_path: string;
+  season_number: number;
 }
 
 export interface TMDBActorDetails {

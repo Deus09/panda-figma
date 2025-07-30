@@ -15,6 +15,7 @@ import { ModalProvider, useModal } from './context/ModalContext';
 import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
+import SeriesDetailPage from './pages/SeriesDetailPage';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -107,6 +108,7 @@ const App: React.FC = () => {
           <Route exact path="/profile">
             <Profile />
           </Route>
+          <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
           <Route exact path="/">
             <Redirect to="/home" />
           </Route>
