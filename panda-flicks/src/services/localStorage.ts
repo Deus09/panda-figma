@@ -21,6 +21,9 @@ export interface MovieLog {
   seriesId?: string;       // Dizi ID'si (Gruplama için kritik)
   seriesTitle?: string;    // Dizi Adı (Gruplanmış kart başlığı için)
   seriesPoster?: string;   // Dizinin Ana Poster Resmi (Gruplanmış kart görseli için)
+  // Rozet sistemi için gerekli alanlar
+  genres?: string[];       // Film/dizi türleri
+  releaseYear?: number;    // Yayın yılı
   createdAt: string;
   updatedAt: string;
 }
@@ -459,6 +462,48 @@ export class LocalStorageService {
     ];
   }
 
+  // Tamamlanan dizileri bulan yardımcı fonksiyon
+  private static getCompletedSeries(watchedLogs: MovieLog[]): string[] {
+    const seriesGroups = new Map<string, { totalSeasons: number; watchedSeasons: Set<number> }>();
+    
+    watchedLogs
+      .filter(log => log.mediaType === 'tv' && log.seriesId && log.seasonNumber)
+      .forEach(log => {
+        const seriesId = log.seriesId!;
+        const seasonNumber = log.seasonNumber!;
+        
+        if (!seriesGroups.has(seriesId)) {
+          seriesGroups.set(seriesId, {
+            totalSeasons: log.seasonCount || 1,
+            watchedSeasons: new Set()
+          });
+        }
+        
+        const series = seriesGroups.get(seriesId)!;
+        series.watchedSeasons.add(seasonNumber);
+      });
+    
+    // Tüm sezonları izlenen dizileri döndür
+    return Array.from(seriesGroups.entries())
+      .filter(([_, series]) => series.watchedSeasons.size >= series.totalSeasons)
+      .map(([seriesId, _]) => seriesId);
+  }
+
+  // Bir günde 3+ film izleme kontrolü
+  private static hasMarathonDay(watchedLogs: MovieLog[]): boolean {
+    const dailyCounts = new Map<string, number>();
+    
+    watchedLogs
+      .filter(log => log.mediaType === 'movie')
+      .forEach(log => {
+        const date = log.date.split('T')[0]; // Sadece tarih kısmını al
+        dailyCounts.set(date, (dailyCounts.get(date) || 0) + 1);
+      });
+    
+    // Herhangi bir günde 3+ film var mı?
+    return Array.from(dailyCounts.values()).some(count => count >= 3);
+  }
+
   static checkAndAwardBadges(): Badge[] {
     try {
       const profile = this.getUserProfile();
@@ -484,33 +529,64 @@ export class LocalStorageService {
               break;
             
             case 'comedy-expert':
-              // Bu örnekte genre bilgisi olmadığı için watchedMovieCount kullanıyoruz
-              // Gerçek uygulamada genre bilgisi MovieLog'da olmalı
-              shouldEarn = profile.watchedMovieCount >= 25;
+              // Komedi filmlerini say
+              const comedyCount = watchedLogs.filter(log => 
+                log.mediaType === 'movie' && 
+                log.genres && 
+                log.genres.some(genre => 
+                  genre.toLowerCase().includes('komedi') || 
+                  genre.toLowerCase().includes('comedy')
+                )
+              ).length;
+              shouldEarn = comedyCount >= 25;
               break;
             
             case 'drama-expert':
-              shouldEarn = profile.watchedMovieCount >= 25;
+              // Drama filmlerini say
+              const dramaCount = watchedLogs.filter(log => 
+                log.mediaType === 'movie' && 
+                log.genres && 
+                log.genres.some(genre => 
+                  genre.toLowerCase().includes('drama') || 
+                  genre.toLowerCase().includes('dram')
+                )
+              ).length;
+              shouldEarn = dramaCount >= 25;
               break;
             
             case 'action-expert':
-              shouldEarn = profile.watchedMovieCount >= 25;
+              // Aksiyon filmlerini say
+              const actionCount = watchedLogs.filter(log => 
+                log.mediaType === 'movie' && 
+                log.genres && 
+                log.genres.some(genre => 
+                  genre.toLowerCase().includes('aksiyon') || 
+                  genre.toLowerCase().includes('action')
+                )
+              ).length;
+              shouldEarn = actionCount >= 25;
               break;
             
             case 'series-killer':
-              shouldEarn = profile.watchedTvCount >= 1;
+              // Tamamlanan dizileri kontrol et
+              const completedSeries = this.getCompletedSeries(watchedLogs);
+              shouldEarn = completedSeries.length >= 1;
               break;
             
             case 'nostalgia-traveler':
-              // 1990 öncesi filmleri kontrol etmek için date parsing gerekli
-              // Şimdilik watchedMovieCount kullanıyoruz
-              shouldEarn = profile.watchedMovieCount >= 10;
+              // 1990 öncesi filmleri say
+              const oldMoviesCount = watchedLogs.filter(log => 
+                log.mediaType === 'movie' && 
+                log.releaseYear && 
+                log.releaseYear < 1990
+              ).length;
+              shouldEarn = oldMoviesCount >= 10;
               break;
             
             case 'marathon-runner':
-              // Bir günde 3+ film kontrolü için log tarihlerini analiz etmek gerekir
-              // Şimdilik basit kontrol
-              shouldEarn = profile.watchedMovieCount >= 3;
+              // Bir günde 3+ film kontrolü
+              const hasMarathonDay = this.hasMarathonDay(watchedLogs);
+              shouldEarn = hasMarathonDay;
               break;
             
             case 'century-watcher':
@@ -523,6 +599,20 @@ export class LocalStorageService {
             
             case 'time-traveler':
               shouldEarn = profile.totalWatchTimeMinutes >= 6000; // 100 saat
+              break;
+            
+            case 'critic-master':
+              // Yorum yazılan film sayısı
+              const reviewedMoviesCount = watchedLogs.filter(log => 
+                log.review && log.review.trim().length > 0
+              ).length;
+              shouldEarn = reviewedMoviesCount >= 50;
+              break;
+            
+            case 'collector':
+              // İzleme listesindeki film sayısı
+              const watchlistCount = logs.filter(log => log.type === 'watchlist').length;
+              shouldEarn = watchlistCount >= 25;
               break;
           }
 

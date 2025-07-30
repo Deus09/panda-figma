@@ -185,25 +185,102 @@ const Profile: React.FC = () => {
   const getProgressForBadge = (badge: any) => {
     if (!profile) return 0;
 
+    const logs = LocalStorageService.getMovieLogs();
+    const watchedLogs = logs.filter(log => log.type === 'watched');
+
     switch (badge.id) {
       case 'first-movie':
         return profile.watchedMovieCount;
+      
       case 'comedy-expert':
+        return watchedLogs.filter(log => 
+          log.mediaType === 'movie' && 
+          log.genres && 
+          log.genres.some(genre => 
+            genre.toLowerCase().includes('komedi') || 
+            genre.toLowerCase().includes('comedy')
+          )
+        ).length;
+      
       case 'drama-expert':
+        return watchedLogs.filter(log => 
+          log.mediaType === 'movie' && 
+          log.genres && 
+          log.genres.some(genre => 
+            genre.toLowerCase().includes('drama') || 
+            genre.toLowerCase().includes('dram')
+          )
+        ).length;
+      
       case 'action-expert':
-        return profile.watchedMovieCount;
+        return watchedLogs.filter(log => 
+          log.mediaType === 'movie' && 
+          log.genres && 
+          log.genres.some(genre => 
+            genre.toLowerCase().includes('aksiyon') || 
+            genre.toLowerCase().includes('action')
+          )
+        ).length;
+      
       case 'series-killer':
-        return profile.watchedTvCount;
+        // Tamamlanan dizi sayısı
+        const seriesGroups = new Map<string, { totalSeasons: number; watchedSeasons: Set<number> }>();
+        watchedLogs
+          .filter(log => log.mediaType === 'tv' && log.seriesId && log.seasonNumber)
+          .forEach(log => {
+            const seriesId = log.seriesId!;
+            const seasonNumber = log.seasonNumber!;
+            
+            if (!seriesGroups.has(seriesId)) {
+              seriesGroups.set(seriesId, {
+                totalSeasons: log.seasonCount || 1,
+                watchedSeasons: new Set()
+              });
+            }
+            
+            const series = seriesGroups.get(seriesId)!;
+            series.watchedSeasons.add(seasonNumber);
+          });
+        
+        return Array.from(seriesGroups.entries())
+          .filter(([_, series]) => series.watchedSeasons.size >= series.totalSeasons)
+          .length;
+      
       case 'nostalgia-traveler':
-        return profile.watchedMovieCount;
+        return watchedLogs.filter(log => 
+          log.mediaType === 'movie' && 
+          log.releaseYear && 
+          log.releaseYear < 1990
+        ).length;
+      
       case 'marathon-runner':
-        return profile.watchedMovieCount;
+        // Bir günde 3+ film izleme günü var mı?
+        const dailyCounts = new Map<string, number>();
+        watchedLogs
+          .filter(log => log.mediaType === 'movie')
+          .forEach(log => {
+            const date = log.date.split('T')[0];
+            dailyCounts.set(date, (dailyCounts.get(date) || 0) + 1);
+          });
+        return Array.from(dailyCounts.values()).some(count => count >= 3) ? 1 : 0;
+      
       case 'century-watcher':
         return profile.watchedMovieCount;
+      
       case 'binge-watcher':
         return profile.totalEpisodesWatched;
+      
       case 'time-traveler':
         return profile.totalWatchTimeMinutes;
+      
+      case 'critic-master':
+        return watchedLogs.filter(log => 
+          log.review && log.review.trim().length > 0
+        ).length;
+      
+      case 'collector':
+        return logs.filter(log => log.type === 'watchlist').length;
+      
       default:
         return 0;
     }
