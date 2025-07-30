@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IonTextarea, IonModal } from '@ionic/react';
 import { getMovieSuggestions, MovieSuggestion } from '../services/geminiService';
 import TopHeaderBar from './TopHeaderBar';
+import { useModal } from '../context/ModalContext';
 
 interface AiDiscoveryModalProps {
   open: boolean;
@@ -10,6 +11,7 @@ interface AiDiscoveryModalProps {
 }
 
 const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMovieSelect }) => {
+  const { openModal } = useModal();
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [suggestedMovies, setSuggestedMovies] = useState<MovieSuggestion[]>([]);
@@ -45,6 +47,10 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
   const handleMovieSelect = (movie: MovieSuggestion) => {
     onMovieSelect?.(movie);
     onClose();
+  };
+
+  const handleMovieClick = (movie: MovieSuggestion) => {
+    openModal('movie', movie.tmdbId);
   };
 
   return (
@@ -166,7 +172,7 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                       <div
                         key={`${movie.tmdbId}-${index}`}
                         className="relative aspect-[2/3] rounded-[12px] overflow-hidden cursor-pointer hover:opacity-80 transition-all duration-200 bg-[#333] hover:scale-105 active:scale-95"
-                        onClick={() => handleMovieSelect(movie)}
+                        onClick={() => handleMovieClick(movie)}
                       >
                         <img
                           src={movie.poster_path && movie.poster_path.startsWith('/') 
