@@ -1,12 +1,58 @@
 // Film önerisi için Gemini AI entegrasyonu
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
+// TMDB API URL
+const TMDB_API_URL = 'https://api.themoviedb.org/3';
+
 // Film önerisi response tipi
 export interface MovieSuggestion {
   title: string;
   year: number;
   tmdbId: number;
   poster_path: string;
+}
+
+/**
+ * Gemini'den gelen raw text'i parse ederek film adlarını çıkarır
+ */
+function parseMovieTitles(rawText: string): string[] {
+  if (!rawText) return [];
+  
+  // Numaralandırılmış satırları bul (1. Film Adı (Yıl) formatında)
+  const movieLines = rawText.match(/^(\d+\.\s.*)$/gm);
+  if (!movieLines) return [];
+
+  return movieLines
+    .map(line => line.replace(/^\d+\.\s*/, '').trim()) // Numaralandırmayı kaldır
+    .filter(line => line.length > 0); // Boş satırları filtrele
+}
+
+/**
+ * TMDB'de film arama yapar
+ */
+async function searchTmdb(query: string): Promise<any> {
+  const tmdbApiKey = import.meta.env.VITE_TMDB_API_KEY;
+  if (!tmdbApiKey) {
+    throw new Error('TMDB API anahtarı tanımlanmamış');
+  }
+
+  // Yıl bilgisini çıkar
+  let year = '';
+  const yearMatch = query.match(/\((\d{4})\)/);
+  if (yearMatch) year = yearMatch[1];
+  const movieTitle = query.replace(/\s\(\d{4}\)$/, '').trim();
+
+  let url = `${TMDB_API_URL}/search/movie?query=${encodeURIComponent(movieTitle)}&language=tr-TR&api_key=${tmdbApiKey}`;
+  if (year) url += `&year=${year}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.error(`TMDB arama başarısız: ${query}`);
+    return null;
+  }
+  
+  const data = await response.json();
+  return data.results && data.results.length > 0 ? data.results[0] : null;
 }
 
 /**
@@ -20,32 +66,21 @@ export const getMovieSuggestions = async (
   excludedMovies?: number[]
 ): Promise<MovieSuggestion[]> => {
   try {
-    // Prompt metnini oluştur
-    let prompt = `Kullanıcının şu tarifine uyan 9 adet film öner: "${promptText}".
+    // Gemini'den sadece film adlarını al
+    const prompt = `Lütfen kullanıcının şu isteğine göre birbirinden farklı 9 film öner: "${promptText}". 
 
-Cevabını, içinde title, year, tmdbId ve poster_path alanları olan bir JSON array formatında ver.
-Sadece JSON formatında cevap ver, başka açıklama yapma.
+Sadece numaralandırılmış bir liste halinde, her satırda bir tane olacak şekilde, filmlerin orijinal adını ve parantez içinde çıkış yılını döndür. Başka hiçbir açıklama, selamlama veya ek metin ekleme.
 
-Format örneği:
-[
-  {
-    "title": "Inception",
-    "year": 2010,
-    "tmdbId": 27205,
-    "poster_path": "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg"
-  },
-  {
-    "title": "Interstellar",
-    "year": 2014,
-    "tmdbId": 157336,
-    "poster_path": "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-  }
-]`;
-
-    // Eğer excludedMovies listesi varsa ve boş değilse, prompt'a ekle
-    if (excludedMovies && excludedMovies.length > 0) {
-      prompt += `\n\nLütfen ID'leri şu listede olan filmleri önerme: [${excludedMovies.join(', ')}].`;
-    }
+Örneğin:
+1. The Dark Knight (2008)
+2. Inception (2010)
+3. Pulp Fiction (1994)
+4. The Matrix (1999)
+5. Interstellar (2014)
+6. The Shawshank Redemption (1994)
+7. Fight Club (1999)
+8. Forrest Gump (1994)
+9. The Godfather (1972)`;
 
     // Gemini API'ye istek gönder
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -61,15 +96,15 @@ Format örneği:
       },
       body: JSON.stringify({
         contents: [{
+          role: "user",
           parts: [{
             text: prompt
           }]
         }],
         generationConfig: {
-          temperature: 0.7,
+          temperature: 1.0,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 2048,
         }
       })
     });
@@ -93,46 +128,37 @@ Format örneği:
     }
 
     const responseText = data.candidates[0].content.parts[0].text;
+    console.log('Gemini raw response:', responseText);
     
-    // JSON response'u parse et
-    let movieSuggestions: MovieSuggestion[];
-    try {
-      // Gemini bazen JSON'u code block içinde döndürebilir, temizle
-      const cleanedResponse = responseText
-        .replace(/```json\n?/g, '')
-        .replace(/```\n?/g, '')
-        .trim();
-      
-      movieSuggestions = JSON.parse(cleanedResponse);
-      
-      // Yanıtın array olduğunu ve gerekli alanları içerdiğini kontrol et
-      if (!Array.isArray(movieSuggestions)) {
-        throw new Error('Yanıt array formatında değil');
-      }
-      
-      // Her filmin gerekli alanları olduğunu kontrol et
-      movieSuggestions.forEach((movie, index) => {
-        if (!movie.title || !movie.year || !movie.tmdbId || !movie.poster_path) {
-          throw new Error(`Film ${index + 1} eksik alanlara sahip`);
-        }
-        
-        // Veri tiplerini kontrol et
-        if (typeof movie.title !== 'string' || 
-            typeof movie.year !== 'number' || 
-            typeof movie.tmdbId !== 'number' ||
-            typeof movie.poster_path !== 'string') {
-          throw new Error(`Film ${index + 1} yanlış veri tiplerine sahip`);
-        }
-      });
-      
-    } catch (parseError) {
-      console.error('JSON parse hatası:', parseError);
-      console.error('Raw response:', responseText);
-      throw new Error('Film önerilerini parse ederken hata oluştu');
+    // Film adlarını parse et
+    const movieTitles = parseMovieTitles(responseText);
+    console.log('Parsed movie titles:', movieTitles);
+
+    if (movieTitles.length < 9) {
+      console.warn(`Gemini'den ${movieTitles.length} film adı alındı, 9 bekleniyordu`);
     }
 
-    console.log(`${movieSuggestions.length} film önerisi alındı`);
-    return movieSuggestions;
+    // TMDB'de her film için arama yap
+    const moviePromises = movieTitles.map(title => searchTmdb(title));
+    const tmdbResults = await Promise.all(moviePromises);
+    
+    // Bulunan filmleri filtrele ve formatla
+    const foundMovies = tmdbResults
+      .filter(movie => movie !== null)
+      .map(movie => ({
+        title: movie.title,
+        year: new Date(movie.release_date).getFullYear(),
+        tmdbId: movie.id,
+        poster_path: movie.poster_path
+      }));
+
+    console.log(`${foundMovies.length} film TMDB'de bulundu`);
+
+    if (foundMovies.length === 0) {
+      throw new Error('Önerilen filmlerin hiçbiri TMDB veritabanında bulunamadı. Lütfen tekrar deneyin.');
+    }
+
+    return foundMovies;
 
   } catch (error) {
     console.error('Film önerisi alınırken hata:', error);
