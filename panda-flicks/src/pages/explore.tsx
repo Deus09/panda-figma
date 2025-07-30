@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
+import TopHeaderBar from '../components/TopHeaderBar';
 import ExploreTabSegment from '../components/ExploreTabSegment';
 import SearchTabSegment from '../components/SearchTabSegment';
 import PersonCard from '../components/PersonCard';
@@ -342,10 +343,8 @@ const Explore: React.FC = () => {
   return (
     <IonPage className={styles.explorePage}>
       <IonContent className={styles.exploreContent}>
+        <TopHeaderBar title="Panda Explore" />
         <div className="flex flex-col items-center w-full pt-6 pb-2 px-0">
-          {/* Başlık */}
-          <span className="block text-white font-bold text-[22px] leading-[33px] mb-2 font-poppins w-full max-w-[332px] text-left">Panda Explorer</span>
-          
           {/* Searchbar */}
           <div className="w-full max-w-[332px] flex flex-row items-center bg-[#EFEEEA] rounded-[12px] px-[15px] py-[4px] gap-[8px] mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#000" className="w-[14px] h-[14px]">

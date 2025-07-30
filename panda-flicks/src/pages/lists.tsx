@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
+import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import MovieDetailModal from '../components/MovieDetailModal';
 import SkeletonLoader from '../components/SkeletonLoader';
@@ -674,10 +675,10 @@ const Lists: React.FC = () => {
   return (
     <IonPage className={styles.listsPage}>
       <IonContent className={styles.listsContent}>
+        <TopHeaderBar title="Panda Lists" />
         {/* Ana Liste Görünümü */}
         {!showListeDetail ? (
           <div className="p-4 pb-24">
-            <h1 className="text-white font-bold text-2xl mb-6 font-poppins">Film Listeleri</h1>
             
             {isInitialLoading ? (
               <div className="space-y-4">

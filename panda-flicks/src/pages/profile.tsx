@@ -290,7 +290,7 @@ const Profile: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#1A1A1A] text-white">
       <TopHeaderBar 
-        title="Sinema Karnem" 
+        title="Panda Profile" 
         showBackButton={false}
         onSettingsClick={() => setIsSettingsOpen(true)}
       />
