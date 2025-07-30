@@ -3,6 +3,7 @@ import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import SettingsModal from '../components/SettingsModal';
 import MovieCard from '../components/MovieCard';
+import MoviePosterCard from '../components/MoviePosterCard';
 import LocalStorageService, { UserProfile } from '../services/localStorage';
 import styles from './profile.module.css';
 
@@ -707,33 +708,26 @@ const Profile: React.FC = () => {
             <h2 className="text-xl font-bold text-white font-poppins">Son Aktiviteler</h2>
           </div>
 
-          {/* Yatayda Kaydırılabilir Film Şeridi */}
+          {/* Yatayda Kaydırılabilir Poster Şeridi */}
           <div className="overflow-x-auto pb-4">
             <div className="flex space-x-4 min-w-max">
-              {/* Son izlenen filmler için MovieCard'lar */}
+              {/* Son izlenen filmler için sadece posterler */}
               {getRecentMovies().map((movie, index) => (
-                <div key={`recent-${index}`} className="flex-shrink-0 w-48">
-                  <MovieCard
-                    title={movie.title}
-                    date={movie.date}
-                    rating={movie.rating}
-                    review={movie.review}
-                    poster={movie.poster}
-                  />
-                </div>
+                <MoviePosterCard
+                  key={`recent-${index}`}
+                  title={movie.title}
+                  poster={movie.poster}
+                />
               ))}
               
               {/* Eğer hiç film yoksa */}
               {getRecentMovies().length === 0 && (
-                <div className="flex-shrink-0 w-48 h-64 bg-[#333] rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-600">
-                  <svg width="48" height="48" className="text-gray-500 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                <div className="flex-shrink-0 w-24 h-36 bg-[#333] rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-gray-600">
+                  <svg width="32" height="32" className="text-gray-500 mb-2" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
                   </svg>
-                  <p className="text-gray-400 text-sm text-center font-poppins">
-                    Henüz film eklenmemiş
-                  </p>
-                  <p className="text-gray-500 text-xs text-center mt-1 font-poppins">
-                    İlk filminizi ekleyin
+                  <p className="text-gray-400 text-xs text-center font-poppins">
+                    Henüz film yok
                   </p>
                 </div>
               )}
@@ -741,13 +735,10 @@ const Profile: React.FC = () => {
           </div>
 
           {/* Alt Bilgi */}
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#333]">
+          <div className="flex items-center mt-4 pt-4 border-t border-[#333]">
             <p className="text-gray-400 text-sm font-poppins">
               Son {getRecentMovies().length} aktivite
             </p>
-            <button className="text-[#FE7743] text-sm font-medium hover:text-[#E56A3C] transition-colors font-poppins">
-              Tümünü Gör →
-            </button>
           </div>
         </div>
 
