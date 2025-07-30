@@ -70,8 +70,7 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
         {/* Modal Content */}
         <div className="px-4 pb-8 pt-6 overflow-y-auto h-full">
               {/* Açıklama Metni */}
-              <div className="text-center mb-4">
-                <div className="text-xl mb-2">🧠✨</div>
+              <div className="text-center mb-3">
                 <p className="text-[#CCC] font-poppins text-[14px] leading-relaxed">
                   {suggestedMovies.length === 0 
                     ? "Aklındaki filmi tarif et, yapay zeka sana en uygun önerileri getirsin!"
