@@ -6,14 +6,14 @@ import { Episode } from '../services/tmdb';
 interface SeasonAccordionProps {
   seasonNumber: number;
   episodes: Episode[];
-  watchedEpisodeIds: Set<number>;
+  watchedEpisodeIds: Set<string>; // String ID'ler kullanıyoruz
   onEpisodeToggle: (episodeId: number, isWatched: boolean) => void;
 }
 
 const SeasonAccordion: React.FC<SeasonAccordionProps> = ({ seasonNumber, episodes, watchedEpisodeIds, onEpisodeToggle }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const watchedCount = episodes.filter(ep => watchedEpisodeIds.has(ep.id)).length;
+  const watchedCount = episodes.filter(ep => watchedEpisodeIds.has(String(ep.id))).length;
   const totalCount = episodes.length;
   const isSeasonCompleted = watchedCount === totalCount;
 
@@ -36,7 +36,7 @@ const SeasonAccordion: React.FC<SeasonAccordionProps> = ({ seasonNumber, episode
         <div className="px-4 pb-4">
           <ul className="space-y-2">
             {episodes.map(episode => {
-              const isWatched = watchedEpisodeIds.has(episode.id);
+              const isWatched = watchedEpisodeIds.has(String(episode.id));
               return (
                 <li
                   key={episode.id}

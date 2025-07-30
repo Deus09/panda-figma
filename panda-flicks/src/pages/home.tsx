@@ -178,16 +178,31 @@ const Home: React.FC = () => {
                       const firstEpisode = episodes[0];
                       if (!firstEpisode) return null;
                       
+                      // 🐛 DEBUG: SeriesGroupCard verisini logla
+                      console.log('🏠 Home SeriesGroupCard data:', { 
+                        seriesId, 
+                        firstEpisodeSeriesId: firstEpisode.seriesId,
+                        firstEpisodeTmdbId: firstEpisode.tmdbId,
+                        episodeCount: episodes.length,
+                        title: firstEpisode.seriesTitle || firstEpisode.title
+                      });
+                      
+                      // ⚡ FİKS: Navigation için doğru ID'yi kullan
+                      const navigationId = firstEpisode.seriesId || firstEpisode.tmdbId || seriesId;
+                      
                       return (
                         <SeriesGroupCard
                           key={seriesId}
                           seriesInfo={{
-                            id: seriesId,
+                            id: navigationId, // ⚡ Düzeltildi
                             title: firstEpisode.seriesTitle || firstEpisode.title,
                             poster: firstEpisode.seriesPoster || undefined
                           }}
                           episodes={episodes}
-                          onClick={() => history.push(`/series/${seriesId}`)}
+                          onClick={() => {
+                            console.log('🚀 Navigating to series:', navigationId);
+                            history.push(`/series/${navigationId}`);
+                          }}
                         />
                       );
                     }).filter(Boolean)}

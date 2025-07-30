@@ -24,6 +24,10 @@ const SeriesGroupCard: React.FC<SeriesGroupCardProps> = ({ seriesInfo, episodes,
   const totalCount = episodes.length;
 
   const handleSeriesClick = () => {
+    // 🐛 DEBUG: SeriesGroupCard click'inde veriyi logla
+    console.log('🎯 SeriesGroupCard clicked, seriesInfo:', seriesInfo);
+    console.log('🔗 Navigating to series ID:', seriesInfo.id);
+    console.log('📊 Episodes in this series:', episodes.length);
     onClick();
   };
 

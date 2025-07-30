@@ -61,6 +61,11 @@ export interface Episode {
   episode_number: number;
   name: string;
   runtime?: number;
+  season_number: number;
+  still_path?: string;
+  air_date?: string;
+  overview?: string;
+  vote_average?: number;
 }
 
 export interface SeasonDetails {

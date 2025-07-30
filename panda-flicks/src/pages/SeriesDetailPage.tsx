@@ -12,9 +12,10 @@ import {
   IonIcon,
 } from '@ionic/react';
 import { checkmark, play, time, chevronBack } from 'ionicons/icons';
-import LocalStorageService, { MovieLog } from '../services/localStorage';
+import { LocalStorageService, MovieLog } from '../services/localStorage';
 import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, Episode } from '../services/tmdb';
 import SeasonAccordion from '../components/SeasonAccordion';
+import { debugSpecificSeries } from '../utils/globalSeriesAnalyzer';
 
 const SeriesDetailPage: React.FC = () => {
   const { seriesId } = useParams<{ seriesId: string }>();
@@ -27,6 +28,10 @@ const SeriesDetailPage: React.FC = () => {
       if (!seriesId) return;
       setIsLoading(true);
       try {
+        // ⚡ YENİ DEBUG KODU - Başlangıçta seriesId'yi analiz et
+        console.log('🔍 CURRENT SERIES ID:', seriesId);
+        debugSpecificSeries(seriesId);
+        
         const seriesDetails = await getSeriesDetails(parseInt(seriesId));
         
         const seasonsWithEpisodes = await Promise.all(
@@ -42,7 +47,51 @@ const SeriesDetailPage: React.FC = () => {
         setSeriesApiData({ ...seriesDetails, seasons: seasonsWithEpisodes });
 
         const allLogs = LocalStorageService.getMovieLogs();
-        setWatchedLogs(allLogs.filter(log => String(log.seriesId) === seriesId));
+        
+        // --- YENİ TEŞHİS KODLARI ---
+        console.log('URL\'den gelen seriesId:', seriesId, '| Tipi:', typeof seriesId);
+        console.log('LocalStorage\'daki ilk kaydın seriesId\'si:', allLogs.length > 0 ? allLogs[0].seriesId : 'Kayıt yok', '| Tipi:', allLogs.length > 0 ? typeof allLogs[0].seriesId : 'Kayıt yok');
+        console.log('Tüm Kayıtlar (Filtresiz):', allLogs);
+        // --- TEŞHİS KODLARI BİTİŞİ ---
+
+        // ⚡ FLEXIBLE MATCHING - Önce tam eşleşme dene, sonra fallback'leri kullan
+        let seriesEpisodes = allLogs.filter(log => 
+          log.seriesId && // Önce seriesId'nin var olduğundan emin ol
+          String(log.seriesId) === seriesId && 
+          (log.contentType === 'tv' || log.mediaType === 'tv')
+        );
+        
+        console.log('🎯 Tam eşleşme sonucu:', seriesEpisodes.length, 'bölüm');
+        
+        // Eğer tam eşleşme yoksa, title'da series adı geçen kayıtları ara
+        if (seriesEpisodes.length === 0 && seriesDetails) {
+          console.log('🔄 Fallback arama yapılıyor...');
+          seriesEpisodes = allLogs.filter(log => {
+            const titleMatch = log.title && 
+              log.title.toLowerCase().includes(seriesDetails.name.toLowerCase());
+            const isTvContent = log.contentType === 'tv' || log.mediaType === 'tv';
+            return titleMatch && isTvContent;
+          });
+          console.log('🔄 Fallback sonucu:', seriesEpisodes.length, 'bölüm bulundu');
+        }
+        
+        // Eğer hala bulunamadıysa, seriesTitle field'ında ara
+        if (seriesEpisodes.length === 0 && seriesDetails) {
+          console.log('🔄 SeriesTitle arama yapılıyor...');
+          seriesEpisodes = allLogs.filter(log => {
+            const seriesTitleMatch = log.seriesTitle && 
+              log.seriesTitle.toLowerCase().includes(seriesDetails.name.toLowerCase());
+            const isTvContent = log.contentType === 'tv' || log.mediaType === 'tv';
+            return seriesTitleMatch && isTvContent;
+          });
+          console.log('🔄 SeriesTitle sonucu:', seriesEpisodes.length, 'bölüm bulundu');
+        }
+
+        // --- YENİ SONUÇ KODU ---
+        console.log('✅ Filtreleme Sonucu Bulunan Bölümler:', seriesEpisodes);
+        // --- SONUÇ KODU BİTİŞİ ---
+
+        setWatchedLogs(seriesEpisodes);
 
       } catch (error) {
         console.error("Error loading series data:", error);
@@ -53,6 +102,7 @@ const SeriesDetailPage: React.FC = () => {
     loadData();
   }, [seriesId]);
 
+  // 📊 İstatistik hesaplamaları
   const {
     totalEpisodeCount,
     watchedEpisodeCount,
@@ -61,32 +111,93 @@ const SeriesDetailPage: React.FC = () => {
     totalSeriesMinutes,
     remainingMinutes,
     watchedEpisodeIds,
-  } = useMemo(() => {
-    const watchedLogsSet = new Set(watchedLogs.map(log => log.tmdbId));
+  } = useMemo(() => {    
+    // ❗ ÖNEMLİ: String karşılaştırması yapıyoruz
+    const watchedLogsSet = new Set(watchedLogs.map(log => String(log.tmdbId)));
     const allEpisodes = seriesApiData?.seasons.flatMap(s => s.episodes || []) || [];
 
     const totalEpCount = allEpisodes.length;
-    const watchedEpCount = allEpisodes.filter(ep => watchedLogsSet.has(ep.id)).length;
+    // ❗ ÖNEMLİ FİKS: episode.id'yi de String'e çeviriyoruz
+    const watchedEpCount = allEpisodes.filter(ep => watchedLogsSet.has(String(ep.id))).length;
     
     const totalSeriesMins = allEpisodes.reduce((sum, ep) => sum + (ep.runtime || 0), 0);
     const watchedMins = allEpisodes
-      .filter(ep => watchedLogsSet.has(ep.id))
+      .filter(ep => watchedLogsSet.has(String(ep.id)))
       .reduce((sum, ep) => sum + (ep.runtime || 0), 0);
 
-    return {
+    const result = {
       totalEpisodeCount: totalEpCount,
       watchedEpisodeCount: watchedEpCount,
       progressPercentage: totalEpCount > 0 ? (watchedEpCount / totalEpCount) * 100 : 0,
       totalWatchedMinutes: watchedMins,
       totalSeriesMinutes: totalSeriesMins,
       remainingMinutes: totalSeriesMins - watchedMins,
-      watchedEpisodeIds: new Set(allEpisodes.filter(ep => watchedLogsSet.has(ep.id)).map(ep => ep.id)),
+      // ❗ ÖNEMLİ FİKS: watchedEpisodeIds Set'inde de String kullanıyoruz
+      watchedEpisodeIds: new Set(allEpisodes.filter(ep => watchedLogsSet.has(String(ep.id))).map(ep => String(ep.id))),
     };
+    
+    return result;
   }, [seriesApiData, watchedLogs]);
 
   const handleEpisodeToggle = (episodeId: number, isWatched: boolean) => {
-    // Bu fonksiyonu daha sonra dolduracağız
-    console.log(`Episode ${episodeId} is now ${isWatched ? 'watched' : 'unwatched'}`);
+    console.log(`🎬 Episode toggle: ${episodeId} -> ${isWatched ? 'watched' : 'unwatched'}`);
+    
+    if (!seriesApiData) return;
+    
+    // Episode bilgisini TMDB verilerinden bul
+    const episode = seriesApiData.seasons
+      .flatMap(season => season.episodes || [])
+      .find(ep => ep.id === episodeId);
+    
+    if (!episode) {
+      console.error('❌ Episode bulunamadı:', episodeId);
+      return;
+    }
+    
+    if (isWatched) {
+      // ✅ Bölümü izlendi olarak kaydet
+      try {
+        const episodeLog = LocalStorageService.saveMovieLog({
+          title: `${seriesApiData.name} - S${episode.season_number.toString().padStart(2, '0')}E${episode.episode_number.toString().padStart(2, '0')} - ${episode.name}`,
+          date: new Date().toISOString().split('T')[0], // Bugünün tarihi
+          rating: '', // İsteğe bağlı
+          review: '', // İsteğe bağlı 
+          poster: episode.still_path ? `https://image.tmdb.org/t/p/w500${episode.still_path}` : (seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : ''),
+          type: 'watched',
+          mediaType: 'tv',
+          contentType: 'tv',
+          tmdbId: episodeId, // ❗ ÖNEMLİ: Episode ID'sini tmdbId olarak kullan
+          seasonCount: seriesApiData.number_of_seasons,
+          episodeCount: seriesApiData.number_of_episodes,
+          runtime: episode.runtime || 45, // Varsayılan olarak 45 dakika
+          seriesId: seriesId, // Dizi ID'si
+          seriesTitle: seriesApiData.name,
+          seriesPoster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : ''
+        });
+        
+        console.log('✅ Bölüm kaydedildi:', episodeLog.title);
+        
+        // WatchedLogs state'ini güncelle
+        setWatchedLogs(prev => [...prev, episodeLog]);
+        
+      } catch (error) {
+        console.error('❌ Bölüm kaydetme hatası:', error);
+      }
+    } else {
+      // ❌ Bölümü izlenmedi olarak işaretle (localStorage'dan sil)
+      const episodeLogToDelete = watchedLogs.find(log => log.tmdbId === episodeId);
+      if (episodeLogToDelete) {
+        const success = LocalStorageService.deleteMovieLog(episodeLogToDelete.id);
+        if (success) {
+          console.log('🗑️ Bölüm silindi:', episodeLogToDelete.title);
+          
+          // WatchedLogs state'ini güncelle
+          setWatchedLogs(prev => prev.filter(log => log.id !== episodeLogToDelete.id));
+        } else {
+          console.error('❌ Bölüm silme hatası');
+        }
+      }
+    }
   };
 
   if (isLoading) {
