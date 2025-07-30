@@ -242,31 +242,82 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
             {/* Progress Dashboard */}
             <div className="p-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-card/80 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-white">{seriesStats.watchedCount}</div>
-                  <div className="text-sm text-white/70">İzlenen Bölüm</div>
+                {/* İzlenen Bölüm */}
+                <div className="group bg-gradient-to-br from-card/90 via-card/80 to-card/70 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:border-primary/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <div className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white group-hover:text-primary transition-colors duration-300">{seriesStats.watchedCount}</div>
+                  <div className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">İzlenen Bölüm</div>
                 </div>
-                <div className="bg-card/80 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-white">{Math.round(seriesStats.progressPercentage)}%</div>
-                  <div className="text-sm text-white/70">İlerleme</div>
+                
+                {/* İlerleme */}
+                <div className="group bg-gradient-to-br from-card/90 via-card/80 to-card/70 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:border-orange-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-400/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                    <div className="w-6 h-6 bg-orange-400/20 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white group-hover:text-orange-400 transition-colors duration-300">{Math.round(seriesStats.progressPercentage)}%</div>
+                  <div className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">İlerleme</div>
                 </div>
-                <div className="bg-card/80 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-white">{seriesStats.totalEpisodes}</div>
-                  <div className="text-sm text-white/70">Toplam Bölüm</div>
+                
+                {/* Toplam Bölüm */}
+                <div className="group bg-gradient-to-br from-card/90 via-card/80 to-card/70 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-400/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                    <div className="w-6 h-6 bg-blue-400/20 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white group-hover:text-blue-400 transition-colors duration-300">{seriesStats.totalEpisodes}</div>
+                  <div className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">Toplam Bölüm</div>
                 </div>
-                <div className="bg-card/80 backdrop-blur-sm rounded-xl p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-white">{seriesStats.avgRating.toFixed(1)}</div>
-                  <div className="text-sm text-white/70">Ortalama Puan</div>
+                
+                {/* Ortalama Puan */}
+                <div className="group bg-gradient-to-br from-card/90 via-card/80 to-card/70 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:border-yellow-400/40 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-yellow-400/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    <div className="w-6 h-6 bg-yellow-400/20 rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-white group-hover:text-yellow-400 transition-colors duration-300">{seriesStats.avgRating.toFixed(1)}</div>
+                  <div className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">Ortalama Puan</div>
                 </div>
               </div>
               
-              {/* Progress Bar */}
+              {/* Enhanced Progress Bar */}
               <div className="mb-6">
-                <div className="w-full bg-white/20 rounded-full h-2">
+                <div className="relative">
+                  <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden backdrop-blur-sm shadow-inner">
+                    <div 
+                      className="h-full bg-gradient-to-r from-primary via-orange-400 to-yellow-400 rounded-full transition-all duration-1000 ease-out relative"
+                      style={{ width: `${seriesStats.progressPercentage}%` }}
+                    >
+                      {/* Animated shine effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse"></div>
+                      {/* Moving light effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 animate-bounce"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Progress indicator dot */}
                   <div 
-                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${seriesStats.progressPercentage}%` }}
-                  />
+                    className="absolute top-1/2 transform -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-white rounded-full shadow-lg transition-all duration-1000 ease-out border-2 border-primary/30"
+                    style={{ left: `${seriesStats.progressPercentage}%` }}
+                  >
+                    <div className="w-2 h-2 bg-primary rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
+                  </div>
+                </div>
+                
+                {/* Progress text */}
+                <div className="text-center mt-3">
+                  <span className="text-white/60 text-xs">{seriesStats.watchedCount} / {seriesStats.totalEpisodes} bölüm izlendi</span>
                 </div>
               </div>
               
