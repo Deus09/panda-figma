@@ -68,10 +68,10 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
         </div>
         
         {/* Modal Content */}
-        <div className="px-4 pb-6 pt-6 overflow-y-auto h-full">
+        <div className="px-4 pb-8 pt-6 overflow-y-auto h-full">
               {/* Açıklama Metni */}
-              <div className="text-center mb-8">
-                <div className="text-4xl mb-4">🧠✨</div>
+              <div className="text-center mb-4">
+                <div className="text-xl mb-2">🧠✨</div>
                 <p className="text-[#CCC] font-poppins text-[14px] leading-relaxed">
                   {suggestedMovies.length === 0 
                     ? "Aklındaki filmi tarif et, yapay zeka sana en uygun önerileri getirsin!"
@@ -162,7 +162,7 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                 /* Film önerileri alınmışsa - Poster grid'ini göster */
                 <>
                   {/* Film Posterleri Grid */}
-                  <div className="grid grid-cols-3 gap-3 mb-8">
+                  <div className="grid grid-cols-3 gap-2 mb-4">
                     {suggestedMovies.map((movie, index) => (
                       <div
                         key={`${movie.tmdbId}-${index}`}
@@ -180,11 +180,11 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                           }}
                         />
                         {/* Film başlığı overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-3">
-                          <p className="text-white text-[12px] font-poppins font-semibold truncate leading-tight">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-2">
+                          <p className="text-white text-[11px] font-poppins font-semibold truncate leading-tight">
                             {movie.title}
                           </p>
-                          <p className="text-[#CCC] text-[10px] mt-1">
+                          <p className="text-[#CCC] text-[9px] mt-1">
                             {movie.year}
                           </p>
                         </div>
@@ -193,10 +193,10 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                   </div>
 
                   {/* Yeniden Dene Butonu */}
-                  <div className="space-y-4">
+                  <div className="pb-4">
                     <button
                       onClick={handleTryAgain}
-                      className="w-full h-[48px] rounded-[12px] text-[16px] font-poppins font-medium border-2 border-[#FE7743] text-[#FE7743] hover:bg-[#FE7743]/10 active:scale-95 transition-all duration-200"
+                      className="w-full h-[48px] rounded-[12px] text-[16px] font-poppins font-semibold bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90 active:scale-95 transition-all duration-200 shadow-lg"
                     >
                       🔄 Yeniden Dene
                     </button>
