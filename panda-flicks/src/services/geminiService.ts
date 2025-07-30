@@ -1,12 +1,12 @@
 // Film önerisi için Gemini AI entegrasyonu
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'your-gemini-api-key-here';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 // Film önerisi response tipi
 export interface MovieSuggestion {
   title: string;
   year: number;
   tmdbId: number;
+  poster_path: string;
 }
 
 /**
@@ -23,7 +23,7 @@ export const getMovieSuggestions = async (
     // Prompt metnini oluştur
     let prompt = `Kullanıcının şu tarifine uyan 9 adet film öner: "${promptText}".
 
-Cevabını, içinde title, year ve tmdbId alanları olan bir JSON array formatında ver.
+Cevabını, içinde title, year, tmdbId ve poster_path alanları olan bir JSON array formatında ver.
 Sadece JSON formatında cevap ver, başka açıklama yapma.
 
 Format örneği:
@@ -31,12 +31,14 @@ Format örneği:
   {
     "title": "Inception",
     "year": 2010,
-    "tmdbId": 27205
+    "tmdbId": 27205,
+    "poster_path": "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg"
   },
   {
     "title": "Interstellar",
     "year": 2014,
-    "tmdbId": 157336
+    "tmdbId": 157336,
+    "poster_path": "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
   }
 ]`;
 
@@ -46,7 +48,13 @@ Format örneği:
     }
 
     // Gemini API'ye istek gönder
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    
+    if (!apiKey) {
+      throw new Error('Gemini API anahtarı tanımlanmamış. VITE_GEMINI_API_KEY environment variable\'ını ayarlayın.');
+    }
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -104,14 +112,15 @@ Format örneği:
       
       // Her filmin gerekli alanları olduğunu kontrol et
       movieSuggestions.forEach((movie, index) => {
-        if (!movie.title || !movie.year || !movie.tmdbId) {
+        if (!movie.title || !movie.year || !movie.tmdbId || !movie.poster_path) {
           throw new Error(`Film ${index + 1} eksik alanlara sahip`);
         }
         
         // Veri tiplerini kontrol et
         if (typeof movie.title !== 'string' || 
             typeof movie.year !== 'number' || 
-            typeof movie.tmdbId !== 'number') {
+            typeof movie.tmdbId !== 'number' ||
+            typeof movie.poster_path !== 'string') {
           throw new Error(`Film ${index + 1} yanlış veri tiplerine sahip`);
         }
       });
