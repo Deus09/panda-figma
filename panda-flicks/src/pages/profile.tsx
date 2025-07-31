@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
-import SettingsModal from '../components/SettingsModal';
 import MovieCard from '../components/MovieCard';
 import MoviePosterCard from '../components/MoviePosterCard';
 import LocalStorageService, { UserProfile } from '../services/localStorage';
@@ -10,7 +9,6 @@ import styles from './profile.module.css';
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -583,7 +581,6 @@ const Profile: React.FC = () => {
       <TopHeaderBar 
         title="Panda Profile" 
         showBackButton={false}
-        onSettingsClick={() => setIsSettingsOpen(true)}
       />
       
       <div className="flex-1 px-4 py-6 pb-32 overflow-y-auto">
@@ -1259,10 +1256,6 @@ const Profile: React.FC = () => {
       </div>
 
       <BottomNavBar />
-      
-      {isSettingsOpen && (
-        <SettingsModal onClose={() => setIsSettingsOpen(false)} />
-      )}
     </div>
   );
 };
