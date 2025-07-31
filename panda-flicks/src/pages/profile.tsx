@@ -180,9 +180,9 @@ const Profile: React.FC = () => {
     return { average: Math.round(average * 10) / 10, total: watchedLogs.length };
   };
 
-  // Bu ay izlenen film sayısı
+  // Bu ay izlenen toplam içerik sayısı (film + dizi)
   const getThisMonthWatched = () => {
-    if (!profile) return { count: 0, trend: 0 };
+    if (!profile) return { count: 0, trend: 0, movies: 0, tvShows: 0 };
     const logs = LocalStorageService.getMovieLogs();
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -207,7 +207,10 @@ const Profile: React.FC = () => {
     });
     
     const trend = thisMonthLogs.length - lastMonthLogs.length;
-    return { count: thisMonthLogs.length, trend };
+    const movies = thisMonthLogs.filter(log => log.mediaType === 'movie').length;
+    const tvShows = thisMonthLogs.filter(log => log.mediaType === 'tv').length;
+    
+    return { count: thisMonthLogs.length, trend, movies, tvShows };
   };
 
   // En çok izlenen tür
@@ -970,7 +973,9 @@ const Profile: React.FC = () => {
                 <div>
                   <p className="text-gray-300 text-sm font-poppins">Bu Ay İzlenen</p>
                   <div className="flex items-center space-x-2">
-                    <span className="text-white font-semibold font-poppins">{getThisMonthWatched().count} Film</span>
+                    <span className="text-white font-semibold font-poppins">
+                      {getThisMonthWatched().movies} Film, {getThisMonthWatched().tvShows} Dizi
+                    </span>
                     {getThisMonthWatched().trend !== 0 && (
                       <span className={`${styles.trendIndicator} text-xs font-medium px-2 py-1 rounded-full ${
                         getThisMonthWatched().trend > 0 
