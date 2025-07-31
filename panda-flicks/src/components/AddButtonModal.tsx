@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { IonDatetime, IonModal, IonItem, IonLabel, IonThumbnail, IonCheckbox, IonButton, IonList } from '@ionic/react';
 import { searchMovies, TMDBMovieResult, TMDBCastMember, getSeriesDetails, searchAll, TMDBMultiSearchResponse, TMDBSearchResult, getSeasonDetails, SeasonDetails as TMDBSeasonDetails } from '../services/tmdb';
 import { improveComment, chatWithCast } from '../services/gemini';
+import { LocalStorageService } from '../services/localStorage';
 import { TvSeriesDetails } from '../types/tmdb';
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
@@ -12,9 +13,20 @@ interface AddButtonModalProps {
   onSave: (log?: { selectedMovie?: TMDBMovieResult; tmdbId?: number }) => void;
   onAddMovieLog?: (log: any) => void;
   onMovieSelect?: (movie: TMDBMovieResult, id: number) => void;
+  prefillData?: {
+    title?: string;
+    poster?: string;
+    tmdbId?: number;
+    mediaType?: 'movie' | 'tv';
+    contentType?: 'movie' | 'tv';
+    genres?: string[];
+    releaseYear?: number;
+    runtime?: number;
+    type?: 'watched' | 'watchlist';
+  };
 }
 
-const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect }) => {
+const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect, prefillData }) => {
   // Modal view states
   type ModalView = 'search' | 'episodes';
   const [view, setView] = useState<ModalView>('search');
@@ -84,8 +96,29 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       setTitle('');
       setPoster('');
       setSelectedItem(null);
+
+      // Prefill data varsa kullan
+      if (prefillData) {
+        setSelectedItem({
+          title: prefillData.title,
+          name: prefillData.title,
+          poster_path: prefillData.poster,
+          poster: prefillData.poster,
+          tmdbId: prefillData.tmdbId,
+          id: prefillData.tmdbId,
+          mediaType: prefillData.mediaType || 'movie',
+          contentType: prefillData.contentType || 'movie',
+          genres: prefillData.genres || [],
+          releaseYear: prefillData.releaseYear,
+          runtime: prefillData.runtime || 120
+        });
+        setTmdbId(prefillData.tmdbId || null);
+        setWatchList(prefillData.type === 'watchlist');
+        setTitle(prefillData.title || '');
+        setPoster(prefillData.poster || '');
+      }
     }
-  }, [open]);
+  }, [open, prefillData]);
 
   useEffect(() => {
     if (search.length >= 3) {
@@ -271,6 +304,27 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   const handleSave = () => {
     if (!selectedItem) return;
     console.log('handleSave called, selectedItem:', selectedItem);
+    
+    // Prefill data ile gelen film/dizi için mevcut kaydı kontrol et
+    if (prefillData && prefillData.tmdbId) {
+      const existingLogs = LocalStorageService.getMovieLogs();
+      const existingLog = existingLogs.find(log => 
+        log.tmdbId === prefillData.tmdbId && 
+        log.mediaType === prefillData.mediaType
+      );
+      
+      if (existingLog) {
+        // Mevcut kaydı güncelle
+        const updatedLog = LocalStorageService.updateMovieLog(existingLog.id, {
+          rating: rating.toString(),
+          review: comment,
+          date: date
+        });
+        onAddMovieLog?.(updatedLog);
+        onSave({ selectedMovie: selectedItem, tmdbId: selectedItem.tmdbId || selectedItem.id });
+        return;
+      }
+    }
     
     // Eğer birden fazla bölüm seçildiyse hepsini kaydet
     if (selectedItem.allSelectedEpisodes && selectedItem.allSelectedEpisodes.length > 1) {

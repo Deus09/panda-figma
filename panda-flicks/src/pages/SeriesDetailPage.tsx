@@ -15,6 +15,7 @@ import { checkmark, play, time, chevronBack } from 'ionicons/icons';
 import { LocalStorageService, MovieLog } from '../services/localStorage';
 import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, Episode } from '../services/tmdb';
 import SeasonAccordion from '../components/SeasonAccordion';
+import AddButtonModal from '../components/AddButtonModal';
 
 const SeriesDetailPage: React.FC = () => {
   const { seriesId } = useParams<{ seriesId: string }>();
@@ -26,6 +27,10 @@ const SeriesDetailPage: React.FC = () => {
   const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Film ekleme modalı state'i
+  const [showAddMovieModal, setShowAddMovieModal] = useState(false);
+  const [prefillData, setPrefillData] = useState<any>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -337,9 +342,26 @@ const SeriesDetailPage: React.FC = () => {
       setToastTimeout(null);
     }
     
-    // Dizi ekleme/düzenleme modalını aç
-    // Bu kısım daha sonra implement edilecek
-    console.log('Rating modal açılacak');
+    // Dizi ekleme modalını aç
+    if (seriesApiData) {
+      setPrefillData({
+        title: seriesApiData.name,
+        poster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : '',
+        tmdbId: seriesApiData.id,
+        mediaType: 'tv',
+        contentType: 'tv',
+        genres: seriesApiData.genres?.map(g => g.name) || [],
+        releaseYear: seriesApiData.first_air_date ? new Date(seriesApiData.first_air_date).getFullYear() : undefined,
+        runtime: 45, // Ortalama bölüm süresi
+        type: 'watched', // Zaten izlendi olarak işaretlendiği için
+        seasonCount: seriesApiData.number_of_seasons,
+        episodeCount: seriesApiData.number_of_episodes,
+        seriesId: seriesId,
+        seriesTitle: seriesApiData.name,
+        seriesPoster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : ''
+      });
+      setShowAddMovieModal(true);
+    }
   };
 
   if (isLoading) {
@@ -482,6 +504,31 @@ const SeriesDetailPage: React.FC = () => {
                 />
             ))}
         </div>
+
+        {/* Add Movie Modal */}
+        <AddButtonModal
+          open={showAddMovieModal}
+          onClose={() => {
+            setShowAddMovieModal(false);
+            setPrefillData(null);
+          }}
+          onSave={(log?: any) => {
+            setShowAddMovieModal(false);
+            setPrefillData(null);
+            // Başarı mesajı göster
+            console.log('Dizi puan ve yorum ile güncellendi:', log);
+          }}
+          onAddMovieLog={(log: any) => {
+            // Dizi log'unu güncelle
+            if (log && seriesApiData) {
+              LocalStorageService.updateMovieLog(log.id, {
+                rating: log.rating,
+                review: log.review
+              });
+            }
+          }}
+          prefillData={prefillData}
+        />
 
         {/* Success Toast */}
         {showToast && (

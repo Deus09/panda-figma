@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import ActorDetailModal from './ActorDetailModal';
+import AddButtonModal from './AddButtonModal';
 import { useModal } from '../context/ModalContext';
 import { LocalStorageService } from '../services/localStorage';
 
@@ -26,6 +27,10 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Film ekleme modalı state'i
+  const [showAddMovieModal, setShowAddMovieModal] = useState(false);
+  const [prefillData, setPrefillData] = useState<any>(null);
 
   useEffect(() => {
     if (open && movieId) {
@@ -216,9 +221,21 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       setToastTimeout(null);
     }
     
-    // Film ekleme/düzenleme modalını aç
-    // Bu kısım daha sonra implement edilecek
-    console.log('Rating modal açılacak');
+    // Film ekleme modalını aç
+    if (movieDetails) {
+      setPrefillData({
+        title: movieDetails.title,
+        poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : '',
+        tmdbId: movieDetails.id,
+        mediaType: 'movie',
+        contentType: 'movie',
+        genres: movieDetails.genres?.map(g => g.name) || [],
+        releaseYear: movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : undefined,
+        runtime: movieDetails.runtime || 120,
+        type: 'watched' // Zaten izlendi olarak işaretlendiği için
+      });
+      setShowAddMovieModal(true);
+    }
   };
 
   const formatRuntime = (minutes: number) => {
@@ -448,6 +465,31 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
           onClose={handleActorModalClose}
           actorId={selectedActorId}
           onMovieClick={handleSimilarMovieClick}
+        />
+
+        {/* Add Movie Modal */}
+        <AddButtonModal
+          open={showAddMovieModal}
+          onClose={() => {
+            setShowAddMovieModal(false);
+            setPrefillData(null);
+          }}
+          onSave={(log?: any) => {
+            setShowAddMovieModal(false);
+            setPrefillData(null);
+            // Başarı mesajı göster
+            console.log('Film puan ve yorum ile güncellendi:', log);
+          }}
+          onAddMovieLog={(log: any) => {
+            // Film log'unu güncelle
+            if (log && movieDetails) {
+              LocalStorageService.updateMovieLog(log.id, {
+                rating: log.rating,
+                review: log.review
+              });
+            }
+          }}
+          prefillData={prefillData}
         />
 
         {/* Success Toast */}
