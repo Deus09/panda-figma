@@ -362,7 +362,7 @@ const Explore: React.FC = () => {
             </svg>
             <input
               className="bg-transparent flex-1 outline-none text-black text-[14px] placeholder:text-[#A3ABB2] font-normal font-poppins"
-              placeholder="Fight Club"
+              placeholder="Fight Club | Brad Pitt | David Fincher"
               value={search}
               onChange={e => setSearch(e.target.value)}
               onFocus={handleSearchFocus}
