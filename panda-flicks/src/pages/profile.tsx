@@ -352,7 +352,7 @@ const Profile: React.FC = () => {
 
   // Bu ay izlenen dizi sayısı
   const getThisMonthTvShows = () => {
-    if (!profile) return { count: 0, trend: 0 };
+    if (!profile) return { count: 0, trend: 0, uniqueSeries: 0 };
     const logs = LocalStorageService.getMovieLogs();
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -378,8 +378,43 @@ const Profile: React.FC = () => {
              logDate.getFullYear() === lastYear;
     });
     
-    const trend = thisMonthLogs.length - lastMonthLogs.length;
-    return { count: thisMonthLogs.length, trend };
+    // Farklı dizi sayısı (aynı diziden birden fazla bölüm olsa bile 1 dizi sayılır)
+    const thisMonthUniqueSeries = new Set(
+      thisMonthLogs
+        .filter(log => log.seriesId)
+        .map(log => log.seriesId)
+    );
+    
+    const lastMonthUniqueSeries = new Set(
+      lastMonthLogs
+        .filter(log => log.seriesId)
+        .map(log => log.seriesId)
+    );
+    
+    const trend = thisMonthUniqueSeries.size - lastMonthUniqueSeries.size;
+    return { 
+      count: thisMonthLogs.length, 
+      trend, 
+      uniqueSeries: thisMonthUniqueSeries.size 
+    };
+  };
+
+  // Toplam bölüm sayısı hesaplama
+  const getTotalEpisodes = () => {
+    if (!profile) return { total: 0, average: 0, uniqueSeries: 0 };
+    const logs = LocalStorageService.getMovieLogs();
+    const watchedLogs = logs.filter(log => log.type === 'watched' && log.mediaType === 'tv');
+    
+    const totalEpisodes = watchedLogs.reduce((sum, log) => sum + (log.episodeCount || 1), 0);
+    const uniqueSeries = new Set(
+      watchedLogs
+        .filter(log => log.seriesId)
+        .map(log => log.seriesId)
+    );
+    
+    const average = uniqueSeries.size > 0 ? Math.round(totalEpisodes / uniqueSeries.size) : 0;
+    
+    return { total: totalEpisodes, average, uniqueSeries: uniqueSeries.size };
   };
 
   // Günlük ortalama izleme süresi
@@ -816,14 +851,13 @@ const Profile: React.FC = () => {
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-poppins">Bu Ay</p>
                     <p className={`text-xs font-poppins ${
-                      getThisMonthTvShows().trend > 0 ? 'text-[#4CAF50]' : 
-                      getThisMonthTvShows().trend < 0 ? 'text-[#FF6B6B]' : 'text-white'
+                      getThisMonthTvShows().uniqueSeries > 0 ? 'text-[#4CAF50]' : 'text-white'
                     }`}>
-                      {getThisMonthTvShows().trend > 0 ? '+' : ''}{getThisMonthTvShows().trend}
+                      +{getThisMonthTvShows().uniqueSeries}
                     </p>
                   </div>
                 </div>
-                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{profile.watchedTvCount}</p>
+                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{getTotalEpisodes().uniqueSeries}</p>
                 <p className="text-sm text-gray-300 font-poppins">İzlenen Diziler</p>
               </div>
             </div>
@@ -851,10 +885,10 @@ const Profile: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-poppins">Ortalama</p>
-                    <p className="text-xs text-white font-poppins">{Math.round(profile.totalEpisodesWatched / Math.max(1, profile.watchedTvCount))}/dizi</p>
+                    <p className="text-xs text-white font-poppins">{getTotalEpisodes().average}/dizi</p>
                   </div>
                 </div>
-                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{profile.totalEpisodesWatched}</p>
+                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{getTotalEpisodes().total}</p>
                 <p className="text-sm text-gray-300 font-poppins">Toplam Bölüm</p>
               </div>
             </div>
