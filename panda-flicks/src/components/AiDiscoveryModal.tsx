@@ -15,18 +15,24 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [suggestedMovies, setSuggestedMovies] = useState<MovieSuggestion[]>([]);
+  const [retryCount, setRetryCount] = useState(0);
+  const [excludedMovies, setExcludedMovies] = useState<MovieSuggestion[]>([]);
+  const MAX_RETRIES = 2; // İlk deneme hariç 2 yeniden deneme hakkı
 
   const handleFindMovies = async () => {
     if (!description.trim()) return;
-    
+
+    setIsLoading(true);
+    setRetryCount(0); // Sayacı sıfırla
+    setExcludedMovies([]); // Dışlama listesini temizle
+
     try {
-      setIsLoading(true);
-      
       console.log('Film aranıyor:', description);
       const movieSuggestions = await getMovieSuggestions(description.trim());
       
       // Film önerilerini state'e kaydet
       setSuggestedMovies(movieSuggestions);
+      setExcludedMovies(movieSuggestions); // Gelen ilk filmleri dışlama listesine ekle
       
     } catch (error) {
       console.error('Film önerisi alınırken hata oluştu:', error);
@@ -38,10 +44,28 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
   const handleReset = () => {
     setDescription('');
     setSuggestedMovies([]);
+    setRetryCount(0);
+    setExcludedMovies([]);
   };
 
-  const handleTryAgain = () => {
-    setSuggestedMovies([]);
+  const handleTryAgain = async () => {
+    if (retryCount >= MAX_RETRIES) return; // Limite ulaşıldıysa işlemi durdur
+
+    setIsLoading(true);
+    setSuggestedMovies([]); // Mevcut filmleri temizle
+
+    try {
+      // API isteğini dışlanacak filmlerle birlikte gönder
+      const movieSuggestions = await getMovieSuggestions(description.trim(), excludedMovies);
+      setSuggestedMovies(movieSuggestions);
+      // Yeni gelen filmleri kümülatif listeye ekle
+      setExcludedMovies(prev => [...prev, ...movieSuggestions]);
+      setRetryCount(prev => prev + 1); // Sayacı artır
+    } catch (error) {
+      console.error('Film önerisi alınırken hata oluştu:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleMovieSelect = (movie: MovieSuggestion) => {
@@ -80,7 +104,7 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                 <p className="text-[#CCC] font-poppins text-[14px] leading-relaxed">
                   {suggestedMovies.length === 0 
                     ? "Aklındaki filmi tarif et, yapay zeka sana en uygun önerileri getirsin!"
-                    : "İşte sana özel seçtiklerim! 🎬"
+                    : `İşte sana özel seçtiklerim! 🎬 ${retryCount > 0 ? `(Deneme ${retryCount}/${MAX_RETRIES})` : ''}`
                   }
                 </p>
               </div>
@@ -204,9 +228,20 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                   <div className="pb-4">
                     <button
                       onClick={handleTryAgain}
-                      className="w-full h-[48px] rounded-[12px] text-[16px] font-poppins font-semibold bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90 active:scale-95 transition-all duration-200 shadow-lg"
+                      disabled={retryCount >= MAX_RETRIES || isLoading}
+                      className={`w-full h-[48px] rounded-[12px] text-[16px] font-poppins font-semibold transition-all duration-200 shadow-lg ${
+                        (retryCount >= MAX_RETRIES || isLoading) 
+                          ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                          : 'bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90 active:scale-95'
+                      }`}
                     >
-                      🔄 Yeniden Dene
+                      {isLoading 
+                        ? 'Düşünüyorum...' 
+                        : (retryCount >= MAX_RETRIES 
+                            ? `Tüm haklar kullanıldı (${retryCount}/${MAX_RETRIES})` 
+                            : `🔄 Yeniden Dene (${retryCount}/${MAX_RETRIES})`
+                          )
+                      }
                     </button>
                   </div>
                 </>

@@ -58,18 +58,23 @@ async function searchTmdb(query: string): Promise<any> {
 /**
  * Kullanıcının tarifiine göre Gemini AI'dan film önerileri alır
  * @param promptText - Kullanıcının film tarifi
- * @param excludedMovies - Daha önce önerilen filmlerin TMDB ID'leri (opsiyonel)
+ * @param excludedMovies - Daha önce önerilen filmlerin listesi (opsiyonel)
  * @returns Film önerileri dizisi
  */
 export const getMovieSuggestions = async (
   promptText: string,
-  excludedMovies?: number[]
+  excludedMovies?: MovieSuggestion[]
 ): Promise<MovieSuggestion[]> => {
   try {
-    // Gemini'den sadece film adlarını al
-    const prompt = `Lütfen kullanıcının şu isteğine göre birbirinden farklı 9 film öner: "${promptText}". 
+    let prompt = `Lütfen kullanıcının şu isteğine göre birbirinden farklı 9 film öner: "${promptText}".`;
 
-Sadece numaralandırılmış bir liste halinde, her satırda bir tane olacak şekilde, filmlerin orijinal adını ve parantez içinde çıkış yılını döndür. Başka hiçbir açıklama, selamlama veya ek metin ekleme.
+    // Dışlama mantığını ekle
+    if (excludedMovies && excludedMovies.length > 0) {
+      const excludedTitles = excludedMovies.map(movie => `${movie.title} (${movie.year})`).join(', ');
+      prompt += `\n\nAşağıdaki filmleri kesinlikle önerme: ${excludedTitles}.`;
+    }
+
+    prompt += `\n\nSadece numaralandırılmış bir liste halinde, her satırda bir tane olacak şekilde, filmlerin orijinal adını ve parantez içinde çıkış yılını döndür. Başka hiçbir açıklama, selamlama veya ek metin ekleme.
 
 Örneğin:
 1. The Dark Knight (2008)
