@@ -430,7 +430,7 @@ export class LocalStorageService {
       {
         id: 'series-killer',
         name: 'Dizi Avcısı',
-        description: 'Bir dizinin tüm sezonlarını bitirdiğinde kazanılır',
+        description: 'En az 2 sezonlu bir dizinin tüm sezonlarını bitirdiğinde kazanılır',
         icon: '📺',
         category: 'special',
         requirement: 1,
@@ -503,7 +503,7 @@ export class LocalStorageService {
   }
 
   // Tamamlanan dizileri bulan yardımcı fonksiyon
-  private static getCompletedSeries(watchedLogs: MovieLog[]): string[] {
+  static getCompletedSeries(watchedLogs: MovieLog[]): string[] {
     const seriesGroups = new Map<string, { totalSeasons: number; watchedSeasons: Set<number> }>();
     
     watchedLogs
@@ -513,8 +513,10 @@ export class LocalStorageService {
         const seasonNumber = log.seasonNumber!;
         
         if (!seriesGroups.has(seriesId)) {
+          // seasonCount varsa kullan, yoksa en az 2 sezon varsay (1 sezon diziler için rozet verilmez)
+          const totalSeasons = log.seasonCount && log.seasonCount > 1 ? log.seasonCount : 2;
           seriesGroups.set(seriesId, {
-            totalSeasons: log.seasonCount || 1,
+            totalSeasons: totalSeasons,
             watchedSeasons: new Set()
           });
         }
@@ -523,9 +525,9 @@ export class LocalStorageService {
         series.watchedSeasons.add(seasonNumber);
       });
     
-    // Tüm sezonları izlenen dizileri döndür
+    // Tüm sezonları izlenen dizileri döndür (en az 2 sezon olmalı)
     return Array.from(seriesGroups.entries())
-      .filter(([_, series]) => series.watchedSeasons.size >= series.totalSeasons)
+      .filter(([_, series]) => series.totalSeasons >= 2 && series.watchedSeasons.size >= series.totalSeasons)
       .map(([seriesId, _]) => seriesId);
   }
 
@@ -541,7 +543,8 @@ export class LocalStorageService {
       });
     
     // Herhangi bir günde 3+ film var mı?
-    return Array.from(dailyCounts.values()).some(count => count >= 3);
+    const maxDailyCount = Math.max(...Array.from(dailyCounts.values()), 0);
+    return maxDailyCount >= 3;
   }
 
   static checkAndAwardBadges(): Badge[] {

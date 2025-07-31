@@ -182,7 +182,7 @@ const Profile: React.FC = () => {
 
   // Bu ay izlenen toplam içerik sayısı (film + dizi)
   const getThisMonthWatched = () => {
-    if (!profile) return { count: 0, trend: 0, movies: 0, tvShows: 0 };
+    if (!profile) return { count: 0, trend: 0, movies: 0, tvShows: 0, episodes: 0 };
     const logs = LocalStorageService.getMovieLogs();
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -208,9 +208,21 @@ const Profile: React.FC = () => {
     
     const trend = thisMonthLogs.length - lastMonthLogs.length;
     const movies = thisMonthLogs.filter(log => log.mediaType === 'movie').length;
-    const tvShows = thisMonthLogs.filter(log => log.mediaType === 'tv').length;
     
-    return { count: thisMonthLogs.length, trend, movies, tvShows };
+    // Farklı dizi sayısı (aynı diziden birden fazla bölüm olsa bile 1 dizi sayılır)
+    const uniqueSeries = new Set(
+      thisMonthLogs
+        .filter(log => log.mediaType === 'tv' && log.seriesId)
+        .map(log => log.seriesId)
+    );
+    const tvShows = uniqueSeries.size;
+    
+    // Toplam bölüm sayısı
+    const episodes = thisMonthLogs
+      .filter(log => log.mediaType === 'tv')
+      .reduce((sum, log) => sum + (log.episodeCount || 1), 0);
+    
+    return { count: thisMonthLogs.length, trend, movies, tvShows, episodes };
   };
 
   // En çok izlenen tür
@@ -437,28 +449,9 @@ const Profile: React.FC = () => {
         ).length;
       
       case 'series-killer':
-        // Tamamlanan dizi sayısı
-        const seriesGroups = new Map<string, { totalSeasons: number; watchedSeasons: Set<number> }>();
-        watchedLogs
-          .filter(log => log.mediaType === 'tv' && log.seriesId && log.seasonNumber)
-          .forEach(log => {
-            const seriesId = log.seriesId!;
-            const seasonNumber = log.seasonNumber!;
-            
-            if (!seriesGroups.has(seriesId)) {
-              seriesGroups.set(seriesId, {
-                totalSeasons: log.seasonCount || 1,
-                watchedSeasons: new Set()
-              });
-            }
-            
-            const series = seriesGroups.get(seriesId)!;
-            series.watchedSeasons.add(seasonNumber);
-          });
-        
-        return Array.from(seriesGroups.entries())
-          .filter(([_, series]) => series.watchedSeasons.size >= series.totalSeasons)
-          .length;
+        // Tamamlanan dizi sayısı - localStorage servisi ile aynı mantık
+        const completedSeries = LocalStorageService.getCompletedSeries(watchedLogs);
+        return completedSeries.length;
       
       case 'nostalgia-traveler':
         return watchedLogs.filter(log => 
@@ -476,7 +469,9 @@ const Profile: React.FC = () => {
             const date = log.date.split('T')[0];
             dailyCounts.set(date, (dailyCounts.get(date) || 0) + 1);
           });
-        return Array.from(dailyCounts.values()).some(count => count >= 3) ? 1 : 0;
+        // En yüksek günlük film sayısını döndür
+        const maxDailyCount = Math.max(...Array.from(dailyCounts.values()), 0);
+        return maxDailyCount;
       
       case 'century-watcher':
         return profile.watchedMovieCount;
@@ -574,6 +569,8 @@ const Profile: React.FC = () => {
       }
     }
   };
+
+
 
   if (!profile) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
