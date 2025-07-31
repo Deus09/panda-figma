@@ -55,6 +55,8 @@ const Explore: React.FC = () => {
     'Korku': 27,
     'Romantik': 10749,
     'Bilim Kurgu': 878,
+    'Gerilim': 53,
+    'Macera': 12,
   };
 
   // Dizi türleri için ID'ler (TMDB'de farklı)
@@ -65,6 +67,8 @@ const Explore: React.FC = () => {
     'Korku': 9648, // Mystery (daha uygun dizi türü)
     'Romantik': 10749,
     'Bilim Kurgu': 10765, // Sci-Fi & Fantasy
+    'Gerilim': 53, // Thriller
+    'Macera': 10759, // Action & Adventure (macera da bu kategoride)
   };
 
   const categories = [
@@ -74,6 +78,8 @@ const Explore: React.FC = () => {
     { label: 'Korku', prefix: 'genre:Horror', genreId: 27 },
     { label: 'Romantik', prefix: 'genre:Romance', genreId: 10749 },
     { label: 'Bilim Kurgu', prefix: 'genre:Sci-Fi', genreId: 878 },
+    { label: 'Gerilim', prefix: 'genre:Thriller', genreId: 53 },
+    { label: 'Macera', prefix: 'genre:Adventure', genreId: 12 },
   ];
 
   useEffect(() => {
