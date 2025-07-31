@@ -104,9 +104,14 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
             
             // 📊 STATISTICS CALCULATION for TV Series
             const allEpisodes = seasonsWithEpisodes.flatMap(season => season.episodes || []);
-            const watchedCount = episodes.length;
+            // API'den gelen bölümlerle eşleşen yerel kayıtları filtrele
+            const existingWatchedEpisodes = episodes.filter(ep =>
+              allEpisodes.some(apiEp => apiEp.id === ep.tmdbId)
+            );
+            const watchedCount = existingWatchedEpisodes.length;
             const totalCount = allEpisodes.length;
-            const progressPercentage = totalCount > 0 ? (watchedCount / totalCount) * 100 : 0;
+            const rawPercent = totalCount > 0 ? (watchedCount / totalCount) * 100 : 0;
+            const progressPercentage = Math.min(rawPercent, 100);
             
             // Calculate average rating
             const ratingsWithValues = episodes
