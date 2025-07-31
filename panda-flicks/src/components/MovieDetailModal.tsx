@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import ActorDetailModal from './ActorDetailModal';
 import { useModal } from '../context/ModalContext';
+import { LocalStorageService } from '../services/localStorage';
 
 interface MovieDetailModalProps {
   open: boolean;
@@ -20,6 +21,11 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
   const [actorModalOpen, setActorModalOpen] = useState(false);
   const [selectedActorId, setSelectedActorId] = useState<number | null>(null);
+  
+  // İzleme durumu state'i
+  const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (open && movieId) {
@@ -27,6 +33,9 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       loadMovieDetails();
       loadTrailer();
       loadSimilarMovies();
+      // İzleme durumunu kontrol et
+      const status = LocalStorageService.getLogStatusByTmdbId(movieId, 'movie');
+      setLogStatus(status);
     } else if (!open) {
       // Modal kapandığında state'leri temizle
       setMovieDetails(null);
@@ -36,8 +45,16 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       setError(null);
       setLoading(false);
       setSelectedMovieId(null);
+      setLogStatus(null);
+      setShowToast(false);
+      if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        setToastTimeout(null);
+      }
     }
   }, [open, movieId]);
+
+
 
 
 
@@ -101,6 +118,107 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   const handleActorModalClose = () => {
     setActorModalOpen(false);
     setSelectedActorId(null);
+  };
+
+  // İzleme durumu buton işleyicileri
+  const handleWatchlistToggle = () => {
+    const movieIdToUpdate = selectedMovieId || movieId;
+    if (!movieIdToUpdate || !movieDetails) return;
+
+    const newType = logStatus === 'watchlist' ? null : 'watchlist';
+    
+    if (newType === null) {
+      // Kaydı sil
+      const logs = LocalStorageService.getMovieLogs();
+      const logToDelete = logs.find(log => log.tmdbId === movieIdToUpdate && log.mediaType === 'movie');
+      if (logToDelete) {
+        LocalStorageService.deleteMovieLog(logToDelete.id);
+      }
+      setLogStatus(null);
+    } else {
+      // Önce mevcut kaydı güncellemeyi dene
+      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(movieIdToUpdate, newType, 'movie');
+      
+      if (!updatedLog) {
+        // Kayıt yoksa yeni kayıt oluştur
+        updatedLog = LocalStorageService.saveMovieLog({
+          title: movieDetails.title,
+          date: new Date().toISOString().split('T')[0],
+          rating: '',
+          review: '',
+          poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : '',
+          type: newType,
+          mediaType: 'movie',
+          tmdbId: movieIdToUpdate,
+          contentType: 'movie',
+          genres: movieDetails.genres?.map(g => g.name) || [],
+          releaseYear: movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : undefined,
+          runtime: movieDetails.runtime || 120
+        });
+      }
+      setLogStatus(newType);
+    }
+  };
+
+  const handleWatchedToggle = () => {
+    const movieIdToUpdate = selectedMovieId || movieId;
+    if (!movieIdToUpdate || !movieDetails) return;
+
+    const newType = logStatus === 'watched' ? null : 'watched';
+    
+    if (newType === null) {
+      // Kaydı sil
+      const logs = LocalStorageService.getMovieLogs();
+      const logToDelete = logs.find(log => log.tmdbId === movieIdToUpdate && log.mediaType === 'movie');
+      if (logToDelete) {
+        LocalStorageService.deleteMovieLog(logToDelete.id);
+      }
+      setLogStatus(null);
+    } else {
+      // Önce mevcut kaydı güncellemeyi dene
+      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(movieIdToUpdate, newType, 'movie');
+      
+      if (!updatedLog) {
+        // Kayıt yoksa yeni kayıt oluştur
+        updatedLog = LocalStorageService.saveMovieLog({
+          title: movieDetails.title,
+          date: new Date().toISOString().split('T')[0],
+          rating: '',
+          review: '',
+          poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : '',
+          type: newType,
+          mediaType: 'movie',
+          tmdbId: movieIdToUpdate,
+          contentType: 'movie',
+          genres: movieDetails.genres?.map(g => g.name) || [],
+          releaseYear: movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : undefined,
+          runtime: movieDetails.runtime || 120
+        });
+      }
+      setLogStatus(newType);
+      
+      // Toast bildirimi göster
+      if (newType === 'watched') {
+        setShowToast(true);
+        const timeout = setTimeout(() => {
+          setShowToast(false);
+        }, 5000);
+        setToastTimeout(timeout);
+      }
+    }
+  };
+
+  const handleRatingClick = () => {
+    // Toast'u kapat
+    setShowToast(false);
+    if (toastTimeout) {
+      clearTimeout(toastTimeout);
+      setToastTimeout(null);
+    }
+    
+    // Film ekleme/düzenleme modalını aç
+    // Bu kısım daha sonra implement edilecek
+    console.log('Rating modal açılacak');
   };
 
   const formatRuntime = (minutes: number) => {
@@ -179,6 +297,59 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                   <span className="text-[#F8F8FF] font-poppins font-semibold text-base drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]">
                     {movieDetails.runtime ? formatRuntime(movieDetails.runtime) : ''}
                   </span>
+                </div>
+
+                {/* İzleme Durumu Butonları */}
+                <div className="flex items-center gap-4 mb-4">
+                  {/* İzledim Butonu */}
+                  <button
+                    onClick={handleWatchedToggle}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 ${
+                      logStatus === 'watched' 
+                        ? 'bg-[#FE7743] text-white shadow-lg' 
+                        : 'bg-transparent text-[#F8F8FF] border border-[#F8F8FF] hover:bg-[#F8F8FF] hover:text-[#0C1117]'
+                    }`}
+                  >
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill={logStatus === 'watched' ? 'currentColor' : 'none'} 
+                      stroke="currentColor" 
+                      strokeWidth="2"
+                    >
+                      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span className="font-poppins font-medium text-sm">
+                      {logStatus === 'watched' ? 'İzlendi' : 'İzledim'}
+                    </span>
+                  </button>
+
+                  {/* İzleme Listesi Butonu - sadece izlenmediyse göster */}
+                  {logStatus !== 'watched' && (
+                    <button
+                      onClick={handleWatchlistToggle}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 ${
+                        logStatus === 'watchlist' 
+                          ? 'bg-[#FE7743] text-white shadow-lg' 
+                          : 'bg-transparent text-[#F8F8FF] border border-[#F8F8FF] hover:bg-[#F8F8FF] hover:text-[#0C1117]'
+                      }`}
+                    >
+                      <svg 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} 
+                        stroke="currentColor" 
+                        strokeWidth="2"
+                      >
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="font-poppins font-medium text-sm">
+                        {logStatus === 'watchlist' ? 'Listede' : 'Listeme Ekle'}
+                      </span>
+                    </button>
+                  )}
                 </div>
 
                 {/* Rating */}
@@ -278,6 +449,24 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
           actorId={selectedActorId}
           onMovieClick={handleSimilarMovieClick}
         />
+
+        {/* Success Toast */}
+        {showToast && (
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-8 rounded-lg shadow-2xl max-w-sm mx-4">
+              <h1 className="text-black text-2xl font-bold mb-4">Başarılı!</h1>
+              <p className="text-black mb-4">
+                "{movieDetails?.title}" izlendi olarak işaretlendi.
+              </p>
+              <button 
+                className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
+                onClick={handleRatingClick}
+              >
+                Puan & Yorum Ekle
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

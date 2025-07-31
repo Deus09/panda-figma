@@ -21,6 +21,11 @@ const SeriesDetailPage: React.FC = () => {
   const [seriesApiData, setSeriesApiData] = useState<TMDBSeriesDetails & { seasons: SeasonDetails[] } | null>(null);
   const [watchedLogs, setWatchedLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // İzleme durumu state'i
+  const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -106,6 +111,12 @@ const SeriesDetailPage: React.FC = () => {
 
         setWatchedLogs(seriesEpisodes);
 
+        // Dizi izleme durumunu kontrol et
+        if (seriesId) {
+          const status = LocalStorageService.getLogStatusByTmdbId(parseInt(seriesId), 'tv');
+          setLogStatus(status);
+        }
+
       } catch (error) {
         console.error("Error loading series data:", error);
       } finally {
@@ -114,6 +125,15 @@ const SeriesDetailPage: React.FC = () => {
     };
     loadData();
   }, [seriesId]);
+
+  // Component unmount olduğunda timeout'ları temizle
+  useEffect(() => {
+    return () => {
+      if (toastTimeout) {
+        clearTimeout(toastTimeout);
+      }
+    };
+  }, [toastTimeout]);
 
   // 📊 İstatistik hesaplamaları
   const {
@@ -213,6 +233,115 @@ const SeriesDetailPage: React.FC = () => {
     }
   };
 
+  // İzleme durumu buton işleyicileri
+  const handleWatchlistToggle = () => {
+    if (!seriesId || !seriesApiData) return;
+
+    const newType = logStatus === 'watchlist' ? null : 'watchlist';
+    
+    if (newType === null) {
+      // Kaydı sil
+      const logs = LocalStorageService.getMovieLogs();
+      const logToDelete = logs.find(log => log.tmdbId === parseInt(seriesId) && log.mediaType === 'tv');
+      if (logToDelete) {
+        LocalStorageService.deleteMovieLog(logToDelete.id);
+      }
+      setLogStatus(null);
+    } else {
+      // Önce mevcut kaydı güncellemeyi dene
+      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(parseInt(seriesId), newType, 'tv');
+      
+      if (!updatedLog) {
+        // Kayıt yoksa yeni kayıt oluştur
+        updatedLog = LocalStorageService.saveMovieLog({
+          title: seriesApiData.name,
+          date: new Date().toISOString().split('T')[0],
+          rating: '',
+          review: '',
+          poster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : '',
+          type: newType,
+          mediaType: 'tv',
+          tmdbId: parseInt(seriesId),
+          contentType: 'tv',
+          genres: seriesApiData.genres?.map(g => g.name) || [],
+          releaseYear: seriesApiData.first_air_date ? new Date(seriesApiData.first_air_date).getFullYear() : undefined,
+          runtime: 45, // Ortalama bölüm süresi
+          seasonCount: seriesApiData.number_of_seasons,
+          episodeCount: seriesApiData.number_of_episodes,
+          seriesId: seriesId,
+          seriesTitle: seriesApiData.name,
+          seriesPoster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : ''
+        });
+      }
+      setLogStatus(newType);
+    }
+  };
+
+  const handleWatchedToggle = () => {
+    if (!seriesId || !seriesApiData) return;
+
+    const newType = logStatus === 'watched' ? null : 'watched';
+    
+    if (newType === null) {
+      // Kaydı sil
+      const logs = LocalStorageService.getMovieLogs();
+      const logToDelete = logs.find(log => log.tmdbId === parseInt(seriesId) && log.mediaType === 'tv');
+      if (logToDelete) {
+        LocalStorageService.deleteMovieLog(logToDelete.id);
+      }
+      setLogStatus(null);
+    } else {
+      // Önce mevcut kaydı güncellemeyi dene
+      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(parseInt(seriesId), newType, 'tv');
+      
+      if (!updatedLog) {
+        // Kayıt yoksa yeni kayıt oluştur
+        updatedLog = LocalStorageService.saveMovieLog({
+          title: seriesApiData.name,
+          date: new Date().toISOString().split('T')[0],
+          rating: '',
+          review: '',
+          poster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : '',
+          type: newType,
+          mediaType: 'tv',
+          tmdbId: parseInt(seriesId),
+          contentType: 'tv',
+          genres: seriesApiData.genres?.map(g => g.name) || [],
+          releaseYear: seriesApiData.first_air_date ? new Date(seriesApiData.first_air_date).getFullYear() : undefined,
+          runtime: 45, // Ortalama bölüm süresi
+          seasonCount: seriesApiData.number_of_seasons,
+          episodeCount: seriesApiData.number_of_episodes,
+          seriesId: seriesId,
+          seriesTitle: seriesApiData.name,
+          seriesPoster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : ''
+        });
+      }
+      setLogStatus(newType);
+      
+      // Toast bildirimi göster
+      if (newType === 'watched') {
+        setShowToast(true);
+        const timeout = setTimeout(() => {
+          setShowToast(false);
+        }, 5000);
+        setToastTimeout(timeout);
+      }
+    }
+  };
+
+  const handleRatingClick = () => {
+    // Toast'u kapat
+    setShowToast(false);
+    if (toastTimeout) {
+      clearTimeout(toastTimeout);
+      setToastTimeout(null);
+    }
+    
+    // Dizi ekleme/düzenleme modalını aç
+    // Bu kısım daha sonra implement edilecek
+    console.log('Rating modal açılacak');
+  };
+
   if (isLoading) {
     return <IonPage><IonContent className="ion-padding">Yükleniyor...</IonContent></IonPage>;
   }
@@ -253,6 +382,59 @@ const SeriesDetailPage: React.FC = () => {
               {' · '}
               {seriesApiData.genres.map(g => g.name).join(', ')}
             </p>
+            
+            {/* İzleme Durumu Butonları */}
+            <div className="flex items-center gap-3 mt-3">
+              {/* İzledim Butonu */}
+              <button
+                onClick={handleWatchedToggle}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 text-sm ${
+                  logStatus === 'watched' 
+                    ? 'bg-[#FE7743] text-white shadow-lg' 
+                    : 'bg-transparent text-white border border-white hover:bg-white hover:text-[#0C1117]'
+                }`}
+              >
+                <svg 
+                  width="16" 
+                  height="16" 
+                  viewBox="0 0 24 24" 
+                  fill={logStatus === 'watched' ? 'currentColor' : 'none'} 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                >
+                  <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span className="font-medium">
+                  {logStatus === 'watched' ? 'İzlendi' : 'İzledim'}
+                </span>
+              </button>
+
+              {/* İzleme Listesi Butonu - sadece izlenmediyse göster */}
+              {logStatus !== 'watched' && (
+                <button
+                  onClick={handleWatchlistToggle}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 text-sm ${
+                    logStatus === 'watchlist' 
+                      ? 'bg-[#FE7743] text-white shadow-lg' 
+                      : 'bg-transparent text-white border border-white hover:bg-white hover:text-[#0C1117]'
+                  }`}
+                >
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} 
+                    stroke="currentColor" 
+                    strokeWidth="2"
+                  >
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span className="font-medium">
+                    {logStatus === 'watchlist' ? 'Listede' : 'Listeme Ekle'}
+                  </span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -300,6 +482,24 @@ const SeriesDetailPage: React.FC = () => {
                 />
             ))}
         </div>
+
+        {/* Success Toast */}
+        {showToast && (
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-8 rounded-lg shadow-2xl max-w-sm mx-4">
+              <h1 className="text-black text-2xl font-bold mb-4">Başarılı!</h1>
+              <p className="text-black mb-4">
+                "{seriesApiData?.name}" izlendi olarak işaretlendi.
+              </p>
+              <button 
+                className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
+                onClick={handleRatingClick}
+              >
+                Puan & Yorum Ekle
+              </button>
+            </div>
+          </div>
+        )}
       </IonContent>
     </IonPage>
   );

@@ -173,6 +173,46 @@ export class LocalStorageService {
     }
   }
 
+  // Yeni yardımcı fonksiyon: tmdbId ile kayıt type'ını güncelleme
+  static updateLogTypeByTmdbId(tmdbId: number, newType: 'watched' | 'watchlist', mediaType: 'movie' | 'tv' = 'movie'): MovieLog | null {
+    try {
+      const logs = this.getMovieLogs();
+      const logIndex = logs.findIndex(log => log.tmdbId === tmdbId && log.mediaType === mediaType);
+      
+      if (logIndex === -1) {
+        // Kayıt yoksa null döndür - yeni kayıt oluşturma işlemi component'te yapılacak
+        return null;
+      }
+
+      // Mevcut kaydı güncelle
+      const updatedLog: MovieLog = {
+        ...logs[logIndex],
+        type: newType,
+        updatedAt: new Date().toISOString()
+      };
+
+      logs[logIndex] = updatedLog;
+      localStorage.setItem(STORAGE_KEYS.MOVIE_LOGS, JSON.stringify(logs));
+      
+      return updatedLog;
+    } catch (error) {
+      console.error('Error updating log type by tmdbId:', error);
+      return null;
+    }
+  }
+
+  // tmdbId ile kayıt durumunu kontrol etme
+  static getLogStatusByTmdbId(tmdbId: number, mediaType: 'movie' | 'tv' = 'movie'): 'watched' | 'watchlist' | null {
+    try {
+      const logs = this.getMovieLogs();
+      const log = logs.find(log => log.tmdbId === tmdbId && log.mediaType === mediaType);
+      return log ? log.type : null;
+    } catch (error) {
+      console.error('Error getting log status by tmdbId:', error);
+      return null;
+    }
+  }
+
   static getMovieLogsByType(type: 'watched' | 'watchlist'): MovieLog[] {
     const logs = this.getMovieLogs();
     return logs.filter(log => log.type === type);
