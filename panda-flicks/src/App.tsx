@@ -10,6 +10,7 @@ import Home from './pages/home';
 import Explore from './pages/explore';
 import Lists from './pages/lists';
 import Profile from './pages/profile';
+import Social from './pages/social';
 import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
 import MovieDetailModal from './components/MovieDetailModal';
@@ -104,6 +105,9 @@ const App: React.FC = () => {
           </Route>
           <Route exact path="/lists">
             <Lists />
+          </Route>
+          <Route exact path="/social">
+            <Social />
           </Route>
           <Route exact path="/profile">
             <Profile />
