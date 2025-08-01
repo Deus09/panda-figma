@@ -284,11 +284,11 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
 
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-white font-poppins">Loading...</div>
+            <div className="text-white font-poppins">{t('movie_detail_modal.loading')}</div>
           </div>
         ) : error ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-red-400 font-poppins">{error}</div>
+            <div className="text-red-400 font-poppins">{t('movie_detail_modal.error')}</div>
           </div>
         ) : movieDetails ? (
           <>
@@ -389,7 +389,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
 
                 {/* Rating */}
                 <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#FE7743] rounded-xl mb-2 drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">
-                  <span className="text-[#F8F8FF] font-poppins text-xs">IMDB Rating:</span>
+                  <span className="text-[#F8F8FF] font-poppins text-xs">{t('movie_detail_modal.imdb_rating')}</span>
                   <div className="flex items-center gap-0.5">
                     <span className="text-[#F8F8FF] font-poppins text-sm">
                       {movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) : 'N/A'}
@@ -402,12 +402,12 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
 
                 {/* Overview */}
                 <p className="text-[#EFEEEA] font-poppins text-xs leading-6 mb-4">
-                  {movieDetails.overview || 'No overview available.'}
+                  {movieDetails.overview || t('movie_detail_modal.no_overview')}
                 </p>
 
                 {/* Cast Section */}
                 <div className="mb-4">
-                  <h2 className="text-[#EFEEEA] font-poppins font-bold text-2xl mb-1">Stars</h2>
+                  <h2 className="text-[#EFEEEA] font-poppins font-bold text-2xl mb-1">{t('movie_detail_modal.stars')}</h2>
                   <div className="flex gap-4 overflow-x-auto">
                     {cast.slice(0, 6).map((member) => (
                       <div 
@@ -432,7 +432,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
 
                 {/* Watch Trailer Section */}
                 <div className="mb-4">
-                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">Watch Trailer</h2>
+                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">{t('movie_detail_modal.watch_trailer')}</h2>
                   {trailerKey ? (
                     <div className="w-full h-40 bg-black rounded-lg overflow-hidden flex items-center justify-center">
                       <iframe
@@ -448,14 +448,14 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                     </div>
                   ) : (
                     <div className="w-full h-40 bg-gray-800 rounded-lg flex items-center justify-center">
-                      <span className="text-[#F8F8FF] font-poppins">Trailer not found</span>
+                      <span className="text-[#F8F8FF] font-poppins">{t('movie_detail_modal.trailer_not_found')}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Liked Others Section */}
                 <div className="mb-6">
-                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">Liked others</h2>
+                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">{t('movie_detail_modal.liked_others')}</h2>
                   <div className="flex gap-3 overflow-x-auto pb-4">
                     {similarMovies.slice(0, 5).map((movie) => (
                       <div 

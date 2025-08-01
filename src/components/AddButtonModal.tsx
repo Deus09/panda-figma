@@ -456,16 +456,16 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
         <div className="w-[393px] max-h-[95vh] h-[95vh] rounded-t-[54px] bg-[#222] pb-6 pt-6 px-4 shadow-2xl animate-slideInUp overflow-y-auto relative z-[60]">
           {/* Modal Title */}
           <div className="flex justify-center mb-8">
-            <span className="text-[24px] font-extrabold font-poppins text-[#F8F8FF] text-center drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">Film/Dizi Ekle</span>
+            <span className="text-[24px] font-extrabold font-poppins text-[#F8F8FF] text-center drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">{t('add_movie_modal.title')}</span>
           </div>
           {/* Search Bar */}
           {!selectedItem ? (
             <div className="mb-8 relative">
-              <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">Search a flick/series</span>
+              <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">{t('add_movie_modal.search_label')}</span>
               <div className="relative">
                 <input
                   className="w-full h-[40px] rounded-[12px] bg-[#EFEEEA] pl-10 pr-10 text-black text-[16px] font-poppins font-semibold outline-none"
-                  placeholder="Fight Club"
+                  placeholder={t('add_movie_modal.search_placeholder')}
                   value={search}
                   onChange={e => {
                     setSearch(e.target.value);
@@ -492,7 +492,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                 </svg>
                 {search.length >= 3 && suggestions.length > 0 && (
                   <div ref={suggestionsRef} className="absolute left-0 top-[44px] w-full bg-white rounded-b-[12px] shadow-lg z-50 max-h-72 overflow-y-auto border border-[#FE7743]">
-                    {loading && <div className="p-2 text-sm text-gray-400">Loading...</div>}
+                    {loading && <div className="p-2 text-sm text-gray-400">{t('add_movie_modal.loading')}</div>}
                     {suggestions.map(item => (
                       <div
                         key={item.id}
@@ -537,7 +537,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             // Seçim yapıldıktan sonra seçilen içeriği göster
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF]">Selected Content</span>
+                <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF]">{t('add_movie_modal.selected_content')}</span>
                 <button
                   onClick={() => {
                     setSelectedItem(null);
@@ -548,7 +548,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                   }}
                   className="text-[#FE7743] text-sm font-medium hover:text-[#FE7743]/80"
                 >
-                  Change
+                  {t('add_movie_modal.change')}
                 </button>
               </div>
               <div className="flex items-center gap-4 p-3 bg-[#333] rounded-lg">
@@ -562,7 +562,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                 <div className="flex-1">
                   <h3 className="text-[#F8F8FF] font-semibold text-[16px] leading-5">{title}</h3>
                   <p className="text-[#B0B0B0] text-sm mt-1">
-                    {selectedItem?.mediaType === 'tv' ? 'TV Series Episode' : 'Movie'}
+                    {selectedItem?.mediaType === 'tv' ? t('add_movie_modal.tv_series_episode') : t('add_movie_modal.movie')}
                   </p>
                 </div>
               </div>
@@ -574,7 +574,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
             <>
           {/* Add Watch List Toggle */}
           <div className="flex items-center justify-between mb-8">
-            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Add Watch List</span>
+            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">{t('add_movie_modal.add_watchlist')}</span>
             <button
               type="button"
               aria-pressed={watchList}
@@ -597,7 +597,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
           {/* Date Watched */}
           <div className="flex items-center justify-between mb-8">
-            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Date Watched</span>
+            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">{t('add_movie_modal.date_watched')}</span>
             <button
               type="button"
               className={`w-[130px] h-[40px] rounded-[12px] bg-[#D9D9D9] flex items-center justify-center text-[#000] text-[16px] font-poppins font-semibold relative ${
@@ -606,7 +606,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
               onClick={() => !watchList && selectedItem && setShowDatePicker(true)}
               disabled={watchList || !selectedItem}
             >
-              {date === new Date().toISOString().split('T')[0] ? 'Today' : date}
+              {date === new Date().toISOString().split('T')[0] ? t('add_movie_modal.today') : date}
             </button>
             <IonModal isOpen={showDatePicker} onDidDismiss={() => setShowDatePicker(false)}>
               <div className="flex flex-col items-center justify-center h-full bg-[#222]">
@@ -626,14 +626,14 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                   onClick={() => setShowDatePicker(false)}
                   disabled={watchList}
                 >
-                  Set Date
+                  {t('add_movie_modal.set_date')}
                 </button>
               </div>
             </IonModal>
           </div>
           {/* Rating */}
           <div className="flex items-center justify-between mb-8">
-            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">Rating</span>
+            <span className="text-[16px] font-semibold font-poppins text-[#F8F8FF]">{t('add_movie_modal.rating')}</span>
             <div className={`flex gap-1 ${(watchList || !selectedItem) ? 'opacity-50 pointer-events-none' : ''}`}>
               {[1,2,3,4,5].map(i => {
                 const value = i;
@@ -694,11 +694,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           </div>
           {/* Comment */}
           <div className="mb-8 relative">
-            <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">Add a comment</span>
+            <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">{t('add_movie_modal.comment')}</span>
             <div className="relative">
               <textarea
                 className={`w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-[#D9D9D9] p-3 pr-10 text-black text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto ${(watchList || !selectedItem) ? 'opacity-50 pointer-events-none' : ''}`}
-                placeholder="Write your comment..."
+                placeholder={t('add_movie_modal.comment_placeholder')}
                 value={comment}
                 onChange={e => setComment(e.target.value)}
                 disabled={watchList || !selectedItem}
@@ -725,7 +725,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           </div>
           {/* Action Buttons */}
           <div className="flex justify-center gap-6 mt-6 relative z-[60]">
-            <button onClick={handleCancel} className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md relative z-[60]">Cancel</button>
+            <button onClick={handleCancel} className="w-[130px] h-[40px] rounded-[12px] bg-[#EFEEEA] text-[#222] text-[16px] font-poppins font-semibold shadow-md relative z-[60]">{t('add_movie_modal.cancel')}</button>
             <button 
               onClick={handleSave} 
               disabled={!selectedItem}
@@ -735,7 +735,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                   : 'bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90'
               }`}
             >
-              Save
+              {t('add_movie_modal.save')}
             </button>
           </div>
           </>
@@ -745,7 +745,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           {view === 'episodes' && seasonDetails && (
             <div>
               <div className="text-center text-[#F8F8FF] text-[18px] font-poppins mb-6">
-                Season {selectedSeason} - Bölüm Seçin
+                {t('add_movie_modal.season')} {selectedSeason} - {t('add_movie_modal.select_all_episodes')}
               </div>
               
               {/* Tümünü Seç Checkbox */}
@@ -783,7 +783,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                         />
                       ) : (
                         <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
-                          No Image
+                          {t('add_movie_modal.no_image')}
                         </div>
                       )}
                     </IonThumbnail>
@@ -803,7 +803,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                 >
                   {selectedSeries?.seasons?.map((season) => (
                     <option key={season.season_number} value={season.season_number}>
-                      {season.season_number === 0 ? 'Özel' : `Sezon ${season.season_number}`}
+                      {season.season_number === 0 ? t('add_movie_modal.special') : `${t('add_movie_modal.season')} ${season.season_number}`}
                     </option>
                   ))}
                 </select>
@@ -816,7 +816,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                       : 'bg-[#FE7743] text-[#F8F8FF] hover:bg-[#FE7743]/90'
                   }`}
                 >
-                  İleri ({checkedEpisodes.size})
+                  {t('add_movie_modal.forward')} ({checkedEpisodes.size})
                 </button>
               </div>
             </div>
@@ -825,11 +825,11 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
         {actionSheetOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
             <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center w-[90vw] max-w-[350px]">
-              <span className="text-black font-poppins text-base mb-4">Yorumunuzu geliştirmek istiyor musunuz?</span>
+              <span className="text-black font-poppins text-base mb-4">{t('add_movie_modal.improve_comment_question')}</span>
               <div className="bg-[#F3F2EF] rounded p-2 text-xs text-gray-700 mb-4 w-full max-h-[120px] overflow-y-auto">{pendingImproved}</div>
               <div className="flex gap-4">
-                <button className="px-4 py-1 rounded bg-[#FE7743] text-white font-poppins" onClick={() => { setComment(pendingImproved); setActionSheetOpen(false); setPendingImproved(''); }}>Yes</button>
-                <button className="px-4 py-1 rounded bg-gray-300 text-black font-poppins" onClick={() => { setActionSheetOpen(false); setPendingImproved(''); }}>No</button>
+                <button className="px-4 py-1 rounded bg-[#FE7743] text-white font-poppins" onClick={() => { setComment(pendingImproved); setActionSheetOpen(false); setPendingImproved(''); }}>{t('add_movie_modal.yes')}</button>
+                <button className="px-4 py-1 rounded bg-gray-300 text-black font-poppins" onClick={() => { setActionSheetOpen(false); setPendingImproved(''); }}>{t('add_movie_modal.no')}</button>
               </div>
             </div>
           </div>

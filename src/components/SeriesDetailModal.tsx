@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IonToast } from '@ionic/react';
 import { getSeriesDetails, getSeriesCast, getSeriesTrailerKey, getSimilarSeries, TMDBSeriesDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import { LocalStorageService } from '../services/localStorage';
@@ -12,6 +13,7 @@ interface SeriesDetailModalProps {
 }
 
 const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, seriesId }) => {
+  const { t } = useTranslation();
   const { openModal, closeModal } = useModal();
   const [seriesDetails, setSeriesDetails] = useState<TMDBSeriesDetails | null>(null);
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
@@ -162,11 +164,11 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
 
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-white font-poppins">Loading...</div>
+            <div className="text-white font-poppins">{t('series_detail_modal.loading')}</div>
           </div>
         ) : error ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-red-400 font-poppins">{error}</div>
+            <div className="text-red-400 font-poppins">{t('series_detail_modal.error')}</div>
           </div>
         ) : seriesDetails ? (
           <>
@@ -204,17 +206,17 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                 {/* Seasons and Episodes */}
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[#F8F8FF] font-poppins font-semibold text-base drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]">
-                    {seriesDetails.number_of_seasons} season{seriesDetails.number_of_seasons !== 1 ? 's' : ''}
+                    {seriesDetails.number_of_seasons} {t('series_detail_modal.seasons')}{seriesDetails.number_of_seasons !== 1 ? 's' : ''}
                   </span>
                   <div className="w-2.5 h-2.5 bg-[#F8F8FF] rounded-full drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]"></div>
                   <span className="text-[#F8F8FF] font-poppins font-semibold text-base drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]">
-                    {seriesDetails.number_of_episodes} episodes
+                    {seriesDetails.number_of_episodes} {t('series_detail_modal.episodes')}
                   </span>
                 </div>
 
                 {/* Rating */}
                 <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#FE7743] rounded-xl mb-2 drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">
-                  <span className="text-[#F8F8FF] font-poppins text-xs">IMDB Rating:</span>
+                  <span className="text-[#F8F8FF] font-poppins text-xs">{t('series_detail_modal.imdb_rating')}</span>
                   <div className="flex items-center gap-0.5">
                     <span className="text-[#F8F8FF] font-poppins text-sm">
                       {seriesDetails.vote_average ? seriesDetails.vote_average.toFixed(1) : 'N/A'}
@@ -227,12 +229,12 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
 
                 {/* Overview */}
                 <p className="text-[#EFEEEA] font-poppins text-xs leading-6 mb-4">
-                  {seriesDetails.overview || 'No overview available.'}
+                  {seriesDetails.overview || t('series_detail_modal.no_overview')}
                 </p>
 
                 {/* Cast Section */}
                 <div className="mb-4">
-                  <h2 className="text-[#EFEEEA] font-poppins font-bold text-2xl mb-1">Stars</h2>
+                  <h2 className="text-[#EFEEEA] font-poppins font-bold text-2xl mb-1">{t('series_detail_modal.stars')}</h2>
                   <div className="flex gap-4 overflow-x-auto">
                     {cast.slice(0, 6).map((member) => (
                       <div 

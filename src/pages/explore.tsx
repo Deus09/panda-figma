@@ -51,37 +51,37 @@ const Explore: React.FC = () => {
 
   // Film türleri için ID'ler
   const MOVIE_GENRES: { [key: string]: number } = {
-    'Aksiyon': 28,
-    'Komedi': 35,
-    'Dram': 18,
-    'Korku': 27,
-    'Romantik': 10749,
-    'Bilim Kurgu': 878,
-    'Gerilim': 53,
-    'Macera': 12,
+    [t('genres.action')]: 28,
+    [t('genres.comedy')]: 35,
+    [t('genres.drama')]: 18,
+    [t('genres.horror')]: 27,
+    [t('genres.romantic')]: 10749,
+    [t('genres.sci_fi')]: 878,
+    [t('genres.thriller')]: 53,
+    [t('genres.adventure')]: 12,
   };
 
   // Dizi türleri için ID'ler (TMDB'de farklı)
   const SERIES_GENRES: { [key: string]: number } = {
-    'Aksiyon': 10759, // Action & Adventure
-    'Komedi': 35,
-    'Dram': 18,
-    'Korku': 9648, // Mystery (daha uygun dizi türü)
-    'Romantik': 10749,
-    'Bilim Kurgu': 10765, // Sci-Fi & Fantasy
-    'Gerilim': 53, // Thriller
-    'Macera': 10759, // Action & Adventure (macera da bu kategoride)
+    [t('genres.action')]: 10759, // Action & Adventure
+    [t('genres.comedy')]: 35,
+    [t('genres.drama')]: 18,
+    [t('genres.horror')]: 9648, // Mystery (daha uygun dizi türü)
+    [t('genres.romantic')]: 10749,
+    [t('genres.sci_fi')]: 10765, // Sci-Fi & Fantasy
+    [t('genres.thriller')]: 53, // Thriller
+    [t('genres.adventure')]: 10759, // Action & Adventure (macera da bu kategoride)
   };
 
   const categories = [
-    { label: 'Aksiyon', prefix: 'genre:Action', genreId: 28 },
-    { label: 'Komedi', prefix: 'genre:Comedy', genreId: 35 },
-    { label: 'Dram', prefix: 'genre:Drama', genreId: 18 },
-    { label: 'Korku', prefix: 'genre:Horror', genreId: 27 },
-    { label: 'Romantik', prefix: 'genre:Romance', genreId: 10749 },
-    { label: 'Bilim Kurgu', prefix: 'genre:Sci-Fi', genreId: 878 },
-    { label: 'Gerilim', prefix: 'genre:Thriller', genreId: 53 },
-    { label: 'Macera', prefix: 'genre:Adventure', genreId: 12 },
+    { label: t('genres.action'), prefix: 'genre:Action', genreId: 28 },
+    { label: t('genres.comedy'), prefix: 'genre:Comedy', genreId: 35 },
+    { label: t('genres.drama'), prefix: 'genre:Drama', genreId: 18 },
+    { label: t('genres.horror'), prefix: 'genre:Horror', genreId: 27 },
+    { label: t('genres.romantic'), prefix: 'genre:Romance', genreId: 10749 },
+    { label: t('genres.sci_fi'), prefix: 'genre:Sci-Fi', genreId: 878 },
+    { label: t('genres.thriller'), prefix: 'genre:Thriller', genreId: 53 },
+    { label: t('genres.adventure'), prefix: 'genre:Adventure', genreId: 12 },
   ];
 
   useEffect(() => {
@@ -355,7 +355,7 @@ const Explore: React.FC = () => {
   return (
     <IonPage className={styles.explorePage}>
       <IonContent className={styles.exploreContent}>
-        <TopHeaderBar title="Cinenar Keşfet" />
+        <TopHeaderBar title={`Cinenar ${t('navigation.explore')}`} />
         <div className="flex flex-col items-center w-full pt-6 pb-2 px-0">
           {/* Searchbar */}
           <div className="w-full max-w-[332px] flex flex-row items-center bg-[#EFEEEA] rounded-[12px] px-[15px] py-[4px] gap-[8px] mb-4">
@@ -384,7 +384,7 @@ const Explore: React.FC = () => {
                   setTotalPages(0);
                 }}
                 className="w-[16px] h-[16px] flex items-center justify-center rounded-full bg-[#A3ABB2] hover:bg-[#8B9399] transition-colors"
-                aria-label="Temizle"
+                aria-label={t('common.close')}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="#fff" className="w-[10px] h-[10px]">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -467,7 +467,7 @@ const Explore: React.FC = () => {
                   >
                     <IonInfiniteScrollContent
                       loadingSpinner="bubbles"
-                      loadingText="Daha fazla yükleniyor..."
+                      loadingText={t('common.loading')}
                     />
                   </IonInfiniteScroll>
                 )}
@@ -527,7 +527,7 @@ const Explore: React.FC = () => {
                  filteredResults.series.length === 0 && 
                  filteredResults.persons.length === 0 && (
                   <div className="col-span-3 text-center text-gray-400 py-8">
-                    <p className="font-poppins">Arama sonucu bulunamadı</p>
+                    <p className="font-poppins">{t('search.no_results')}</p>
                   </div>
                 )}
               </div>
@@ -542,7 +542,7 @@ const Explore: React.FC = () => {
         <button
           className="fixed bottom-[110px] right-[20px] w-[56px] h-[56px] rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center shadow-[0_8px_24px_0_rgba(0,0,0,0.15),0_2px_4px_0_rgba(0,0,0,0.2)] z-50 hover:from-purple-700 hover:to-blue-700 transition-all duration-200 hover:scale-105 active:scale-95"
           onClick={() => setIsAiModalOpen(true)}
-          aria-label="AI Film Keşfi"
+          aria-label={t('ai.ai_discovery')}
         >
           {/* Brain/AI Icon */}
           <svg 
