@@ -1,17 +1,22 @@
 import React from 'react';
 import logo from '../assets/logo.png';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface TopHeaderBarProps {
   title?: string;
   showBackButton?: boolean;
   showLogo?: boolean;
+  showLanguageSwitcher?: boolean;
   onBackClick?: () => void;
+  isProfilePage?: boolean;
 }
 
 const TopHeaderBar: React.FC<TopHeaderBarProps> = ({ 
   title = "Pandaflicks", 
   showBackButton = false, 
   showLogo = true,
+  showLanguageSwitcher = false,
+  isProfilePage = false,
   onBackClick
 }) => (
   <div className="flex flex-row items-center justify-between bg-background w-full h-[60px] p-4">
@@ -33,6 +38,13 @@ const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
         {title}
       </span>
     </div>
+    
+    {/* Sağ taraf - LanguageSwitcher (sadece profil sayfası için) */}
+    {showLanguageSwitcher && isProfilePage && (
+      <div className="mr-4">
+        <LanguageSwitcher compact={true} />
+      </div>
+    )}
   </div>
 );
 

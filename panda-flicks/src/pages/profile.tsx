@@ -4,7 +4,6 @@ import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import MovieCard from '../components/MovieCard';
 import MoviePosterCard from '../components/MoviePosterCard';
-import LanguageSwitcher from '../components/LanguageSwitcher';
 import LocalStorageService, { UserProfile } from '../services/localStorage';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../services/supabaseClient';
@@ -667,6 +666,8 @@ const Profile: React.FC = () => {
         <TopHeaderBar 
           title={t('profile.my_profile')} 
           showBackButton={false}
+          showLanguageSwitcher={true}
+          isProfilePage={true}
         />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
@@ -686,6 +687,8 @@ const Profile: React.FC = () => {
         <TopHeaderBar 
           title={t('profile.my_profile')} 
           showBackButton={false}
+          showLanguageSwitcher={true}
+          isProfilePage={true}
         />
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="text-center space-y-6 max-w-md">
@@ -724,6 +727,8 @@ const Profile: React.FC = () => {
         <TopHeaderBar 
           title={t('profile.my_profile')} 
           showBackButton={false}
+          showLanguageSwitcher={true}
+          isProfilePage={true}
         />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
@@ -741,6 +746,8 @@ const Profile: React.FC = () => {
       <TopHeaderBar 
         title={t('profile.my_profile')} 
         showBackButton={false}
+        showLanguageSwitcher={true}
+        isProfilePage={true}
       />
       
       <div className="flex-1 px-4 py-6 pb-32 overflow-y-auto">
@@ -927,15 +934,6 @@ const Profile: React.FC = () => {
               </button>
             </div>
           )}
-        </div>
-
-        {/* Dil Ayarları */}
-        <div className="bg-[#222] rounded-[20px] p-6 mb-6 shadow-lg">
-          <div className="flex items-center mb-4">
-            <div className="w-1 h-6 bg-[#FE7743] rounded-full mr-3"></div>
-            <h2 className="text-xl font-bold text-white font-poppins">{t('profile.language')}</h2>
-          </div>
-          <LanguageSwitcher />
         </div>
 
         {/* İstatistiksel Gösterge Paneli (Dashboard) */}

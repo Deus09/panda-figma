@@ -1,0 +1,53 @@
+/* LanguageSwitcher Accordion Styles */
+.language-switcher-accordion ion-accordion-group {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.language-switcher-accordion ion-accordion {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.language-switcher-accordion ion-item {
+  --background: transparent !important;
+  --inner-border-width: 0 !important;
+  --border-width: 0 !important;
+  --padding-start: 12px !important;
+  --padding-end: 12px !important;
+  --min-height: 36px !important;
+  margin: 0 !important;
+}
+
+.language-switcher-accordion .header-item {
+  background: #333 !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.language-switcher-accordion .header-item:hover {
+  background: #444 !important;
+}
+
+.language-switcher-accordion .content-item {
+  background: transparent !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.language-switcher-accordion .content-item:hover {
+  background: #444 !important;
+}
+
+.language-switcher-accordion .content-item.active {
+  background: #FE7743 !important;
+}
+
+.language-switcher-accordion .content-container {
+  background: #333 !important;
+  border-radius: 8px !important;
+  margin-top: 4px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
