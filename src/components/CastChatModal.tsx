@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TMDBCastMember } from '../services/tmdb';
 
 interface ChatMessage {
@@ -23,6 +24,7 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
   movieTitle,
   onSendMessage
 }) => {
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,15 +38,29 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
   // Welcome message when chat opens
   useEffect(() => {
     if (open && messages.length === 0) {
+      const currentLanguage = i18n.language || 'tr';
+      let welcomeText = '';
+      
+      switch (currentLanguage) {
+        case 'tr':
+          welcomeText = `Merhaba! Ben ${castMember.name}, "${movieTitle}" filminde ${castMember.character} karakterini canlandırıyorum. Film veya karakterim hakkında ne öğrenmek istersin?`;
+          break;
+        case 'es':
+          welcomeText = `¡Hola! Soy ${castMember.name}, interpretando a ${castMember.character} en "${movieTitle}". ¿Qué te gustaría saber sobre la película o mi personaje?`;
+          break;
+        default:
+          welcomeText = `Hi! I'm ${castMember.name}, playing ${castMember.character} in "${movieTitle}". What would you like to know about the movie or my character?`;
+      }
+      
       const welcomeMessage: ChatMessage = {
         id: 'welcome',
-        text: `Hi! I'm ${castMember.name}, playing ${castMember.character} in "${movieTitle}". What would you like to know about the movie or my character?`,
+        text: welcomeText,
         isUser: false,
         timestamp: new Date()
       };
       setMessages([welcomeMessage]);
     }
-  }, [open, castMember, movieTitle, messages.length]);
+  }, [open, castMember, movieTitle, messages.length, i18n.language]);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -70,9 +86,23 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
       };
       setMessages(prev => [...prev, castMessage]);
     } catch (error) {
+      const currentLanguage = i18n.language || 'tr';
+      let errorText = '';
+      
+      switch (currentLanguage) {
+        case 'tr':
+          errorText = "Üzgünüm, şu anda yanıt vermekte zorlanıyorum. Lütfen tekrar deneyin.";
+          break;
+        case 'es':
+          errorText = "Lo siento, estoy teniendo problemas para responder en este momento. Por favor, inténtalo de nuevo.";
+          break;
+        default:
+          errorText = "Sorry, I'm having trouble responding right now. Please try again.";
+      }
+      
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        text: "Sorry, I'm having trouble responding right now. Please try again.",
+        text: errorText,
         isUser: false,
         timestamp: new Date()
       };
@@ -86,6 +116,32 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  // Placeholder text'i dile göre ayarla
+  const getPlaceholderText = () => {
+    const currentLanguage = i18n.language || 'tr';
+    switch (currentLanguage) {
+      case 'tr':
+        return 'Mesajınızı yazın...';
+      case 'es':
+        return 'Escribe tu mensaje...';
+      default:
+        return 'Type your message...';
+    }
+  };
+
+  // Typing text'i dile göre ayarla
+  const getTypingText = () => {
+    const currentLanguage = i18n.language || 'tr';
+    switch (currentLanguage) {
+      case 'tr':
+        return 'Yazıyor...';
+      case 'es':
+        return 'Escribiendo...';
+      default:
+        return 'Typing...';
     }
   };
 
@@ -161,7 +217,7 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
                     <div className="w-2 h-2 bg-[#FE7743] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                     <div className="w-2 h-2 bg-[#FE7743] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
-                  <span className="text-xs">Typing...</span>
+                  <span className="text-xs">{getTypingText()}</span>
                 </div>
               </div>
             </div>
@@ -177,7 +233,7 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type your message..."
+              placeholder={getPlaceholderText()}
               className="flex-1 bg-[#333] text-white rounded-[12px] p-3 font-poppins text-[14px] resize-none outline-none border-none"
               rows={1}
               disabled={isLoading}

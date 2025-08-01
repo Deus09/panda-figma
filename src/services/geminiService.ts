@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 // Film önerisi için Gemini AI entegrasyonu
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
@@ -11,6 +13,34 @@ export interface MovieSuggestion {
   tmdbId: number;
   poster_path: string;
 }
+
+// Dil kodlarını Gemini için uygun formata çevir
+const getLanguageCode = (language: string): string => {
+  switch (language) {
+    case 'tr':
+      return 'Turkish';
+    case 'en':
+      return 'English';
+    case 'es':
+      return 'Spanish';
+    default:
+      return 'Turkish';
+  }
+};
+
+// TMDB dil kodlarını al
+const getTmdbLanguageCode = (language: string): string => {
+  switch (language) {
+    case 'tr':
+      return 'tr-TR';
+    case 'en':
+      return 'en-US';
+    case 'es':
+      return 'es-ES';
+    default:
+      return 'tr-TR';
+  }
+};
 
 /**
  * Gemini'den gelen raw text'i parse ederek film adlarını çıkarır
@@ -36,13 +66,16 @@ async function searchTmdb(query: string): Promise<any> {
     throw new Error('TMDB API anahtarı tanımlanmamış');
   }
 
+  const currentLanguage = i18n.language || 'tr';
+  const tmdbLanguageCode = getTmdbLanguageCode(currentLanguage);
+
   // Yıl bilgisini çıkar
   let year = '';
   const yearMatch = query.match(/\((\d{4})\)/);
   if (yearMatch) year = yearMatch[1];
   const movieTitle = query.replace(/\s\(\d{4}\)$/, '').trim();
 
-  let url = `${TMDB_API_URL}/search/movie?query=${encodeURIComponent(movieTitle)}&language=tr-TR&api_key=${tmdbApiKey}`;
+  let url = `${TMDB_API_URL}/search/movie?query=${encodeURIComponent(movieTitle)}&language=${tmdbLanguageCode}&api_key=${tmdbApiKey}`;
   if (year) url += `&year=${year}`;
 
   const response = await fetch(url);
@@ -66,6 +99,9 @@ export const getMovieSuggestions = async (
   excludedMovies?: MovieSuggestion[]
 ): Promise<MovieSuggestion[]> => {
   try {
+    const currentLanguage = i18n.language || 'tr';
+    const languageCode = getLanguageCode(currentLanguage);
+    
     let prompt = `Lütfen kullanıcının şu isteğine göre birbirinden farklı 9 film öner: "${promptText}".`;
 
     // Dışlama mantığını ekle
@@ -85,7 +121,9 @@ export const getMovieSuggestions = async (
 6. The Shawshank Redemption (1994)
 7. Fight Club (1999)
 8. Forrest Gump (1994)
-9. The Godfather (1972)`;
+9. The Godfather (1972)
+
+Please respond in ${languageCode} language.`;
 
     // Gemini API'ye istek gönder
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -160,7 +198,12 @@ export const getMovieSuggestions = async (
     console.log(`${foundMovies.length} film TMDB'de bulundu`);
 
     if (foundMovies.length === 0) {
-      throw new Error('Önerilen filmlerin hiçbiri TMDB veritabanında bulunamadı. Lütfen tekrar deneyin.');
+      const errorMessage = currentLanguage === 'tr' 
+        ? 'Önerilen filmlerin hiçbiri TMDB veritabanında bulunamadı. Lütfen tekrar deneyin.'
+        : currentLanguage === 'es'
+        ? 'Ninguna de las películas sugeridas se encontró en la base de datos de TMDB. Por favor, inténtalo de nuevo.'
+        : 'None of the suggested movies were found in the TMDB database. Please try again.';
+      throw new Error(errorMessage);
     }
 
     return foundMovies;

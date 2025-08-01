@@ -215,7 +215,11 @@
     "thinking": "Thinking...",
     "try_again": "🔄 Try Again",
     "all_attempts_used": "All attempts used",
-    "attempt": "Attempt"
+    "attempt": "Attempt",
+    "chat_with_cast": "Chat with Cast",
+    "improve_comment": "Improve Comment",
+    "chat_started": "Chat started",
+    "chat_error": "Error starting chat"
   },
   "tabs": {
     "watched": "Watched",
@@ -385,6 +389,12 @@
     "series_added_to_watchlist": "{{title}} added to watchlist",
     "series_removed_from_watchlist": "{{title}} removed from watchlist",
     "series_marked_as_watched": "{{title}} marked as watched",
-    "content_added_successfully": "Content added successfully"
+    "content_added_successfully": "Content added successfully",
+    "comment_improved": "Comment improved successfully",
+    "chat_started": "Chat started",
+    "chat_error": "Error starting chat",
+    "ai_working": "AI is working...",
+    "ai_success": "AI suggestions ready!",
+    "ai_error": "Error getting AI suggestions"
   }
 }

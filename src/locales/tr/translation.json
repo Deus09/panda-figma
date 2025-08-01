@@ -215,7 +215,11 @@
     "thinking": "Düşünüyorum...",
     "try_again": "🔄 Yeniden Dene",
     "all_attempts_used": "Tüm haklar kullanıldı",
-    "attempt": "Deneme"
+    "attempt": "Deneme",
+    "chat_with_cast": "Oyuncu ile Sohbet Et",
+    "improve_comment": "Yorumu Geliştir",
+    "chat_started": "Sohbet başlatıldı",
+    "chat_error": "Sohbet başlatılırken hata oluştu"
   },
   "tabs": {
     "watched": "İzlendi",
@@ -385,6 +389,12 @@
     "series_added_to_watchlist": "{{title}} izleme listesine eklendi",
     "series_removed_from_watchlist": "{{title}} izleme listesinden çıkarıldı",
     "series_marked_as_watched": "{{title}} izlendi olarak işaretlendi",
-    "content_added_successfully": "İçerik başarıyla eklendi"
+    "content_added_successfully": "İçerik başarıyla eklendi",
+    "comment_improved": "Yorum başarıyla geliştirildi",
+    "chat_started": "Sohbet başlatıldı",
+    "chat_error": "Sohbet başlatılırken hata oluştu",
+    "ai_working": "Yapay zeka çalışıyor...",
+    "ai_success": "Yapay zeka önerileri hazır!",
+    "ai_error": "Yapay zeka önerisi alınırken hata oluştu"
   }
 }

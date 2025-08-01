@@ -215,7 +215,11 @@
     "thinking": "Pensando...",
     "try_again": "🔄 Intentar de Nuevo",
     "all_attempts_used": "Todos los intentos utilizados",
-    "attempt": "Intento"
+    "attempt": "Intento",
+    "chat_with_cast": "Chat con el Reparto",
+    "improve_comment": "Mejorar Comentario",
+    "chat_started": "Chat iniciado",
+    "chat_error": "Error al iniciar chat"
   },
   "tabs": {
     "watched": "Visto",
@@ -385,6 +389,12 @@
     "series_added_to_watchlist": "{{title}} añadida a la lista de ver",
     "series_removed_from_watchlist": "{{title}} eliminada de la lista de ver",
     "series_marked_as_watched": "{{title}} marcada como vista",
-    "content_added_successfully": "Contenido añadido exitosamente"
+    "content_added_successfully": "Contenido añadido exitosamente",
+    "comment_improved": "Comentario mejorado exitosamente",
+    "chat_started": "Chat iniciado",
+    "chat_error": "Error al iniciar chat",
+    "ai_working": "IA trabajando...",
+    "ai_success": "¡Sugerencias de IA listas!",
+    "ai_error": "Error al obtener sugerencias de IA"
   }
 }
