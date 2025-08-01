@@ -27,22 +27,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  useEffect(() => {
-    if (open && seriesId) {
-      setSelectedSeriesId(seriesId);
-      loadSeriesDetails();
-      loadTrailer();
-      loadSimilarSeries();
-    }
-  }, [open, seriesId]);
 
-  useEffect(() => {
-    if (selectedSeriesId) {
-      loadSeriesDetails();
-      loadTrailer();
-      loadSimilarSeries();
-    }
-  }, [selectedSeriesId]);
 
   const loadSeriesDetails = async () => {
     if (!selectedSeriesId) return;
@@ -99,34 +84,122 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
     setSelectedActorId(null);
   };
 
-  const handleWatchlistAdd = () => {
-    if (!seriesDetails) return;
+  // İzleme durumu state'i
+  const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
 
-    try {
-      LocalStorageService.saveMovieLog({
-        title: seriesDetails.name,
-        date: new Date().toISOString(),
-        rating: '',
-        review: '',
-        poster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',
-        type: 'watchlist',
-        mediaType: 'tv',
-        tmdbId: seriesDetails.id,
-        contentType: 'tv',
-        seasonCount: seriesDetails.number_of_seasons,
-        episodeCount: seriesDetails.number_of_episodes,
-        seriesId: seriesDetails.id.toString(),
-        seriesTitle: seriesDetails.name,
-        seriesPoster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',
-        genres: seriesDetails.genres?.map(g => g.name) || [],
-        releaseYear: seriesDetails.first_air_date ? new Date(seriesDetails.first_air_date).getFullYear() : undefined
-      });
+  useEffect(() => {
+    if (open && seriesId) {
+      setSelectedSeriesId(seriesId);
+      loadSeriesDetails();
+      loadTrailer();
+      loadSimilarSeries();
+      // İzleme durumunu kontrol et
+      const status = LocalStorageService.getLogStatusByTmdbId(seriesId, 'tv');
+      setLogStatus(status);
+    } else if (!open) {
+      // Modal kapandığında state'leri temizle
+      setSeriesDetails(null);
+      setCast([]);
+      setTrailerKey(null);
+      setSimilarSeries([]);
+      setError(null);
+      setLoading(false);
+      setSelectedSeriesId(null);
+      setLogStatus(null);
+      setShowToast(false);
+    }
+  }, [open, seriesId]);
 
-      setToastMessage('Daha sonra izle listesine kaydedildi');
+  const handleWatchlistToggle = () => {
+    const seriesIdToUpdate = selectedSeriesId || seriesId;
+    if (!seriesIdToUpdate || !seriesDetails) return;
+
+    const newType = logStatus === 'watchlist' ? null : 'watchlist';
+    
+    if (newType === null) {
+      // Kaydı sil
+      const logs = LocalStorageService.getMovieLogs();
+      const logToDelete = logs.find(log => log.tmdbId === seriesIdToUpdate && log.mediaType === 'tv');
+      if (logToDelete) {
+        LocalStorageService.deleteMovieLog(logToDelete.id);
+      }
+      setLogStatus(null);
+      setToastMessage('İzleme listesinden çıkarıldı');
       setShowToast(true);
-    } catch (error) {
-      console.error('Error adding to watchlist:', error);
-      setToastMessage('Kaydetme işlemi başarısız oldu');
+    } else {
+      // Önce mevcut kaydı güncellemeyi dene
+      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(seriesIdToUpdate, newType, 'tv');
+      
+      if (!updatedLog) {
+        // Kayıt yoksa yeni kayıt oluştur
+        updatedLog = LocalStorageService.saveMovieLog({
+          title: seriesDetails.name,
+          date: new Date().toISOString().split('T')[0],
+          rating: '',
+          review: '',
+          poster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',
+          type: newType,
+          mediaType: 'tv',
+          tmdbId: seriesIdToUpdate,
+          contentType: 'tv',
+          seasonCount: seriesDetails.number_of_seasons,
+          episodeCount: seriesDetails.number_of_episodes,
+          seriesId: seriesDetails.id.toString(),
+          seriesTitle: seriesDetails.name,
+          seriesPoster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',
+          genres: seriesDetails.genres?.map(g => g.name) || [],
+          releaseYear: seriesDetails.first_air_date ? new Date(seriesDetails.first_air_date).getFullYear() : undefined
+        });
+      }
+      setLogStatus(newType);
+      setToastMessage('İzleme listesine eklendi');
+      setShowToast(true);
+    }
+  };
+
+  const handleWatchedToggle = () => {
+    const seriesIdToUpdate = selectedSeriesId || seriesId;
+    if (!seriesIdToUpdate || !seriesDetails) return;
+
+    const newType = logStatus === 'watched' ? null : 'watched';
+    
+    if (newType === null) {
+      // Kaydı sil
+      const logs = LocalStorageService.getMovieLogs();
+      const logToDelete = logs.find(log => log.tmdbId === seriesIdToUpdate && log.mediaType === 'tv');
+      if (logToDelete) {
+        LocalStorageService.deleteMovieLog(logToDelete.id);
+      }
+      setLogStatus(null);
+      setToastMessage('İzledim listesinden çıkarıldı');
+      setShowToast(true);
+    } else {
+      // Önce mevcut kaydı güncellemeyi dene
+      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(seriesIdToUpdate, newType, 'tv');
+      
+      if (!updatedLog) {
+        // Kayıt yoksa yeni kayıt oluştur
+        updatedLog = LocalStorageService.saveMovieLog({
+          title: seriesDetails.name,
+          date: new Date().toISOString().split('T')[0],
+          rating: '',
+          review: '',
+          poster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',
+          type: newType,
+          mediaType: 'tv',
+          tmdbId: seriesIdToUpdate,
+          contentType: 'tv',
+          seasonCount: seriesDetails.number_of_seasons,
+          episodeCount: seriesDetails.number_of_episodes,
+          seriesId: seriesDetails.id.toString(),
+          seriesTitle: seriesDetails.name,
+          seriesPoster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',
+          genres: seriesDetails.genres?.map(g => g.name) || [],
+          releaseYear: seriesDetails.first_air_date ? new Date(seriesDetails.first_air_date).getFullYear() : undefined
+        });
+      }
+      setLogStatus(newType);
+      setToastMessage('İzledim listesine eklendi');
       setShowToast(true);
     }
   };
@@ -151,16 +224,52 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
           </svg>
         </button>
 
-        {/* Watchlist Button */}
-        <button
-          onClick={handleWatchlistAdd}
-          className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition-all duration-200"
-          aria-label="Daha sonra izle listesine ekle"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 50 50" fill="#F8F8FF">
-            <path d="M 12.8125 2 C 12.335938 2.089844 11.992188 2.511719 12 3 L 12 47 C 11.996094 47.359375 12.1875 47.691406 12.496094 47.871094 C 12.804688 48.054688 13.1875 48.054688 13.5 47.875 L 25 41.15625 L 36.5 47.875 C 36.8125 48.054688 37.195313 48.054688 37.503906 47.871094 C 37.8125 47.691406 38.003906 47.359375 38 47 L 38 3 C 38 2.449219 37.550781 2 37 2 L 13 2 C 12.96875 2 12.9375 2 12.90625 2 C 12.875 2 12.84375 2 12.8125 2 Z M 14 4 L 36 4 L 36 45.25 L 25.5 39.125 C 25.191406 38.945313 24.808594 38.945313 24.5 39.125 L 14 45.25 Z"></path>
-          </svg>
-        </button>
+        {/* Action Buttons - Sağ Üst */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          {/* İzledim Butonu */}
+          <button
+            onClick={handleWatchedToggle}
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
+              logStatus === 'watched' 
+                ? 'bg-[#FE7743] text-white shadow-lg' 
+                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'
+            }`}
+            aria-label={logStatus === 'watched' ? 'İzledim olarak işaretle' : 'İzledim olarak işaretle'}
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill={logStatus === 'watched' ? 'currentColor' : 'none'} 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+
+          {/* İzleme Listesi Butonu */}
+          <button
+            onClick={handleWatchlistToggle}
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
+              logStatus === 'watchlist' 
+                ? 'bg-[#FE7743] text-white shadow-lg' 
+                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'
+            }`}
+            aria-label={logStatus === 'watchlist' ? 'İzleme listesinden çıkar' : 'İzleme listesine ekle'}
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -259,7 +368,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
 
                 {/* Watch Trailer Section */}
                 <div className="mb-4">
-                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">Watch Trailer</h2>
+                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">{t('series_detail_modal.watch_trailer')}</h2>
                   {trailerKey ? (
                     <div className="w-full h-40 bg-black rounded-lg overflow-hidden flex items-center justify-center">
                       <iframe
@@ -275,14 +384,14 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
                     </div>
                   ) : (
                     <div className="w-full h-40 bg-gray-800 rounded-lg flex items-center justify-center">
-                      <span className="text-[#F8F8FF] font-poppins">Trailer not found</span>
+                      <span className="text-[#F8F8FF] font-poppins">{t('series_detail_modal.trailer_not_found')}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Similar Series Section */}
                 <div className="mb-6">
-                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">You might also like</h2>
+                  <h2 className="text-[#F8F8FF] font-poppins font-bold text-2xl mb-2">{t('series_detail_modal.liked_others')}</h2>
                   <div className="flex gap-3 overflow-x-auto pb-4">
                     {similarSeries.slice(0, 5).map((series) => (
                       <div 
@@ -309,7 +418,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
-          duration={2000}
+          duration={3000}
           position="bottom"
           color="success"
           cssClass="custom-toast"

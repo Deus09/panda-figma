@@ -143,6 +143,12 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
         LocalStorageService.deleteMovieLog(logToDelete.id);
       }
       setLogStatus(null);
+      // Toast bildirimi göster
+      setShowToast(true);
+      const timeout = setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      setToastTimeout(timeout);
     } else {
       // Önce mevcut kaydı güncellemeyi dene
       let updatedLog = LocalStorageService.updateLogTypeByTmdbId(movieIdToUpdate, newType, 'movie');
@@ -165,6 +171,12 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
         });
       }
       setLogStatus(newType);
+      // Toast bildirimi göster
+      setShowToast(true);
+      const timeout = setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      setToastTimeout(timeout);
     }
   };
 
@@ -254,10 +266,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
 
   if (!open) return null;
 
-  function handleWatchlistAdd(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    event.stopPropagation();
-    handleWatchlistToggle();
-  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full h-full bg-[#0C1117] overflow-y-auto">
@@ -271,16 +280,52 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
           </svg>
         </button>
 
-        {/* Watchlist Button */}
-        <button
-          onClick={handleWatchlistAdd}
-          className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition-all duration-200"
-          aria-label="Daha sonra izle listesine ekle"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 50 50" fill="#F8F8FF">
-            <path d="M 12.8125 2 C 12.335938 2.089844 11.992188 2.511719 12 3 L 12 47 C 11.996094 47.359375 12.1875 47.691406 12.496094 47.871094 C 12.804688 48.054688 13.1875 48.054688 13.5 47.875 L 25 41.15625 L 36.5 47.875 C 36.8125 48.054688 37.195313 48.054688 37.503906 47.871094 C 37.8125 47.691406 38.003906 47.359375 38 47 L 38 3 C 38 2.449219 37.550781 2 37 2 L 13 2 C 12.96875 2 12.9375 2 12.90625 2 C 12.875 2 12.84375 2 12.8125 2 Z M 14 4 L 36 4 L 36 45.25 L 25.5 39.125 C 25.191406 38.945313 24.808594 38.945313 24.5 39.125 L 14 45.25 Z"></path>
-          </svg>
-        </button>
+        {/* Action Buttons - Sağ Üst */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          {/* İzledim Butonu */}
+          <button
+            onClick={handleWatchedToggle}
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
+              logStatus === 'watched' 
+                ? 'bg-[#FE7743] text-white shadow-lg' 
+                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'
+            }`}
+            aria-label={logStatus === 'watched' ? 'İzledim olarak işaretle' : 'İzledim olarak işaretle'}
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill={logStatus === 'watched' ? 'currentColor' : 'none'} 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+
+          {/* İzleme Listesi Butonu */}
+          <button
+            onClick={handleWatchlistToggle}
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${
+              logStatus === 'watchlist' 
+                ? 'bg-[#FE7743] text-white shadow-lg' 
+                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'
+            }`}
+            aria-label={logStatus === 'watchlist' ? 'İzleme listesinden çıkar' : 'İzleme listesine ekle'}
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-full">
@@ -334,58 +379,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                   </span>
                 </div>
 
-                {/* İzleme Durumu Butonları */}
-                <div className="flex items-center gap-4 mb-4">
-                  {/* İzledim Butonu */}
-                  <button
-                    onClick={handleWatchedToggle}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 ${
-                      logStatus === 'watched' 
-                        ? 'bg-[#FE7743] text-white shadow-lg' 
-                        : 'bg-transparent text-[#F8F8FF] border border-[#F8F8FF] hover:bg-[#F8F8FF] hover:text-[#0C1117]'
-                    }`}
-                  >
-                    <svg 
-                      width="20" 
-                      height="20" 
-                      viewBox="0 0 24 24" 
-                      fill={logStatus === 'watched' ? 'currentColor' : 'none'} 
-                      stroke="currentColor" 
-                      strokeWidth="2"
-                    >
-                      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <span className="font-poppins font-medium text-sm">
-                      {logStatus === 'watched' ? t('movies.watched') : t('movies.watch')}
-                    </span>
-                  </button>
 
-                  {/* İzleme Listesi Butonu - sadece izlenmediyse göster */}
-                  {logStatus !== 'watched' && (
-                    <button
-                      onClick={handleWatchlistToggle}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 ${
-                        logStatus === 'watchlist' 
-                          ? 'bg-[#FE7743] text-white shadow-lg' 
-                          : 'bg-transparent text-[#F8F8FF] border border-[#F8F8FF] hover:bg-[#F8F8FF] hover:text-[#0C1117]'
-                      }`}
-                    >
-                      <svg 
-                        width="20" 
-                        height="20" 
-                        viewBox="0 0 24 24" 
-                        fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} 
-                        stroke="currentColor" 
-                        strokeWidth="2"
-                      >
-                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      <span className="font-poppins font-medium text-sm">
-                        {logStatus === 'watchlist' ? t('lists.in_list') : t('lists.add_to_list')}
-                      </span>
-                    </button>
-                  )}
-                </div>
 
                 {/* Rating */}
                 <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#FE7743] rounded-xl mb-2 drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">
@@ -516,14 +510,21 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
             <div className="bg-white p-8 rounded-lg shadow-2xl max-w-sm mx-4">
               <h1 className="text-black text-2xl font-bold mb-4">Başarılı!</h1>
               <p className="text-black mb-4">
-                "{movieDetails?.title}" izlendi olarak işaretlendi.
+                {logStatus === 'watchlist' 
+                  ? `"${movieDetails?.title}" izleme listesine eklendi.`
+                  : logStatus === 'watched'
+                  ? `"${movieDetails?.title}" izlendi olarak işaretlendi.`
+                  : `"${movieDetails?.title}" izleme listesinden çıkarıldı.`
+                }
               </p>
-              <button 
-                className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
-                onClick={handleRatingClick}
-              >
-                Puan & Yorum Ekle
-              </button>
+              {logStatus === 'watched' && (
+                <button 
+                  className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
+                  onClick={handleRatingClick}
+                >
+                  Puan & Yorum Ekle
+                </button>
+              )}
             </div>
           </div>
         )}
