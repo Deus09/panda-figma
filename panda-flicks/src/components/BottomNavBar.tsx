@@ -9,7 +9,7 @@ import iconProfile from '../assets/icon-profile.svg';
 const navItems = [
   { icon: iconHome, label: 'Home', path: '/home' },
   { icon: iconExplore, label: 'Explore', path: '/explore' },
-  { icon: iconSocial, label: 'Social', path: null },
+  { icon: iconSocial, label: 'Social', path: '/social' },
   { icon: iconLists, label: 'Lists', path: '/lists' },
   { icon: iconProfile, label: 'Profile', path: '/profile' },
 ];

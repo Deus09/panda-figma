@@ -180,9 +180,9 @@ const Profile: React.FC = () => {
     return { average: Math.round(average * 10) / 10, total: watchedLogs.length };
   };
 
-  // Bu ay izlenen film sayısı
+  // Bu ay izlenen toplam içerik sayısı (film + dizi)
   const getThisMonthWatched = () => {
-    if (!profile) return { count: 0, trend: 0 };
+    if (!profile) return { count: 0, trend: 0, movies: 0, tvShows: 0, episodes: 0 };
     const logs = LocalStorageService.getMovieLogs();
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -207,7 +207,22 @@ const Profile: React.FC = () => {
     });
     
     const trend = thisMonthLogs.length - lastMonthLogs.length;
-    return { count: thisMonthLogs.length, trend };
+    const movies = thisMonthLogs.filter(log => log.mediaType === 'movie').length;
+    
+    // Farklı dizi sayısı (aynı diziden birden fazla bölüm olsa bile 1 dizi sayılır)
+    const uniqueSeries = new Set(
+      thisMonthLogs
+        .filter(log => log.mediaType === 'tv' && log.seriesId)
+        .map(log => log.seriesId)
+    );
+    const tvShows = uniqueSeries.size;
+    
+    // Toplam bölüm sayısı
+    const episodes = thisMonthLogs
+      .filter(log => log.mediaType === 'tv')
+      .reduce((sum, log) => sum + (log.episodeCount || 1), 0);
+    
+    return { count: thisMonthLogs.length, trend, movies, tvShows, episodes };
   };
 
   // En çok izlenen tür
@@ -337,7 +352,7 @@ const Profile: React.FC = () => {
 
   // Bu ay izlenen dizi sayısı
   const getThisMonthTvShows = () => {
-    if (!profile) return { count: 0, trend: 0 };
+    if (!profile) return { count: 0, trend: 0, uniqueSeries: 0 };
     const logs = LocalStorageService.getMovieLogs();
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -363,8 +378,43 @@ const Profile: React.FC = () => {
              logDate.getFullYear() === lastYear;
     });
     
-    const trend = thisMonthLogs.length - lastMonthLogs.length;
-    return { count: thisMonthLogs.length, trend };
+    // Farklı dizi sayısı (aynı diziden birden fazla bölüm olsa bile 1 dizi sayılır)
+    const thisMonthUniqueSeries = new Set(
+      thisMonthLogs
+        .filter(log => log.seriesId)
+        .map(log => log.seriesId)
+    );
+    
+    const lastMonthUniqueSeries = new Set(
+      lastMonthLogs
+        .filter(log => log.seriesId)
+        .map(log => log.seriesId)
+    );
+    
+    const trend = thisMonthUniqueSeries.size - lastMonthUniqueSeries.size;
+    return { 
+      count: thisMonthLogs.length, 
+      trend, 
+      uniqueSeries: thisMonthUniqueSeries.size 
+    };
+  };
+
+  // Toplam bölüm sayısı hesaplama
+  const getTotalEpisodes = () => {
+    if (!profile) return { total: 0, average: 0, uniqueSeries: 0 };
+    const logs = LocalStorageService.getMovieLogs();
+    const watchedLogs = logs.filter(log => log.type === 'watched' && log.mediaType === 'tv');
+    
+    const totalEpisodes = watchedLogs.reduce((sum, log) => sum + (log.episodeCount || 1), 0);
+    const uniqueSeries = new Set(
+      watchedLogs
+        .filter(log => log.seriesId)
+        .map(log => log.seriesId)
+    );
+    
+    const average = uniqueSeries.size > 0 ? Math.round(totalEpisodes / uniqueSeries.size) : 0;
+    
+    return { total: totalEpisodes, average, uniqueSeries: uniqueSeries.size };
   };
 
   // Günlük ortalama izleme süresi
@@ -434,28 +484,9 @@ const Profile: React.FC = () => {
         ).length;
       
       case 'series-killer':
-        // Tamamlanan dizi sayısı
-        const seriesGroups = new Map<string, { totalSeasons: number; watchedSeasons: Set<number> }>();
-        watchedLogs
-          .filter(log => log.mediaType === 'tv' && log.seriesId && log.seasonNumber)
-          .forEach(log => {
-            const seriesId = log.seriesId!;
-            const seasonNumber = log.seasonNumber!;
-            
-            if (!seriesGroups.has(seriesId)) {
-              seriesGroups.set(seriesId, {
-                totalSeasons: log.seasonCount || 1,
-                watchedSeasons: new Set()
-              });
-            }
-            
-            const series = seriesGroups.get(seriesId)!;
-            series.watchedSeasons.add(seasonNumber);
-          });
-        
-        return Array.from(seriesGroups.entries())
-          .filter(([_, series]) => series.watchedSeasons.size >= series.totalSeasons)
-          .length;
+        // Tamamlanan dizi sayısı - localStorage servisi ile aynı mantık
+        const completedSeries = LocalStorageService.getCompletedSeries(watchedLogs);
+        return completedSeries.length;
       
       case 'nostalgia-traveler':
         return watchedLogs.filter(log => 
@@ -473,7 +504,9 @@ const Profile: React.FC = () => {
             const date = log.date.split('T')[0];
             dailyCounts.set(date, (dailyCounts.get(date) || 0) + 1);
           });
-        return Array.from(dailyCounts.values()).some(count => count >= 3) ? 1 : 0;
+        // En yüksek günlük film sayısını döndür
+        const maxDailyCount = Math.max(...Array.from(dailyCounts.values()), 0);
+        return maxDailyCount;
       
       case 'century-watcher':
         return profile.watchedMovieCount;
@@ -571,6 +604,8 @@ const Profile: React.FC = () => {
       }
     }
   };
+
+
 
   if (!profile) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -816,14 +851,13 @@ const Profile: React.FC = () => {
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-poppins">Bu Ay</p>
                     <p className={`text-xs font-poppins ${
-                      getThisMonthTvShows().trend > 0 ? 'text-[#4CAF50]' : 
-                      getThisMonthTvShows().trend < 0 ? 'text-[#FF6B6B]' : 'text-white'
+                      getThisMonthTvShows().uniqueSeries > 0 ? 'text-[#4CAF50]' : 'text-white'
                     }`}>
-                      {getThisMonthTvShows().trend > 0 ? '+' : ''}{getThisMonthTvShows().trend}
+                      +{getThisMonthTvShows().uniqueSeries}
                     </p>
                   </div>
                 </div>
-                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{profile.watchedTvCount}</p>
+                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{getTotalEpisodes().uniqueSeries}</p>
                 <p className="text-sm text-gray-300 font-poppins">İzlenen Diziler</p>
               </div>
             </div>
@@ -851,10 +885,10 @@ const Profile: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-poppins">Ortalama</p>
-                    <p className="text-xs text-white font-poppins">{Math.round(profile.totalEpisodesWatched / Math.max(1, profile.watchedTvCount))}/dizi</p>
+                    <p className="text-xs text-white font-poppins">{getTotalEpisodes().average}/dizi</p>
                   </div>
                 </div>
-                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{profile.totalEpisodesWatched}</p>
+                <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{getTotalEpisodes().total}</p>
                 <p className="text-sm text-gray-300 font-poppins">Toplam Bölüm</p>
               </div>
             </div>
@@ -970,7 +1004,9 @@ const Profile: React.FC = () => {
                 <div>
                   <p className="text-gray-300 text-sm font-poppins">Bu Ay İzlenen</p>
                   <div className="flex items-center space-x-2">
-                    <span className="text-white font-semibold font-poppins">{getThisMonthWatched().count} Film</span>
+                    <span className="text-white font-semibold font-poppins">
+                      {getThisMonthWatched().movies} Film, {getThisMonthWatched().tvShows} Dizi
+                    </span>
                     {getThisMonthWatched().trend !== 0 && (
                       <span className={`${styles.trendIndicator} text-xs font-medium px-2 py-1 rounded-full ${
                         getThisMonthWatched().trend > 0 

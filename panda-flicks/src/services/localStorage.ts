@@ -173,6 +173,46 @@ export class LocalStorageService {
     }
   }
 
+  // Yeni yardımcı fonksiyon: tmdbId ile kayıt type'ını güncelleme
+  static updateLogTypeByTmdbId(tmdbId: number, newType: 'watched' | 'watchlist', mediaType: 'movie' | 'tv' = 'movie'): MovieLog | null {
+    try {
+      const logs = this.getMovieLogs();
+      const logIndex = logs.findIndex(log => log.tmdbId === tmdbId && log.mediaType === mediaType);
+      
+      if (logIndex === -1) {
+        // Kayıt yoksa null döndür - yeni kayıt oluşturma işlemi component'te yapılacak
+        return null;
+      }
+
+      // Mevcut kaydı güncelle
+      const updatedLog: MovieLog = {
+        ...logs[logIndex],
+        type: newType,
+        updatedAt: new Date().toISOString()
+      };
+
+      logs[logIndex] = updatedLog;
+      localStorage.setItem(STORAGE_KEYS.MOVIE_LOGS, JSON.stringify(logs));
+      
+      return updatedLog;
+    } catch (error) {
+      console.error('Error updating log type by tmdbId:', error);
+      return null;
+    }
+  }
+
+  // tmdbId ile kayıt durumunu kontrol etme
+  static getLogStatusByTmdbId(tmdbId: number, mediaType: 'movie' | 'tv' = 'movie'): 'watched' | 'watchlist' | null {
+    try {
+      const logs = this.getMovieLogs();
+      const log = logs.find(log => log.tmdbId === tmdbId && log.mediaType === mediaType);
+      return log ? log.type : null;
+    } catch (error) {
+      console.error('Error getting log status by tmdbId:', error);
+      return null;
+    }
+  }
+
   static getMovieLogsByType(type: 'watched' | 'watchlist'): MovieLog[] {
     const logs = this.getMovieLogs();
     return logs.filter(log => log.type === type);
@@ -390,7 +430,7 @@ export class LocalStorageService {
       {
         id: 'series-killer',
         name: 'Dizi Avcısı',
-        description: 'Bir dizinin tüm sezonlarını bitirdiğinde kazanılır',
+        description: 'En az 2 sezonlu bir dizinin tüm sezonlarını bitirdiğinde kazanılır',
         icon: '📺',
         category: 'special',
         requirement: 1,
@@ -463,7 +503,7 @@ export class LocalStorageService {
   }
 
   // Tamamlanan dizileri bulan yardımcı fonksiyon
-  private static getCompletedSeries(watchedLogs: MovieLog[]): string[] {
+  static getCompletedSeries(watchedLogs: MovieLog[]): string[] {
     const seriesGroups = new Map<string, { totalSeasons: number; watchedSeasons: Set<number> }>();
     
     watchedLogs
@@ -473,8 +513,10 @@ export class LocalStorageService {
         const seasonNumber = log.seasonNumber!;
         
         if (!seriesGroups.has(seriesId)) {
+          // seasonCount varsa kullan, yoksa en az 2 sezon varsay (1 sezon diziler için rozet verilmez)
+          const totalSeasons = log.seasonCount && log.seasonCount > 1 ? log.seasonCount : 2;
           seriesGroups.set(seriesId, {
-            totalSeasons: log.seasonCount || 1,
+            totalSeasons: totalSeasons,
             watchedSeasons: new Set()
           });
         }
@@ -483,9 +525,9 @@ export class LocalStorageService {
         series.watchedSeasons.add(seasonNumber);
       });
     
-    // Tüm sezonları izlenen dizileri döndür
+    // Tüm sezonları izlenen dizileri döndür (en az 2 sezon olmalı)
     return Array.from(seriesGroups.entries())
-      .filter(([_, series]) => series.watchedSeasons.size >= series.totalSeasons)
+      .filter(([_, series]) => series.totalSeasons >= 2 && series.watchedSeasons.size >= series.totalSeasons)
       .map(([seriesId, _]) => seriesId);
   }
 
@@ -501,7 +543,8 @@ export class LocalStorageService {
       });
     
     // Herhangi bir günde 3+ film var mı?
-    return Array.from(dailyCounts.values()).some(count => count >= 3);
+    const maxDailyCount = Math.max(...Array.from(dailyCounts.values()), 0);
+    return maxDailyCount >= 3;
   }
 
   static checkAndAwardBadges(): Badge[] {
