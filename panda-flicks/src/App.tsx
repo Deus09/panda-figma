@@ -11,8 +11,10 @@ import Explore from './pages/explore';
 import Lists from './pages/lists';
 import Profile from './pages/profile';
 import Social from './pages/social';
+import AuthCallback from './pages/AuthCallback';
 import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
+import { AuthProvider } from './context/AuthContext';
 import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
@@ -94,32 +96,37 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <ModalProvider>
-      <IonApp className="bg-background text-foreground">
-        <IonReactRouter>
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path="/explore">
-            <Explore />
-          </Route>
-          <Route exact path="/lists">
-            <Lists />
-          </Route>
-          <Route exact path="/social">
-            <Social />
-          </Route>
-          <Route exact path="/profile">
-            <Profile />
-          </Route>
-          <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
-          <Route exact path="/">
-            <Redirect to="/home" />
-          </Route>
-        </IonReactRouter>
-        <ModalRenderer />
-      </IonApp>
-    </ModalProvider>
+    <AuthProvider>
+      <ModalProvider>
+        <IonApp className="bg-background text-foreground">
+          <IonReactRouter>
+            <Route exact path="/home">
+              <Home />
+            </Route>
+            <Route exact path="/explore">
+              <Explore />
+            </Route>
+            <Route exact path="/lists">
+              <Lists />
+            </Route>
+            <Route exact path="/social">
+              <Social />
+            </Route>
+            <Route exact path="/profile">
+              <Profile />
+            </Route>
+            <Route exact path="/auth/callback">
+              <AuthCallback />
+            </Route>
+            <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </IonReactRouter>
+          <ModalRenderer />
+        </IonApp>
+      </ModalProvider>
+    </AuthProvider>
   );
 };
 
