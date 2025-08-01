@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IonAccordion, IonAccordionGroup, IonItem, IonLabel } from '@ionic/react';
 import './LanguageSwitcher.css';
 
 interface LanguageSwitcherProps {
@@ -9,6 +8,8 @@ interface LanguageSwitcherProps {
 
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) => {
   const { i18n, t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const languages = [
     { code: 'tr', label: 'Türkçe', flag: '🇹🇷', short: 'TR' },
@@ -18,44 +19,59 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) 
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    setIsOpen(false);
   };
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[1];
 
+  // Dropdown dışına tıklandığında kapat
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   if (compact) {
     return (
-      <div className="language-switcher-accordion min-w-[100px]">
-        <IonAccordionGroup>
-          <IonAccordion value="language">
-            <IonItem 
-              slot="header" 
-              className="header-item"
-            >
-              <IonLabel className="text-white text-sm font-medium">
-                <span className="mr-1">{currentLanguage.flag}</span>
-                {currentLanguage.short}
-              </IonLabel>
-            </IonItem>
-            
-            <div slot="content" className="content-container">
-              {languages.map((lang) => (
-                <IonItem
-                  key={lang.code}
-                  button
-                  onClick={() => changeLanguage(lang.code)}
-                  className={`content-item ${i18n.language === lang.code ? 'active' : ''}`}
-                >
-                  <IonLabel className={`text-sm font-medium ${
-                    i18n.language === lang.code ? 'text-white' : 'text-gray-300'
-                  }`}>
-                    <span className="mr-2">{lang.flag}</span>
-                    {lang.short}
-                  </IonLabel>
-                </IonItem>
-              ))}
-            </div>
-          </IonAccordion>
-        </IonAccordionGroup>
+      <div className="language-switcher-minimal" ref={dropdownRef}>
+        <button
+          className="minimal-button"
+          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+        >
+          <span className="flag-text">{currentLanguage.flag}</span>
+          <svg 
+            className={`chevron-icon ${isOpen ? 'rotated' : ''}`} 
+            width="8" 
+            height="8" 
+            viewBox="0 0 24 24" 
+            fill="currentColor"
+          >
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+        
+        {isOpen && (
+          <div className="minimal-dropdown">
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                className={`dropdown-item ${i18n.language === lang.code ? 'active' : ''}`}
+                onClick={() => changeLanguage(lang.code)}
+                type="button"
+              >
+                <span className="flag-text">{lang.flag}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }

@@ -19,7 +19,7 @@ const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
   isProfilePage = false,
   onBackClick
 }) => (
-  <div className="flex flex-row items-center justify-between bg-background w-full h-[60px] p-4">
+  <div className="flex flex-row items-center justify-between bg-background w-full h-[60px] p-4 relative">
     <div className="flex flex-row items-center gap-2 flex-1">
       {showBackButton && (
         <button 
@@ -41,7 +41,7 @@ const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
     
     {/* Sağ taraf - LanguageSwitcher (sadece profil sayfası için) */}
     {showLanguageSwitcher && isProfilePage && (
-      <div className="mr-4">
+      <div className="flex items-center justify-end relative z-10">
         <LanguageSwitcher compact={true} />
       </div>
     )}
