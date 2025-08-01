@@ -16,6 +16,7 @@ import { LocalStorageService, MovieLog } from '../services/localStorage';
 import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, Episode } from '../services/tmdb';
 import SeasonAccordion from '../components/SeasonAccordion';
 import AddButtonModal from '../components/AddButtonModal';
+import ToastNotification from '../components/ToastNotification';
 
 const SeriesDetailPage: React.FC = () => {
   const { seriesId } = useParams<{ seriesId: string }>();
@@ -26,7 +27,6 @@ const SeriesDetailPage: React.FC = () => {
   // İzleme durumu state'i
   const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
   
   // Film ekleme modalı state'i
   const [showAddMovieModal, setShowAddMovieModal] = useState(false);
@@ -131,14 +131,7 @@ const SeriesDetailPage: React.FC = () => {
     loadData();
   }, [seriesId]);
 
-  // Component unmount olduğunda timeout'ları temizle
-  useEffect(() => {
-    return () => {
-      if (toastTimeout) {
-        clearTimeout(toastTimeout);
-      }
-    };
-  }, [toastTimeout]);
+
 
   // 📊 İstatistik hesaplamaları
   const {
@@ -326,10 +319,6 @@ const SeriesDetailPage: React.FC = () => {
       // Toast bildirimi göster
       if (newType === 'watched') {
         setShowToast(true);
-        const timeout = setTimeout(() => {
-          setShowToast(false);
-        }, 5000);
-        setToastTimeout(timeout);
       }
     }
   };
@@ -337,10 +326,6 @@ const SeriesDetailPage: React.FC = () => {
   const handleRatingClick = () => {
     // Toast'u kapat
     setShowToast(false);
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-      setToastTimeout(null);
-    }
     
     // Dizi ekleme modalını aç
     if (seriesApiData) {
@@ -530,23 +515,15 @@ const SeriesDetailPage: React.FC = () => {
           prefillData={prefillData}
         />
 
-        {/* Success Toast */}
-        {showToast && (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 rounded-lg shadow-2xl max-w-sm mx-4">
-              <h1 className="text-black text-2xl font-bold mb-4">Başarılı!</h1>
-              <p className="text-black mb-4">
-                "{seriesApiData?.name}" izlendi olarak işaretlendi.
-              </p>
-              <button 
-                className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
-                onClick={handleRatingClick}
-              >
-                Puan & Yorum Ekle
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Toast Notification */}
+        <ToastNotification
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          messageKey="toast.series_marked_as_watched"
+          messageParams={seriesApiData ? { title: seriesApiData.name } : { title: 'Dizi' }}
+          type="success"
+          duration={3000}
+        />
       </IonContent>
     </IonPage>
   );

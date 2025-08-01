@@ -375,5 +375,16 @@
       "name": "Koleksiyoncu",
       "description": "İzleme listesinde 25 film biriktirildiğinde kazanılır"
     }
+  },
+  "toast": {
+    "movie_added": "{{title}} eklendi",
+    "movie_added_to_watchlist": "{{title}} izleme listesine eklendi",
+    "movie_removed_from_watchlist": "{{title}} izleme listesinden çıkarıldı",
+    "movie_marked_as_watched": "{{title}} izlendi olarak işaretlendi",
+    "series_added": "{{title}} eklendi",
+    "series_added_to_watchlist": "{{title}} izleme listesine eklendi",
+    "series_removed_from_watchlist": "{{title}} izleme listesinden çıkarıldı",
+    "series_marked_as_watched": "{{title}} izlendi olarak işaretlendi",
+    "content_added_successfully": "İçerik başarıyla eklendi"
   }
 }

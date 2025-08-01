@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IonToast } from '@ionic/react';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import { LocalStorageService } from '../services/localStorage';
 import ActorDetailModal from './ActorDetailModal';
 import AddButtonModal from './AddButtonModal';
+import ToastNotification from './ToastNotification';
 import { useModal } from '../context/ModalContext';
 
 interface MovieDetailModalProps {
@@ -29,7 +29,6 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   // İzleme durumu state'i
   const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
   
   // Film ekleme modalı state'i
   const [showAddMovieModal, setShowAddMovieModal] = useState(false);
@@ -55,10 +54,6 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       setSelectedMovieId(null);
       setLogStatus(null);
       setShowToast(false);
-      if (toastTimeout) {
-        clearTimeout(toastTimeout);
-        setToastTimeout(null);
-      }
     }
   }, [open, movieId]);
 
@@ -145,10 +140,6 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       setLogStatus(null);
       // Toast bildirimi göster
       setShowToast(true);
-      const timeout = setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      setToastTimeout(timeout);
     } else {
       // Önce mevcut kaydı güncellemeyi dene
       let updatedLog = LocalStorageService.updateLogTypeByTmdbId(movieIdToUpdate, newType, 'movie');
@@ -173,10 +164,6 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       setLogStatus(newType);
       // Toast bildirimi göster
       setShowToast(true);
-      const timeout = setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      setToastTimeout(timeout);
     }
   };
 
@@ -220,10 +207,6 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       // Toast bildirimi göster
       if (newType === 'watched') {
         setShowToast(true);
-        const timeout = setTimeout(() => {
-          setShowToast(false);
-        }, 5000);
-        setToastTimeout(timeout);
       }
     }
   };
@@ -231,10 +214,6 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   const handleRatingClick = () => {
     // Toast'u kapat
     setShowToast(false);
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-      setToastTimeout(null);
-    }
     
     // Film ekleme modalını aç
     if (movieDetails) {
@@ -504,30 +483,21 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
           prefillData={prefillData}
         />
 
-        {/* Success Toast */}
-        {showToast && (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 rounded-lg shadow-2xl max-w-sm mx-4">
-              <h1 className="text-black text-2xl font-bold mb-4">Başarılı!</h1>
-              <p className="text-black mb-4">
-                {logStatus === 'watchlist' 
-                  ? `"${movieDetails?.title}" izleme listesine eklendi.`
-                  : logStatus === 'watched'
-                  ? `"${movieDetails?.title}" izlendi olarak işaretlendi.`
-                  : `"${movieDetails?.title}" izleme listesinden çıkarıldı.`
-                }
-              </p>
-              {logStatus === 'watched' && (
-                <button 
-                  className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
-                  onClick={handleRatingClick}
-                >
-                  Puan & Yorum Ekle
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+        {/* Toast Notification */}
+        <ToastNotification
+          isOpen={showToast}
+          onClose={() => setShowToast(false)}
+          messageKey={
+            logStatus === 'watchlist' 
+              ? 'toast.movie_added_to_watchlist'
+              : logStatus === 'watched'
+              ? 'toast.movie_marked_as_watched'
+              : 'toast.movie_removed_from_watchlist'
+          }
+          messageParams={movieDetails ? { title: movieDetails.title } : { title: 'Film' }}
+          type="success"
+          duration={3000}
+        />
       </div>
     </div>
   );

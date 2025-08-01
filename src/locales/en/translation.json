@@ -375,5 +375,16 @@
       "name": "Collector",
       "description": "Earned when you add 25 movies to your watchlist"
     }
+  },
+  "toast": {
+    "movie_added": "{{title}} added",
+    "movie_added_to_watchlist": "{{title}} added to watchlist",
+    "movie_removed_from_watchlist": "{{title}} removed from watchlist",
+    "movie_marked_as_watched": "{{title}} marked as watched",
+    "series_added": "{{title}} added",
+    "series_added_to_watchlist": "{{title}} added to watchlist",
+    "series_removed_from_watchlist": "{{title}} removed from watchlist",
+    "series_marked_as_watched": "{{title}} marked as watched",
+    "content_added_successfully": "Content added successfully"
   }
 }

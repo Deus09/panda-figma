@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IonToast } from '@ionic/react';
 import { getSeriesDetails, getSeriesCast, getSeriesTrailerKey, getSimilarSeries, TMDBSeriesDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import { LocalStorageService } from '../services/localStorage';
 import ActorDetailModal from './ActorDetailModal';
+import ToastNotification from './ToastNotification';
 import { useModal } from '../context/ModalContext';
 
 interface SeriesDetailModalProps {
@@ -124,7 +124,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
         LocalStorageService.deleteMovieLog(logToDelete.id);
       }
       setLogStatus(null);
-      setToastMessage('İzleme listesinden çıkarıldı');
+      setToastMessage(t('toast.series_removed_from_watchlist', { title: seriesDetails.name }));
       setShowToast(true);
     } else {
       // Önce mevcut kaydı güncellemeyi dene
@@ -152,7 +152,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
         });
       }
       setLogStatus(newType);
-      setToastMessage('İzleme listesine eklendi');
+      setToastMessage(t('toast.series_added_to_watchlist', { title: seriesDetails.name }));
       setShowToast(true);
     }
   };
@@ -171,7 +171,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
         LocalStorageService.deleteMovieLog(logToDelete.id);
       }
       setLogStatus(null);
-      setToastMessage('İzledim listesinden çıkarıldı');
+      setToastMessage(t('toast.series_removed_from_watchlist', { title: seriesDetails.name }));
       setShowToast(true);
     } else {
       // Önce mevcut kaydı güncellemeyi dene
@@ -199,7 +199,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
         });
       }
       setLogStatus(newType);
-      setToastMessage('İzledim listesine eklendi');
+      setToastMessage(t('toast.series_marked_as_watched', { title: seriesDetails.name }));
       setShowToast(true);
     }
   };
@@ -414,14 +414,12 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
         ) : null}
 
         {/* Toast Notification */}
-        <IonToast
+        <ToastNotification
           isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
+          onClose={() => setShowToast(false)}
           message={toastMessage}
+          type="success"
           duration={3000}
-          position="bottom"
-          color="success"
-          cssClass="custom-toast"
         />
       </div>
     </div>

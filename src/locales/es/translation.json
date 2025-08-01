@@ -375,5 +375,16 @@
       "name": "Coleccionista",
       "description": "Se gana cuando añades 25 películas a tu lista de deseos"
     }
+  },
+  "toast": {
+    "movie_added": "{{title}} añadida",
+    "movie_added_to_watchlist": "{{title}} añadida a la lista de ver",
+    "movie_removed_from_watchlist": "{{title}} eliminada de la lista de ver",
+    "movie_marked_as_watched": "{{title}} marcada como vista",
+    "series_added": "{{title}} añadida",
+    "series_added_to_watchlist": "{{title}} añadida a la lista de ver",
+    "series_removed_from_watchlist": "{{title}} eliminada de la lista de ver",
+    "series_marked_as_watched": "{{title}} marcada como vista",
+    "content_added_successfully": "Contenido añadido exitosamente"
   }
 }

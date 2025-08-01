@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AddButtonModal from './AddButtonModal';
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
+import ToastNotification from './ToastNotification';
 import { chatWithCast } from '../services/gemini';
 import { MovieLog } from '../services/localStorage';
 
@@ -12,7 +13,6 @@ interface FabAddButtonProps {
 const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
   const [open, setOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [toastTimeout, setToastTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Cast/chat state
   const [showCastSelection, setShowCastSelection] = useState(false);
@@ -33,25 +33,8 @@ const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
       setSelectedMovie(movie);
       setTmdbId(id);
     }
-    // 0.5sn sonra toast'u göster
-    const toastDelay = setTimeout(() => {
-      setShowToast(true);
-      // 5sn sonra toast'u kapat
-      const timeout = setTimeout(() => {
-        setShowToast(false);
-      }, 5000);
-      setToastTimeout(timeout);
-    }, 500);
-    setToastTimeout(toastDelay);
-  };
-
-  const handleChatWithCast = () => {
-    if (toastTimeout) {
-      clearTimeout(toastTimeout);
-      setToastTimeout(null);
-    }
-    setShowToast(false);
-    setShowCastSelection(true);
+    // Toast mesajını göster
+    setShowToast(true);
   };
 
   const handleCastSelect = (castMember: any) => {
@@ -105,21 +88,15 @@ const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
         onAddMovieLog={onAddMovieLog}
         onMovieSelect={handleMovieSelect}
       />
-      {/* Success Toast */}
-      {showToast && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg shadow-2xl">
-            <h1 className="text-black text-2xl font-bold mb-4">Success!</h1>
-            <p className="text-black mb-4">Your movie has been added successfully.</p>
-            <button 
-              className="w-full h-[40px] rounded-[12px] bg-[#FE7743] text-white text-[14px] font-poppins font-semibold shadow-lg hover:bg-[#e66a3a] transition-colors duration-200"
-              onClick={handleChatWithCast}
-            >
-              Chat with Cast
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Toast Notification */}
+      <ToastNotification
+        isOpen={showToast}
+        onClose={() => setShowToast(false)}
+        messageKey="toast.movie_added"
+        messageParams={selectedMovie ? { title: selectedMovie.title } : { title: 'Film' }}
+        type="success"
+        duration={3000}
+      />
       {/* Cast Selection Modal */}
       {tmdbId && tmdbId > 0 && (
         <CastSelectionModal
