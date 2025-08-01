@@ -37,14 +37,14 @@ const Profile: React.FC = () => {
 
   // Avatar galerisi - Film karakterleri ve sinema ikonları
   const avatarGallery = [
-    { id: 'scarface', url: 'https://i.imgur.com/VqNKQyJ.png', name: 'Tony Montana' },
-    { id: 'godfather', url: 'https://i.imgur.com/8xKQyZL.png', name: 'Vito Corleone' },
-    { id: 'pulpfiction', url: 'https://i.imgur.com/KGHFJxL.png', name: 'Vincent Vega' },
-    { id: 'matrix', url: 'https://i.imgur.com/7R9ZJxL.png', name: 'Neo' },
-    { id: 'joker', url: 'https://i.imgur.com/QxL8K9J.png', name: 'Joker' },
-    { id: 'batman', url: 'https://i.imgur.com/9xKL7ZJ.png', name: 'Batman' },
-    { id: 'cinema', url: 'https://i.imgur.com/MxL9K8J.png', name: 'Cinema Icon' },
-    { id: 'popcorn', url: 'https://i.imgur.com/LxM8K7J.png', name: 'Popcorn' }
+    { id: 'cinema', url: 'https://placehold.co/120x120/FE7743/FFFFFF?text=🎬', name: 'Cinema' },
+    { id: 'popcorn', url: 'https://placehold.co/120x120/4ECDC4/FFFFFF?text=🍿', name: 'Popcorn' },
+    { id: 'film', url: 'https://placehold.co/120x120/96CEB4/FFFFFF?text=🎭', name: 'Film' },
+    { id: 'star', url: 'https://placehold.co/120x120/FFEAA7/000000?text=⭐', name: 'Star' },
+    { id: 'heart', url: 'https://placehold.co/120x120/DDA0DD/FFFFFF?text=❤️', name: 'Heart' },
+    { id: 'movie', url: 'https://placehold.co/120x120/FF6B6B/FFFFFF?text=🎥', name: 'Movie' },
+    { id: 'tv', url: 'https://placehold.co/120x120/45B7D1/FFFFFF?text=📺', name: 'TV' },
+    { id: 'trophy', url: 'https://placehold.co/120x120/FDCB6E/000000?text=🏆', name: 'Trophy' }
   ];
 
   const popularGenres = [
@@ -189,32 +189,50 @@ const Profile: React.FC = () => {
   };
 
   const handleAvatarGallerySelect = (avatarUrl: string) => {
+    console.log('🖼️ Avatar seçildi:', avatarUrl);
     setAvatarPreview(avatarUrl);
   };
 
   const handleSave = async () => {
     if (!profile) return;
 
-    const updates = {
-      ...editData,
-      avatar: avatarPreview || profile.avatar
-    };
-
-    // LocalStorage'ı güncelle
-    const updatedProfile = LocalStorageService.updateUserProfile(updates);
-    if (updatedProfile) {
-      setProfile(updatedProfile);
-      setIsEditing(false);
-      setAvatarPreview(null);
+    try {
+      setIsUpdatingProfile(true);
       
-      // Eğer kullanıcı giriş yapmışsa Supabase'i de güncelle
-      if (user) {
-        await updateSupabaseProfile(editData.username, avatarPreview);
+      const updates = {
+        username: editData.username,
+        fullName: editData.fullName,
+        bio: editData.bio,
+        favoriteGenres: editData.favoriteGenres,
+        avatar: avatarPreview || profile.avatar
+      };
+
+      console.log('💾 Profil güncelleniyor:', updates);
+
+      // LocalStorage'ı güncelle
+      const updatedProfile = LocalStorageService.updateUserProfile(updates);
+      if (updatedProfile) {
+        console.log('✅ Profil başarıyla güncellendi:', updatedProfile);
+        setProfile(updatedProfile);
+        setIsEditing(false);
+        setAvatarPreview(null);
+        
+        // Eğer kullanıcı giriş yapmışsa Supabase'i de güncelle
+        if (user) {
+          await updateSupabaseProfile(editData.username, avatarPreview);
+        }
+      } else {
+        console.error('❌ Profil güncellenemedi');
       }
+    } catch (error) {
+      console.error('❌ Profil kaydetme hatası:', error);
+    } finally {
+      setIsUpdatingProfile(false);
     }
   };
 
   const handleCancel = () => {
+    console.log('❌ Düzenleme iptal ediliyor');
     setIsEditing(false);
     setAvatarPreview(null);
     if (profile) {
@@ -826,7 +844,7 @@ const Profile: React.FC = () => {
                     type="text"
                     value={editData.username}
                     onChange={(e) => setEditData(prev => ({ ...prev, username: e.target.value }))}
-                    className="bg-[#333] text-white text-xl font-bold rounded-lg px-3 py-1 border border-gray-600 focus:border-[#FE7743] focus:outline-none flex-1"
+                    className={`${styles.editInput} text-white text-xl font-bold rounded-lg px-3 py-1 flex-1`}
                     placeholder={t('profile.username_placeholder')}
                   />
                 ) : (
@@ -852,7 +870,7 @@ const Profile: React.FC = () => {
                   <textarea
                     value={editData.bio}
                     onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
-                    className="w-full bg-[#333] text-white rounded-lg px-3 py-2 border border-gray-600 focus:border-[#FE7743] focus:outline-none resize-none text-sm"
+                    className={`${styles.editInput} w-full text-white rounded-lg px-3 py-2 resize-none text-sm`}
                     rows={2}
                     placeholder={t('profile.bio_placeholder')}
                   />
@@ -871,10 +889,8 @@ const Profile: React.FC = () => {
                       <button
                         key={genre}
                         onClick={() => handleGenreToggle(genre)}
-                        className={`px-2 py-1 rounded-full text-xs font-medium transition-colors ${
-                          editData.favoriteGenres.includes(genre)
-                            ? 'bg-[#FE7743] text-white'
-                            : 'bg-[#333] text-gray-300 hover:bg-[#444]'
+                        className={`${styles.genreTag} px-2 py-1 rounded-full text-xs font-medium ${
+                          editData.favoriteGenres.includes(genre) ? styles.selected : ''
                         }`}
                       >
                         {genre}
@@ -916,12 +932,19 @@ const Profile: React.FC = () => {
                   <button
                     key={avatar.id}
                     onClick={() => handleAvatarGallerySelect(avatar.url)}
-                    className="w-12 h-12 rounded-full border-2 border-gray-600 hover:border-[#FE7743] transition-colors overflow-hidden"
+                    className={`${styles.avatarSelectionButton} w-12 h-12 rounded-full border-2 overflow-hidden ${
+                      avatarPreview === avatar.url ? styles.selected : 'border-gray-600'
+                    }`}
                   >
                     <img
-                      src={`https://placehold.co/48x48/333/FE7743?text=${avatar.name.charAt(0)}`}
+                      src={avatar.url}
                       alt={avatar.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Resim yüklenemezse placeholder göster
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://placehold.co/48x48/333/FE7743?text=${avatar.name.charAt(0)}`;
+                      }}
                     />
                   </button>
                 ))}
@@ -935,7 +958,7 @@ const Profile: React.FC = () => {
               <button
                 onClick={handleSave}
                 disabled={isUpdatingProfile}
-                className="flex-1 bg-[#4CAF50] hover:bg-[#45A049] disabled:bg-gray-500 disabled:cursor-not-allowed text-white py-2 rounded-lg font-medium transition-colors font-poppins text-sm flex items-center justify-center space-x-2"
+                className={`${styles.editModeButton} ${styles.editModeButton} ${styles.save} flex-1 text-white py-2 rounded-lg font-medium font-poppins text-sm flex items-center justify-center space-x-2`}
               >
                 {isUpdatingProfile ? (
                   <>
@@ -948,7 +971,7 @@ const Profile: React.FC = () => {
               </button>
               <button
                 onClick={handleCancel}
-                className="flex-1 bg-[#666] hover:bg-[#555] text-white py-2 rounded-lg font-medium transition-colors font-poppins text-sm"
+                className={`${styles.editModeButton} ${styles.editModeButton} ${styles.cancel} flex-1 text-white py-2 rounded-lg font-medium font-poppins text-sm`}
               >
                 {t('common.cancel')}
               </button>
