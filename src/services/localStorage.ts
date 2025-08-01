@@ -392,99 +392,99 @@ export class LocalStorageService {
   static getBadgeTemplates(): Badge[] {
     return [
       {
-        id: 'first-movie',
-        name: 'Çaylak Yönetmen',
-        description: 'İlk filmini eklediğinde kazanılır',
+        id: 'first_movie',
+        name: 'badges.first_movie.name',
+        description: 'badges.first_movie.description',
         icon: '🎬',
         category: 'milestone',
         requirement: 1,
         isEarned: false
       },
       {
-        id: 'comedy-expert',
-        name: 'Komedi Uzmanı',
-        description: '25 komedi filmi izlediğinde kazanılır',
+        id: 'comedy_expert',
+        name: 'badges.comedy_expert.name',
+        description: 'badges.comedy_expert.description',
         icon: '🎭',
         category: 'genre',
         requirement: 25,
         isEarned: false
       },
       {
-        id: 'drama-expert',
-        name: 'Drama Maestrosu',
-        description: '25 drama filmi izlediğinde kazanılır',
-        icon: '�',
+        id: 'drama_expert',
+        name: 'badges.drama_expert.name',
+        description: 'badges.drama_expert.description',
+        icon: '🎭',
         category: 'genre',
         requirement: 25,
         isEarned: false
       },
       {
-        id: 'action-expert',
-        name: 'Aksiyon Kahramanı',
-        description: '25 aksiyon filmi izlediğinde kazanılır',
+        id: 'action_expert',
+        name: 'badges.action_expert.name',
+        description: 'badges.action_expert.description',
         icon: '⚡',
         category: 'genre',
         requirement: 25,
         isEarned: false
       },
       {
-        id: 'series-killer',
-        name: 'Dizi Avcısı',
-        description: 'En az 2 sezonlu bir dizinin tüm sezonlarını bitirdiğinde kazanılır',
+        id: 'series_killer',
+        name: 'badges.series_killer.name',
+        description: 'badges.series_killer.description',
         icon: '📺',
         category: 'special',
         requirement: 1,
         isEarned: false
       },
       {
-        id: 'nostalgia-traveler',
-        name: 'Nostalji Yolcusu',
-        description: '1990 öncesi 10 film izlediğinde kazanılır',
-        icon: '�️',
+        id: 'nostalgia_traveler',
+        name: 'badges.nostalgia_traveler.name',
+        description: 'badges.nostalgia_traveler.description',
+        icon: '🕰️',
         category: 'time',
         requirement: 10,
         isEarned: false
       },
       {
-        id: 'marathon-runner',
-        name: 'Sinema Maratoncusu',
-        description: 'Bir günde 3\'ten fazla film izlediğinde kazanılır',
+        id: 'marathon_runner',
+        name: 'badges.marathon_runner.name',
+        description: 'badges.marathon_runner.description',
         icon: '🏃‍♂️',
         category: 'streak',
         requirement: 3,
         isEarned: false
       },
       {
-        id: 'century-watcher',
-        name: 'Yüzyıl İzleyicisi',
-        description: '100 film izlediğinde kazanılır',
+        id: 'century_watcher',
+        name: 'badges.century_watcher.name',
+        description: 'badges.century_watcher.description',
         icon: '💯',
         category: 'milestone',
         requirement: 100,
         isEarned: false
       },
       {
-        id: 'binge-watcher',
-        name: 'Dizi Bağımlısı',
-        description: '50 dizi bölümü izlediğinde kazanılır',
+        id: 'binge_watcher',
+        name: 'badges.binge_watcher.name',
+        description: 'badges.binge_watcher.description',
         icon: '📱',
         category: 'milestone',
         requirement: 50,
         isEarned: false
       },
       {
-        id: 'time-traveler',
-        name: 'Zaman Efendisi',
-        description: 'Toplam 100 saat içerik izlediğinde kazanılır',
+        id: 'time_traveler',
+        name: 'badges.time_traveler.name',
+        description: 'badges.time_traveler.description',
         icon: '⏰',
         category: 'time',
         requirement: 6000, // 100 saat = 6000 dakika
         isEarned: false
       },
       {
-        id: 'critic-master',
-        name: 'Eleştirmen Usta',
-        description: '50 film için yorum yazıldığında kazanılır',
+        id: 'critic_master',
+        name: 'badges.critic_master.name',
+        description: 'badges.critic_master.description',
         icon: '✍️',
         category: 'special',
         requirement: 50,
@@ -492,8 +492,8 @@ export class LocalStorageService {
       },
       {
         id: 'collector',
-        name: 'Koleksiyoncu',
-        description: 'İzleme listesinde 25 film biriktirildiğinde kazanılır',
+        name: 'badges.collector.name',
+        description: 'badges.collector.description',
         icon: '🗃️',
         category: 'milestone',
         requirement: 25,
@@ -567,11 +567,11 @@ export class LocalStorageService {
           let shouldEarn = false;
 
           switch (template.id) {
-            case 'first-movie':
+            case 'first_movie':
               shouldEarn = profile.watchedMovieCount >= 1;
               break;
             
-            case 'comedy-expert':
+            case 'comedy_expert':
               // Komedi filmlerini say
               const comedyCount = watchedLogs.filter(log => 
                 log.mediaType === 'movie' && 
@@ -584,7 +584,7 @@ export class LocalStorageService {
               shouldEarn = comedyCount >= 25;
               break;
             
-            case 'drama-expert':
+            case 'drama_expert':
               // Drama filmlerini say
               const dramaCount = watchedLogs.filter(log => 
                 log.mediaType === 'movie' && 
@@ -597,7 +597,7 @@ export class LocalStorageService {
               shouldEarn = dramaCount >= 25;
               break;
             
-            case 'action-expert':
+            case 'action_expert':
               // Aksiyon filmlerini say
               const actionCount = watchedLogs.filter(log => 
                 log.mediaType === 'movie' && 
@@ -610,13 +610,13 @@ export class LocalStorageService {
               shouldEarn = actionCount >= 25;
               break;
             
-            case 'series-killer':
+            case 'series_killer':
               // Tamamlanan dizileri kontrol et
               const completedSeries = this.getCompletedSeries(watchedLogs);
               shouldEarn = completedSeries.length >= 1;
               break;
             
-            case 'nostalgia-traveler':
+            case 'nostalgia_traveler':
               // 1990 öncesi filmleri say
               const oldMoviesCount = watchedLogs.filter(log => 
                 log.mediaType === 'movie' && 
@@ -626,25 +626,25 @@ export class LocalStorageService {
               shouldEarn = oldMoviesCount >= 10;
               break;
             
-            case 'marathon-runner':
+            case 'marathon_runner':
               // Bir günde 3+ film kontrolü
               const hasMarathonDay = this.hasMarathonDay(watchedLogs);
               shouldEarn = hasMarathonDay;
               break;
             
-            case 'century-watcher':
+            case 'century_watcher':
               shouldEarn = profile.watchedMovieCount >= 100;
               break;
             
-            case 'binge-watcher':
+            case 'binge_watcher':
               shouldEarn = profile.totalEpisodesWatched >= 50;
               break;
             
-            case 'time-traveler':
+            case 'time_traveler':
               shouldEarn = profile.totalWatchTimeMinutes >= 6000; // 100 saat
               break;
             
-            case 'critic-master':
+            case 'critic_master':
               // Yorum yazılan film sayısı
               const reviewedMoviesCount = watchedLogs.filter(log => 
                 log.review && log.review.trim().length > 0

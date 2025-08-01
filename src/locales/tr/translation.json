@@ -74,7 +74,53 @@
     "stats": "İstatistikler",
     "movies_watched": "İzlenen Filmler",
     "episodes_watched": "İzlenen Bölümler",
-    "total_runtime": "Toplam Süre"
+    "total_runtime": "Toplam Süre",
+    "username_placeholder": "Kullanıcı Adı",
+    "bio_placeholder": "Kendinizi tanıtın...",
+    "join_date": "Aramıza Katılma Tarihi",
+    "avatar_gallery": "Avatar Galerisi",
+    "saving": "Kaydediliyor...",
+    "statistical_dashboard": "İstatistiksel Gösterge Paneli",
+    "this_month": "Bu Ay",
+    "watched_movies": "İzlenen Filmler",
+    "watched_series": "İzlenen Diziler",
+    "average": "Ortalama",
+    "per_series": "dizi",
+    "total_episodes": "Toplam Bölüm",
+    "daily": "Günlük",
+    "minutes": "dk",
+    "total_duration": "Toplam Süre",
+    "quick_overview": "Hızlı Bakış",
+    "average_rating": "Ortalama Puan",
+    "favorite_genre": "Favori Tür",
+    "this_month_watched": "Bu Ay İzlenen",
+    "film": "Film",
+    "series": "Dizi",
+    "time_timeline": "Zaman Tüneli",
+    "nineties": "90'lar",
+    "twenties": "2000'ler",
+    "twenties_2020": "2020'ler",
+    "recent_activities": "Son Aktiviteler",
+    "last_activities": "Son {{count}} aktivite",
+    "badges_achievements": "Rozetler ve Başarılar",
+    "achievement_summary": "Başarı Özeti",
+    "earned": "Kazanılan",
+    "remaining": "Kalan",
+    "next_target": "Sonraki Hedef",
+    "all_badges_earned": "🎉 Tüm rozetler kazanıldı!",
+    "very_close_to_target": "Hedefe çok yakın! 🔥",
+    "perfect": "Mükemmel",
+    "very_good": "Çok İyi",
+    "good": "İyi",
+    "average_quality": "Orta",
+    "needs_improvement": "Geliştirilebilir",
+    "user_levels": {
+      "rookie": "Çaylak",
+      "film_lover": "Film Sever",
+      "cinema_enthusiast": "Sinema Meraklısı",
+      "film_expert": "Film Uzmanı",
+      "cinema_legend": "Sinema Efsanesi"
+    }
   },
   "search": {
     "search_placeholder": "Film, dizi, oyuncu ara...",
@@ -95,7 +141,51 @@
     "cinenar_lists": "Cinenar Listeleri",
     "loading_lists": "Listeler yükleniyor...",
     "no_lists_available": "Henüz liste mevcut değil",
-    "movie_count": "{{count}} film"
+    "movie_count": "{{count}} film",
+    "imdb_top_10_legend": "IMDb Top 10 Efsanesi",
+    "imdb_top_10_description": "Tüm zamanların en yüksek puanlı, izleyici tarafından baş tacı edilmiş filmleri.",
+    "film_lists": {
+      "imdb_top_10": {
+        "title": "IMDb Top 10 Efsanesi",
+        "description": "Tüm zamanların en yüksek puanlı, izleyici tarafından baş tacı edilmiş filmleri."
+      },
+      "oscar_winners": {
+        "title": "Son 10 Yılın En İyi Film Oscar Kazananları",
+        "description": "Akademi tarafından 'En İyi Film' ödülüne layık görülen modern klasiklerin geçidi."
+      },
+      "mind_bending_scifi": {
+        "title": "Kafa Yakan Bilim Kurgu Filmleri",
+        "description": "Gerçekliği sorgulatan, zihin açan ve izleyiciyi düşünmeye iten modern bilim kurgu klasikleri."
+      },
+      "psychological_thrillers": {
+        "title": "Ters Köşe Yapan Psikolojik Gerilimler",
+        "description": "Sonuna kadar merak içinde bırakacak, şaşırtıcı finalleriyle hafızalara kazınan filmler."
+      },
+      "tarantino_filmography": {
+        "title": "Quentin Tarantino Filmografisi",
+        "description": "Diyalogları, müzik seçimleri ve şiddeti stilize kullanımıyla tanınan efsane yönetmenin en iyileri."
+      },
+      "adult_animation": {
+        "title": "Çocuklar İçin Olmayan Animasyon Başyapıtları",
+        "description": "Animasyonun sadece bir tür değil, her türlü hikayeyi anlatabilecek bir sanat formu olduğunu kanıtlayan filmler."
+      },
+      "world_cinema": {
+        "title": "Dünya Sinemasından Başyapıtlar",
+        "description": "Hollywood'un ötesine geçerek farklı kültürlerin ve yönetmenlerin sinema sanatına kattığı eşsiz eserler."
+      },
+      "coen_brothers": {
+        "title": "Coen Kardeşler'in Unutulmazları",
+        "description": "Kara mizahı, eksantrik karakterleri ve özgün senaryolarıyla tanınan yönetmen kardeşlerin en iyi işleri."
+      },
+      "modern_comedy": {
+        "title": "Gülmek Garanti: Modern Komedi Klasikleri",
+        "description": "Sadece güldürmekle kalmayan, zeki senaryoları ve unutulmaz karakterleriyle öne çıkan 21. yüzyıl komedileri."
+      },
+      "epic_historical": {
+        "title": "Epik Tarihi Dramalar",
+        "description": "Geçmişin büyük olaylarını ve kişiliklerini görkemli bir sinematografiyle canlandıran, sürükleyici filmler."
+      }
+    }
   },
   "social": {
     "activity": "Aktivite",
@@ -110,10 +200,22 @@
   },
   "ai": {
     "ai_discovery": "AI Keşfi",
+    "ai_film_discovery": "AI Film Discovery",
     "recommendations": "Öneriler",
     "chat": "Sohbet",
     "ask_ai": "AI'ya Sor",
-    "ai_suggests": "AI Önerir"
+    "ai_suggests": "AI Önerir",
+    "ai_description": "Aklındaki filmi tarif et, yapay zeka sana en uygun önerileri getirsin!",
+    "ai_working": "Yapay Zeka Çalışıyor...",
+    "ai_searching": "Senin için en uygun filmleri arıyorum ✨",
+    "ai_suggestions": "İşte sana özel seçtiklerim! 🎬",
+    "film_description": "Film Açıklaması",
+    "film_description_placeholder": "Örnek: Uzayda geçen, robotları olan ve aşk hikayesi bulunan animasyon film...",
+    "find_movies": "🎬 Film Bul",
+    "thinking": "Düşünüyorum...",
+    "try_again": "🔄 Yeniden Dene",
+    "all_attempts_used": "Tüm haklar kullanıldı",
+    "attempt": "Deneme"
   },
   "tabs": {
     "watched": "İzlendi",
@@ -140,6 +242,71 @@
     "not_yet": "Henüz Yok",
     "no_bio": "Henüz bir biyografi eklenmemiş.",
     "no_watched_content": "Henüz izlediğin bir içerik yok.",
-    "empty_watchlist": "İzleme listeniz boş."
+    "empty_watchlist": "İzleme listeniz boş.",
+    "coming_soon": "Yakında"
+  },
+  "genres": {
+    "action": "Aksiyon",
+    "drama": "Dram",
+    "comedy": "Komedi",
+    "horror": "Korku",
+    "sci_fi": "Bilim Kurgu",
+    "romantic": "Romantik",
+    "thriller": "Gerilim",
+    "fantasy": "Fantastik",
+    "adventure": "Macera",
+    "crime": "Suç",
+    "documentary": "Belgesel",
+    "animation": "Animasyon"
+  },
+  "badges": {
+    "first_movie": {
+      "name": "Çaylak Yönetmen",
+      "description": "İlk filmini eklediğinde kazanılır"
+    },
+    "comedy_expert": {
+      "name": "Komedi Uzmanı",
+      "description": "25 komedi filmi izlediğinde kazanılır"
+    },
+    "drama_expert": {
+      "name": "Drama Maestrosu",
+      "description": "25 drama filmi izlediğinde kazanılır"
+    },
+    "action_expert": {
+      "name": "Aksiyon Kahramanı",
+      "description": "25 aksiyon filmi izlediğinde kazanılır"
+    },
+    "series_killer": {
+      "name": "Dizi Avcısı",
+      "description": "En az 2 sezonlu bir dizinin tüm sezonlarını bitirdiğinde kazanılır"
+    },
+    "nostalgia_traveler": {
+      "name": "Nostalji Yolcusu",
+      "description": "1990 öncesi 10 film izlediğinde kazanılır"
+    },
+    "marathon_runner": {
+      "name": "Sinema Maratoncusu",
+      "description": "Bir günde 3'ten fazla film izlediğinde kazanılır"
+    },
+    "century_watcher": {
+      "name": "Yüzyıl İzleyicisi",
+      "description": "100 film izlediğinde kazanılır"
+    },
+    "binge_watcher": {
+      "name": "Dizi Bağımlısı",
+      "description": "50 dizi bölümü izlediğinde kazanılır"
+    },
+    "time_traveler": {
+      "name": "Zaman Efendisi",
+      "description": "Toplam 100 saat içerik izlediğinde kazanılır"
+    },
+    "critic_master": {
+      "name": "Eleştirmen Usta",
+      "description": "50 film için yorum yazıldığında kazanılır"
+    },
+    "collector": {
+      "name": "Koleksiyoncu",
+      "description": "İzleme listesinde 25 film biriktirildiğinde kazanılır"
+    }
   }
 }

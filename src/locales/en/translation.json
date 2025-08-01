@@ -74,7 +74,53 @@
     "stats": "Statistics",
     "movies_watched": "Movies Watched",
     "episodes_watched": "Episodes Watched",
-    "total_runtime": "Total Runtime"
+    "total_runtime": "Total Runtime",
+    "username_placeholder": "Username",
+    "bio_placeholder": "Tell us about yourself...",
+    "join_date": "Join Date",
+    "avatar_gallery": "Avatar Gallery",
+    "saving": "Saving...",
+    "statistical_dashboard": "Statistical Dashboard",
+    "this_month": "This Month",
+    "watched_movies": "Watched Movies",
+    "watched_series": "Watched Series",
+    "average": "Average",
+    "per_series": "series",
+    "total_episodes": "Total Episodes",
+    "daily": "Daily",
+    "minutes": "min",
+    "total_duration": "Total Duration",
+    "quick_overview": "Quick Overview",
+    "average_rating": "Average Rating",
+    "favorite_genre": "Favorite Genre",
+    "this_month_watched": "Watched This Month",
+    "film": "Film",
+    "series": "Series",
+    "time_timeline": "Time Timeline",
+    "nineties": "90s",
+    "twenties": "2000s",
+    "twenties_2020": "2020s",
+    "recent_activities": "Recent Activities",
+    "last_activities": "Last {{count}} activities",
+    "badges_achievements": "Badges and Achievements",
+    "achievement_summary": "Achievement Summary",
+    "earned": "Earned",
+    "remaining": "Remaining",
+    "next_target": "Next Target",
+    "all_badges_earned": "🎉 All badges earned!",
+    "very_close_to_target": "Very close to target! 🔥",
+    "perfect": "Perfect",
+    "very_good": "Very Good",
+    "good": "Good",
+    "average_quality": "Average",
+    "needs_improvement": "Needs Improvement",
+    "user_levels": {
+      "rookie": "Rookie",
+      "film_lover": "Film Lover",
+      "cinema_enthusiast": "Cinema Enthusiast",
+      "film_expert": "Film Expert",
+      "cinema_legend": "Cinema Legend"
+    }
   },
   "search": {
     "search_placeholder": "Search movies, TV shows, actors...",
@@ -95,7 +141,51 @@
     "cinenar_lists": "Cinenar Lists",
     "loading_lists": "Loading lists...",
     "no_lists_available": "No lists available yet",
-    "movie_count": "{{count}} movies"
+    "movie_count": "{{count}} movies",
+    "imdb_top_10_legend": "IMDb Top 10 Legend",
+    "imdb_top_10_description": "The highest-rated films of all time, crowned by audiences.",
+    "film_lists": {
+      "imdb_top_10": {
+        "title": "IMDb Top 10 Legend",
+        "description": "The highest-rated films of all time, crowned by audiences."
+      },
+      "oscar_winners": {
+        "title": "Last 10 Years Best Picture Oscar Winners",
+        "description": "A parade of modern classics deemed worthy of the Academy's 'Best Picture' award."
+      },
+      "mind_bending_scifi": {
+        "title": "Mind-Bending Science Fiction Films",
+        "description": "Modern sci-fi classics that question reality, expand minds, and make viewers think."
+      },
+      "psychological_thrillers": {
+        "title": "Psychological Thrillers with Plot Twists",
+        "description": "Films that keep you guessing until the end, with surprising finales that stay in your memory."
+      },
+      "tarantino_filmography": {
+        "title": "Quentin Tarantino Filmography",
+        "description": "The best works of the legendary director known for his dialogue, music choices, and stylized use of violence."
+      },
+      "adult_animation": {
+        "title": "Animation Masterpieces Not for Children",
+        "description": "Films that prove animation is not just a genre, but an art form capable of telling any kind of story."
+      },
+      "world_cinema": {
+        "title": "Masterpieces from World Cinema",
+        "description": "Unique works that different cultures and directors have contributed to the art of cinema beyond Hollywood."
+      },
+      "coen_brothers": {
+        "title": "Unforgettable Coen Brothers Films",
+        "description": "The best works of the director brothers known for their dark humor, eccentric characters, and original screenplays."
+      },
+      "modern_comedy": {
+        "title": "Laugh Guaranteed: Modern Comedy Classics",
+        "description": "21st century comedies that don't just make you laugh, but stand out with their intelligent scripts and unforgettable characters."
+      },
+      "epic_historical": {
+        "title": "Epic Historical Dramas",
+        "description": "Compelling films that bring to life the great events and personalities of the past with magnificent cinematography."
+      }
+    }
   },
   "social": {
     "activity": "Activity",
@@ -110,10 +200,22 @@
   },
   "ai": {
     "ai_discovery": "AI Discovery",
+    "ai_film_discovery": "AI Film Discovery",
     "recommendations": "Recommendations",
     "chat": "Chat",
     "ask_ai": "Ask AI",
-    "ai_suggests": "AI Suggests"
+    "ai_suggests": "AI Suggests",
+    "ai_description": "Describe the movie in your mind, and AI will bring you the most suitable recommendations!",
+    "ai_working": "AI is Working...",
+    "ai_searching": "Searching for the most suitable movies for you ✨",
+    "ai_suggestions": "Here are my special picks for you! 🎬",
+    "film_description": "Film Description",
+    "film_description_placeholder": "Example: An animated film set in space with robots and a love story...",
+    "find_movies": "🎬 Find Movies",
+    "thinking": "Thinking...",
+    "try_again": "🔄 Try Again",
+    "all_attempts_used": "All attempts used",
+    "attempt": "Attempt"
   },
   "tabs": {
     "watched": "Watched",
@@ -140,6 +242,71 @@
     "not_yet": "Not Yet",
     "no_bio": "No biography added yet.",
     "no_watched_content": "You haven't watched any content yet.",
-    "empty_watchlist": "Your watchlist is empty."
+    "empty_watchlist": "Your watchlist is empty.",
+    "coming_soon": "Coming Soon"
+  },
+  "genres": {
+    "action": "Action",
+    "drama": "Drama",
+    "comedy": "Comedy",
+    "horror": "Horror",
+    "sci_fi": "Sci-Fi",
+    "romantic": "Romantic",
+    "thriller": "Thriller",
+    "fantasy": "Fantasy",
+    "adventure": "Adventure",
+    "crime": "Crime",
+    "documentary": "Documentary",
+    "animation": "Animation"
+  },
+  "badges": {
+    "first_movie": {
+      "name": "Rookie Director",
+      "description": "Earned when you add your first movie"
+    },
+    "comedy_expert": {
+      "name": "Comedy Expert",
+      "description": "Earned when you watch 25 comedy movies"
+    },
+    "drama_expert": {
+      "name": "Drama Maestro",
+      "description": "Earned when you watch 25 drama movies"
+    },
+    "action_expert": {
+      "name": "Action Hero",
+      "description": "Earned when you watch 25 action movies"
+    },
+    "series_killer": {
+      "name": "Series Hunter",
+      "description": "Earned when you complete all seasons of a series with at least 2 seasons"
+    },
+    "nostalgia_traveler": {
+      "name": "Nostalgia Traveler",
+      "description": "Earned when you watch 10 movies from before 1990"
+    },
+    "marathon_runner": {
+      "name": "Cinema Marathoner",
+      "description": "Earned when you watch more than 3 movies in a day"
+    },
+    "century_watcher": {
+      "name": "Century Watcher",
+      "description": "Earned when you watch 100 movies"
+    },
+    "binge_watcher": {
+      "name": "Binge Watcher",
+      "description": "Earned when you watch 50 TV episodes"
+    },
+    "time_traveler": {
+      "name": "Time Master",
+      "description": "Earned when you watch 100 hours of content"
+    },
+    "critic_master": {
+      "name": "Critic Master",
+      "description": "Earned when you write reviews for 50 movies"
+    },
+    "collector": {
+      "name": "Collector",
+      "description": "Earned when you add 25 movies to your watchlist"
+    }
   }
 }

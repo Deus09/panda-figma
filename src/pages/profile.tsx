@@ -12,7 +12,7 @@ import styles from './profile.module.css';
 const Profile: React.FC = () => {
   // AuthContext'ten kullanıcı bilgilerini al
   const { user, profile: authProfile, loading: authLoading, signInWithGoogle, signOut } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -48,8 +48,8 @@ const Profile: React.FC = () => {
   ];
 
   const popularGenres = [
-    'Aksiyon', 'Dram', 'Komedi', 'Korku', 'Bilim Kurgu', 'Romantik',
-    'Gerilim', 'Fantastik', 'Macera', 'Suç', 'Belgesel', 'Animasyon'
+    t('genres.action'), t('genres.drama'), t('genres.comedy'), t('genres.horror'), t('genres.sci_fi'), t('genres.romantic'),
+    t('genres.thriller'), t('genres.fantasy'), t('genres.adventure'), t('genres.crime'), t('genres.documentary'), t('genres.animation')
   ];
 
   useEffect(() => {
@@ -229,7 +229,9 @@ const Profile: React.FC = () => {
 
   const formatJoinDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR', { 
+    const currentLanguage = i18n.language;
+    const locale = currentLanguage === 'tr' ? 'tr-TR' : currentLanguage === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleDateString(locale, { 
       year: 'numeric', 
       month: 'long' 
     });
@@ -330,32 +332,32 @@ const Profile: React.FC = () => {
     const favoriteGenre = Object.entries(genreCounts)
       .sort(([,a], [,b]) => b - a)[0][0];
     
-    // Türkçe karşılıkları
+    // Çok dilli karşılıkları
     const genreTranslations: { [key: string]: string } = {
-      'drama': 'Drama',
-      'comedy': 'Komedi',
-      'komedi': 'Komedi',
-      'action': 'Aksiyon',
-      'aksiyon': 'Aksiyon',
-      'thriller': 'Gerilim',
-      'horror': 'Korku',
-      'korku': 'Korku',
-      'romance': 'Romantik',
-      'romantik': 'Romantik',
-      'sci-fi': 'Bilim Kurgu',
-      'science fiction': 'Bilim Kurgu',
-      'fantasy': 'Fantastik',
-      'fantastik': 'Fantastik',
-      'adventure': 'Macera',
-      'macera': 'Macera',
-      'crime': 'Suç',
-      'suç': 'Suç',
-      'mystery': 'Gizem',
-      'gizem': 'Gizem',
-      'animation': 'Animasyon',
-      'animasyon': 'Animasyon',
-      'documentary': 'Belgesel',
-      'belgesel': 'Belgesel'
+      'drama': t('genres.drama'),
+      'comedy': t('genres.comedy'),
+      'komedi': t('genres.comedy'),
+      'action': t('genres.action'),
+      'aksiyon': t('genres.action'),
+      'thriller': t('genres.thriller'),
+      'horror': t('genres.horror'),
+      'korku': t('genres.horror'),
+      'romance': t('genres.romantic'),
+      'romantik': t('genres.romantic'),
+      'sci-fi': t('genres.sci_fi'),
+      'science fiction': t('genres.sci_fi'),
+      'fantasy': t('genres.fantasy'),
+      'fantastik': t('genres.fantasy'),
+      'adventure': t('genres.adventure'),
+      'macera': t('genres.adventure'),
+      'crime': t('genres.crime'),
+      'suç': t('genres.crime'),
+      'mystery': t('genres.thriller'),
+      'gizem': t('genres.thriller'),
+      'animation': t('genres.animation'),
+      'animasyon': t('genres.animation'),
+      'documentary': t('genres.documentary'),
+      'belgesel': t('genres.documentary')
     };
     
     return genreTranslations[favoriteGenre] || favoriteGenre.charAt(0).toUpperCase() + favoriteGenre.slice(1);
@@ -619,14 +621,14 @@ const Profile: React.FC = () => {
   };
 
   const getUserLevel = () => {
-    if (!profile) return 'Çaylak';
+    if (!profile) return t('profile.user_levels.rookie');
     
     const earnedCount = profile.earnedBadgeCount;
-    if (earnedCount >= 8) return 'Sinema Efsanesi';
-    if (earnedCount >= 6) return 'Film Uzmanı';
-    if (earnedCount >= 4) return 'Sinema Meraklısı';
-    if (earnedCount >= 2) return 'Film Sever';
-    return 'Çaylak';
+    if (earnedCount >= 8) return t('profile.user_levels.cinema_legend');
+    if (earnedCount >= 6) return t('profile.user_levels.film_expert');
+    if (earnedCount >= 4) return t('profile.user_levels.cinema_enthusiast');
+    if (earnedCount >= 2) return t('profile.user_levels.film_lover');
+    return t('profile.user_levels.rookie');
   };
 
   const getLevelStyle = () => {
@@ -825,7 +827,7 @@ const Profile: React.FC = () => {
                     value={editData.username}
                     onChange={(e) => setEditData(prev => ({ ...prev, username: e.target.value }))}
                     className="bg-[#333] text-white text-xl font-bold rounded-lg px-3 py-1 border border-gray-600 focus:border-[#FE7743] focus:outline-none flex-1"
-                    placeholder="Kullanıcı Adı"
+                    placeholder={t('profile.username_placeholder')}
                   />
                 ) : (
                   <>
@@ -852,7 +854,7 @@ const Profile: React.FC = () => {
                     onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
                     className="w-full bg-[#333] text-white rounded-lg px-3 py-2 border border-gray-600 focus:border-[#FE7743] focus:outline-none resize-none text-sm"
                     rows={2}
-                    placeholder="Kendinizi tanıtın..."
+                    placeholder={t('profile.bio_placeholder')}
                   />
                 ) : (
                   <p className="text-gray-300 text-sm leading-relaxed font-poppins">
@@ -900,7 +902,7 @@ const Profile: React.FC = () => {
 
               {/* Aramıza Katılma Tarihi */}
               <p className="text-gray-400 text-xs font-poppins">
-                Aramıza Katılma Tarihi: {formatJoinDate(profile.joinDate)}
+                {t('profile.join_date')}: {formatJoinDate(profile.joinDate)}
               </p>
             </div>
           </div>
@@ -908,7 +910,7 @@ const Profile: React.FC = () => {
           {/* Avatar Galerisi - Düzenleme Modunda */}
           {isEditing && (
             <div className="mt-6 pt-4 border-t border-[#333]">
-              <p className="text-[#FE7743] text-sm mb-3">Avatar Galerisi</p>
+              <p className="text-[#FE7743] text-sm mb-3">{t('profile.avatar_gallery')}</p>
               <div className="grid grid-cols-4 gap-3">
                 {avatarGallery.map((avatar) => (
                   <button
@@ -938,24 +940,44 @@ const Profile: React.FC = () => {
                 {isUpdatingProfile ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>Kaydediliyor...</span>
+                    <span>{t('profile.saving')}</span>
                   </>
                 ) : (
-                  <span>Kaydet</span>
+                  <span>{t('common.save')}</span>
                 )}
               </button>
               <button
                 onClick={handleCancel}
                 className="flex-1 bg-[#666] hover:bg-[#555] text-white py-2 rounded-lg font-medium transition-colors font-poppins text-sm"
               >
-                İptal
+                {t('common.cancel')}
               </button>
             </div>
           )}
 
           {/* Çıkış Yap Butonu - Kullanıcı giriş yapmışsa göster */}
           {user && !isEditing && (
-            <div className="mt-4 pt-4 border-t border-[#333]">
+            <div className="mt-4 pt-4 border-t border-[#333] space-y-3">
+              <button
+                onClick={() => {
+                  // Rozetleri sıfırla
+                  if (profile) {
+                    const updatedProfile = LocalStorageService.updateUserProfile({
+                      badges: LocalStorageService.getBadgeTemplates(),
+                      earnedBadgeCount: 0
+                    });
+                    if (updatedProfile) {
+                      setProfile(updatedProfile);
+                    }
+                  }
+                }}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                </svg>
+                <span>Reset Badges (Test)</span>
+              </button>
               <button
                 onClick={signOut}
                 className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2"
@@ -973,7 +995,7 @@ const Profile: React.FC = () => {
         <div className="bg-[#222] rounded-[20px] p-6 mb-6 shadow-lg">
           <div className="flex items-center mb-6">
             <div className="w-1 h-6 bg-[#FE7743] rounded-full mr-3"></div>
-            <h2 className="text-xl font-bold text-white font-poppins">İstatistiksel Gösterge Paneli</h2>
+            <h2 className="text-xl font-bold text-white font-poppins">{t('profile.statistical_dashboard')}</h2>
           </div>
 
           {/* Ana Göstergeler - İyileştirilmiş Kartlar */}
@@ -1001,7 +1023,7 @@ const Profile: React.FC = () => {
                     </svg>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-400 font-poppins">Bu Ay</p>
+                    <p className="text-xs text-gray-400 font-poppins">{t('profile.this_month')}</p>
                     <p className={`text-xs font-poppins ${
                       getThisMonthMovies().trend > 0 ? 'text-[#4CAF50]' : 
                       getThisMonthMovies().trend < 0 ? 'text-[#FF6B6B]' : 'text-white'
@@ -1011,7 +1033,7 @@ const Profile: React.FC = () => {
                   </div>
                 </div>
                 <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{profile.watchedMovieCount}</p>
-                <p className="text-sm text-gray-300 font-poppins">İzlenen Filmler</p>
+                <p className="text-sm text-gray-300 font-poppins">{t('profile.watched_movies')}</p>
               </div>
             </div>
 
@@ -1037,7 +1059,7 @@ const Profile: React.FC = () => {
                     </svg>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-400 font-poppins">Bu Ay</p>
+                    <p className="text-xs text-gray-400 font-poppins">{t('profile.this_month')}</p>
                     <p className={`text-xs font-poppins ${
                       getThisMonthTvShows().uniqueSeries > 0 ? 'text-[#4CAF50]' : 'text-white'
                     }`}>
@@ -1046,7 +1068,7 @@ const Profile: React.FC = () => {
                   </div>
                 </div>
                 <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{getTotalEpisodes().uniqueSeries}</p>
-                <p className="text-sm text-gray-300 font-poppins">İzlenen Diziler</p>
+                <p className="text-sm text-gray-300 font-poppins">{t('profile.watched_series')}</p>
               </div>
             </div>
 
@@ -1072,12 +1094,12 @@ const Profile: React.FC = () => {
                     </svg>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-400 font-poppins">Ortalama</p>
-                    <p className="text-xs text-white font-poppins">{getTotalEpisodes().average}/dizi</p>
+                    <p className="text-xs text-gray-400 font-poppins">{t('profile.average')}</p>
+                    <p className="text-xs text-white font-poppins">{getTotalEpisodes().average}/{t('profile.per_series')}</p>
                   </div>
                 </div>
                 <p className={`${styles.numberCounter} text-3xl font-bold text-white font-poppins mb-1 leading-none`}>{getTotalEpisodes().total}</p>
-                <p className="text-sm text-gray-300 font-poppins">Toplam Bölüm</p>
+                <p className="text-sm text-gray-300 font-poppins">{t('profile.total_episodes')}</p>
               </div>
             </div>
 
@@ -1104,16 +1126,16 @@ const Profile: React.FC = () => {
                     </svg>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-400 font-poppins">Günlük</p>
+                    <p className="text-xs text-gray-400 font-poppins">{t('profile.daily')}</p>
                     <p className="text-xs text-white font-poppins">
-                      {getDailyAverageWatchTime()}dk
+                      {getDailyAverageWatchTime()}{t('profile.minutes')}
                     </p>
                   </div>
                 </div>
                 <p className="text-lg font-bold text-white font-poppins mb-1 leading-tight">
                   {LocalStorageService.formatWatchTime(profile.totalWatchTimeMinutes)}
                 </p>
-                <p className="text-sm text-gray-300 font-poppins">Toplam Süre</p>
+                <p className="text-sm text-gray-300 font-poppins">{t('profile.total_duration')}</p>
               </div>
             </div>
           </div>
@@ -1124,7 +1146,7 @@ const Profile: React.FC = () => {
               <svg width="20" height="20" className="mr-2" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
-              Hızlı Bakış
+              {t('profile.quick_overview')}
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1157,12 +1179,12 @@ const Profile: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <p className="text-gray-300 text-sm font-poppins">Ortalama Puan</p>
+                  <p className="text-gray-300 text-sm font-poppins">{t('profile.average_rating')}</p>
                   <p className="text-white font-semibold font-poppins">
-                    {getAverageRating().average >= 8 ? 'Mükemmel' : 
-                     getAverageRating().average >= 7 ? 'Çok İyi' : 
-                     getAverageRating().average >= 6 ? 'İyi' : 
-                     getAverageRating().average >= 5 ? 'Orta' : 'Geliştirilebilir'}
+                    {getAverageRating().average >= 8 ? t('profile.perfect') : 
+                     getAverageRating().average >= 7 ? t('profile.very_good') : 
+                     getAverageRating().average >= 6 ? t('profile.good') : 
+                     getAverageRating().average >= 5 ? t('profile.average_quality') : t('profile.needs_improvement')}
                   </p>
                 </div>
               </div>
@@ -1175,7 +1197,7 @@ const Profile: React.FC = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-gray-300 text-sm font-poppins">Favori Tür</p>
+                  <p className="text-gray-300 text-sm font-poppins">{t('profile.favorite_genre')}</p>
                   <span className={`${styles.chipComponent} inline-block bg-[#4ECDC4] text-white px-3 py-1 rounded-full text-sm font-medium`}>
                     {getFavoriteGenre()}
                   </span>
@@ -1190,10 +1212,10 @@ const Profile: React.FC = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-gray-300 text-sm font-poppins">Bu Ay İzlenen</p>
+                  <p className="text-gray-300 text-sm font-poppins">{t('profile.this_month_watched')}</p>
                   <div className="flex items-center space-x-2">
                     <span className="text-white font-semibold font-poppins">
-                      {getThisMonthWatched().movies} Film, {getThisMonthWatched().tvShows} Dizi
+                      {getThisMonthWatched().movies} {t('profile.film')}, {getThisMonthWatched().tvShows} {t('profile.series')}
                     </span>
                     {getThisMonthWatched().trend !== 0 && (
                       <span className={`${styles.trendIndicator} text-xs font-medium px-2 py-1 rounded-full ${
@@ -1216,16 +1238,16 @@ const Profile: React.FC = () => {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="text-gray-300 text-sm font-poppins mb-2">Zaman Tüneli</p>
+                  <p className="text-gray-300 text-sm font-poppins mb-2">{t('profile.time_timeline')}</p>
                   <div className="flex space-x-1">
                     <div className={`${styles.timelineProgress} flex-1 bg-[#333] rounded-full h-2`}>
                       <div className="bg-gradient-to-r from-[#FF6B6B] to-[#FE7743] h-2 rounded-full" style={{width: `${getTimeTimeline().progress}%`}}></div>
                     </div>
                   </div>
                   <div className="flex justify-between text-xs text-gray-400 mt-1">
-                    <span>90'lar</span>
-                    <span>2000'ler</span>
-                    <span>2020'ler</span>
+                    <span>{t('profile.nineties')}</span>
+                    <span>{t('profile.twenties')}</span>
+                    <span>{t('profile.twenties_2020')}</span>
                   </div>
                 </div>
               </div>
@@ -1237,7 +1259,7 @@ const Profile: React.FC = () => {
         <div className="bg-[#222] rounded-[20px] p-6 mb-6 shadow-lg">
           <div className="flex items-center mb-6">
             <div className="w-1 h-6 bg-[#FE7743] rounded-full mr-3"></div>
-            <h2 className="text-xl font-bold text-white font-poppins">Son Aktiviteler</h2>
+            <h2 className="text-xl font-bold text-white font-poppins">{t('profile.recent_activities')}</h2>
           </div>
 
           {/* Yatayda Kaydırılabilir Poster Şeridi */}
@@ -1269,7 +1291,7 @@ const Profile: React.FC = () => {
           {/* Alt Bilgi */}
           <div className="flex items-center mt-4 pt-4 border-t border-[#333]">
             <p className="text-gray-400 text-sm font-poppins">
-              Son {getRecentMovies().length} aktivite
+              {t('profile.last_activities', { count: getRecentMovies().length })}
             </p>
           </div>
         </div>
@@ -1279,7 +1301,7 @@ const Profile: React.FC = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
               <div className="w-1 h-6 bg-[#FE7743] rounded-full mr-3"></div>
-              <h2 className="text-xl font-bold text-white font-poppins">Rozetler ve Başarılar</h2>
+              <h2 className="text-xl font-bold text-white font-poppins">{t('profile.badges_achievements')}</h2>
             </div>
             <div className="bg-[#FE7743] text-white px-3 py-1 rounded-full text-sm font-medium font-poppins">
               {profile.earnedBadgeCount}/{profile.badges.length}
@@ -1335,14 +1357,14 @@ const Profile: React.FC = () => {
                   <h4 className={`text-sm font-bold mb-2 font-poppins leading-tight ${
                     badge.isEarned ? 'text-white' : 'text-gray-500'
                   }`}>
-                    {badge.name}
+                    {t(badge.name)}
                   </h4>
                   
                   {/* Açıklama */}
                   <p className={`text-xs leading-snug font-poppins mb-3 ${
                     badge.isEarned ? 'text-gray-300' : 'text-gray-600'
                   }`}>
-                    {badge.description}
+                    {t(badge.description)}
                   </p>
                   
                   {/* Kazanılma tarihi */}
@@ -1387,7 +1409,7 @@ const Profile: React.FC = () => {
                       </div>
                       {getProgressForBadge(badge) / badge.requirement > 0.8 && (
                         <p className="text-xs text-[#FE7743] font-medium font-poppins mt-1 animate-pulse">
-                          Hedefe çok yakın! 🔥
+                          {t('profile.very_close_to_target')}
                         </p>
                       )}
                     </div>
@@ -1413,7 +1435,7 @@ const Profile: React.FC = () => {
                 <svg width="20" height="20" className="mr-2" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
-                Başarı Özeti
+                {t('profile.achievement_summary')}
               </h3>
               <div className={`px-3 py-1 rounded-full text-sm font-bold font-poppins ${getLevelStyle()}`}>
                 {getUserLevel()}
@@ -1455,18 +1477,18 @@ const Profile: React.FC = () => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="bg-[#222] rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-[#FE7743] font-poppins">{profile.earnedBadgeCount}</div>
-                <div className="text-gray-300 font-poppins">Kazanılan</div>
+                <div className="text-gray-300 font-poppins">{t('profile.earned')}</div>
               </div>
               <div className="bg-[#222] rounded-lg p-3 text-center">
                 <div className="text-2xl font-bold text-gray-400 font-poppins">
                   {profile.badges.length - profile.earnedBadgeCount}
                 </div>
-                <div className="text-gray-300 font-poppins">Kalan</div>
+                <div className="text-gray-300 font-poppins">{t('profile.remaining')}</div>
               </div>
               <div className="bg-[#222] rounded-lg p-3 text-center col-span-2">
-                <div className="text-gray-300 text-sm font-poppins mb-1">Sonraki Hedef</div>
+                <div className="text-gray-300 text-sm font-poppins mb-1">{t('profile.next_target')}</div>
                 <div className="text-white font-medium font-poppins">
-                  {getNextBadgeTarget()?.name || '🎉 Tüm rozetler kazanıldı!'}
+                  {getNextBadgeTarget() ? t(getNextBadgeTarget()?.name || '') : t('profile.all_badges_earned')}
                 </div>
                 {getNextBadgeTarget() && (
                   <div className="text-xs text-gray-400 mt-1 font-poppins">

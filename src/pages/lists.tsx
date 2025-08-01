@@ -9,11 +9,11 @@ import { searchMovies } from '../services/tmdb';
 import styles from './lists.module.css';
 
 // Film listesi verileri
-const filmListeleri = {
+const getFilmListeleri = (t: any) => ({
   "filmListeleri": [
     {
-      "listeAdi": "IMDb Top 10 Efsanesi",
-      "aciklama": "Tüm zamanların en yüksek puanlı, izleyici tarafından baş tacı edilmiş filmleri.",
+      "listeAdi": t('lists.film_lists.imdb_top_10.title'),
+      "aciklama": t('lists.film_lists.imdb_top_10.description'),
       "filmSayisi": 10,
       "filmler": [
         {
@@ -99,8 +99,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Son 10 Yılın En İyi Film Oscar Kazananları",
-      "aciklama": "Akademi tarafından 'En İyi Film' ödülüne layık görülen modern klasiklerin geçidi.",
+      "listeAdi": t('lists.film_lists.oscar_winners.title'),
+      "aciklama": t('lists.film_lists.oscar_winners.description'),
       "filmSayisi": 11,
       "filmler": [
         {
@@ -108,94 +108,105 @@ const filmListeleri = {
           "filmAdi": "Oppenheimer",
           "yil": 2023,
           "yonetmen": "Christopher Nolan",
-          "kazandigiYil": 2024,
-          "kisaAciklama": "Atom bombasının babasının karmaşık ve çelişkili portresi, görsel bir şölenle sunuluyor."
+          "imdbPuani": 8.4,
+          "kisaAciklama": "Atom bombasının yaratıcısı J. Robert Oppenheimer'ın hayatını anlatan epik biyografik drama.",
+          "kazandigiYil": 2024
         },
         {
           "sira": 2,
           "filmAdi": "Everything Everywhere All at Once",
           "yil": 2022,
           "yonetmen": "Daniel Kwan, Daniel Scheinert",
-          "kazandigiYil": 2023,
-          "kisaAciklama": "Paralel evrenlerde geçen, aksiyon dolu, komik ve dokunaklı bir aile hikayesi."
+          "imdbPuani": 7.8,
+          "kisaAciklama": "Çoklu evrenler arasında geçen, aile bağlarını konu alan bilim kurgu komedi-drama.",
+          "kazandigiYil": 2023
         },
         {
           "sira": 3,
           "filmAdi": "CODA",
           "yil": 2021,
           "yonetmen": "Sian Heder",
-          "kazandigiYil": 2022,
-          "kisaAciklama": "İşitme engelli bir ailenin işiten tek üyesinin hayallerinin peşinden gitme mücadelesi."
+          "imdbPuani": 8.0,
+          "kisaAciklama": "Sağır bir ailenin tek duyabilen üyesi olan genç bir kızın müzik tutkusunu anlatan drama.",
+          "kazandigiYil": 2022
         },
         {
           "sira": 4,
           "filmAdi": "Nomadland",
           "yil": 2020,
           "yonetmen": "Chloé Zhao",
-          "kazandigiYil": 2021,
-          "kisaAciklama": "Modern Amerika'da karavanıyla göçebe bir hayat süren bir kadının dokunaklı öyküsü."
+          "imdbPuani": 7.4,
+          "kisaAciklama": "Amerika'nın batısında göçebe yaşam süren bir kadının hikayesini anlatan drama.",
+          "kazandigiYil": 2021
         },
         {
           "sira": 5,
           "filmAdi": "Parasite",
           "yil": 2019,
-          "yonetmen": "Bong Joon Ho",
-          "kazandigiYil": 2020,
-          "kisaAciklama": "Sınıf çatışmasını kara mizah ve gerilimle harmanlayan Güney Kore sinemasından bir başyapıt."
+          "yonetmen": "Bong Joon-ho",
+          "imdbPuani": 8.5,
+          "kisaAciklama": "Sosyal sınıflar arasındaki uçurumu konu alan, sürpriz dönüşlerle dolu Kore filmi.",
+          "kazandigiYil": 2020
         },
         {
           "sira": 6,
           "filmAdi": "Green Book",
           "yil": 2018,
           "yonetmen": "Peter Farrelly",
-          "kazandigiYil": 2019,
-          "kisaAciklama": "Irkçılığın hüküm sürdüğü yıllarda siyahi bir piyanist ile İtalyan-Amerikan şoförünün dostluğu."
+          "imdbPuani": 8.2,
+          "kisaAciklama": "1960'larda ırkçılığın hüküm sürdüğü Amerika'da gelişen dostluk hikayesi.",
+          "kazandigiYil": 2019
         },
         {
           "sira": 7,
           "filmAdi": "The Shape of Water",
           "yil": 2017,
           "yonetmen": "Guillermo del Toro",
-          "kazandigiYil": 2018,
-          "kisaAciklama": "Soğuk Savaş döneminde geçen, yalnız bir kadının ve suda yaşayan bir yaratığın fantastik aşk hikayesi."
+          "imdbPuani": 7.3,
+          "kisaAciklama": "Soğuk Savaş döneminde geçen, insan ve yaratık arasında gelişen aşk hikayesi.",
+          "kazandigiYil": 2018
         },
         {
           "sira": 8,
           "filmAdi": "Moonlight",
           "yil": 2016,
           "yonetmen": "Barry Jenkins",
-          "kazandigiYil": 2017,
-          "kisaAciklama": "Genç bir siyahi adamın çocukluğundan yetişkinliğine kimliğini ve yerini bulma arayışı."
+          "imdbPuani": 7.4,
+          "kisaAciklama": "Afro-Amerikan bir gencin kimlik arayışını anlatan üç bölümlük drama.",
+          "kazandigiYil": 2017
         },
         {
           "sira": 9,
           "filmAdi": "Spotlight",
           "yil": 2015,
           "yonetmen": "Tom McCarthy",
-          "kazandigiYil": 2016,
-          "kisaAciklama": "Katolik Kilisesi'ndeki taciz skandalını ortaya çıkaran gazetecilerin gerçek hikayesi."
+          "imdbPuani": 8.1,
+          "kisaAciklama": "Boston Globe gazetesinin Katolik Kilisesi'ndeki cinsel istismar skandalını ortaya çıkarma süreci.",
+          "kazandigiYil": 2016
         },
         {
           "sira": 10,
           "filmAdi": "Birdman",
           "yil": 2014,
           "yonetmen": "Alejandro G. Iñárritu",
-          "kazandigiYil": 2015,
-          "kisaAciklama": "Tek planda çekilmiş gibi görünen, eski bir süper kahraman aktörünün geri dönüş çabası."
+          "imdbPuani": 7.7,
+          "kisaAciklama": "Bir zamanların süper kahraman oyuncusunun Broadway'de yeniden doğuş mücadelesi.",
+          "kazandigiYil": 2015
         },
         {
           "sira": 11,
           "filmAdi": "12 Years a Slave",
           "yil": 2013,
           "yonetmen": "Steve McQueen",
-          "kazandigiYil": 2014,
-          "kisaAciklama": "Özgür bir adamken kaçırılıp köle olarak satılan Solomon Northup'un sarsıcı gerçek hikayesi."
+          "imdbPuani": 8.1,
+          "kisaAciklama": "Özgür bir adamın köleleştirilmesi ve 12 yıl sonra özgürlüğüne kavuşma hikayesi.",
+          "kazandigiYil": 2014
         }
       ]
     },
     {
-      "listeAdi": "Kafa Yakan Bilim Kurgu Filmleri",
-      "aciklama": "Gerçekliği sorgulatan, zihin açan ve izleyiciyi düşünmeye iten modern bilim kurgu klasikleri.",
+      "listeAdi": t('lists.film_lists.mind_bending_scifi.title'),
+      "aciklama": t('lists.film_lists.mind_bending_scifi.description'),
       "filmSayisi": 10,
       "filmler": [
         {
@@ -281,8 +292,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Ters Köşe Yapan Psikolojik Gerilimler",
-      "aciklama": "Sonuna kadar merak içinde bırakacak, şaşırtıcı finalleriyle hafızalara kazınan filmler.",
+      "listeAdi": t('lists.film_lists.psychological_thrillers.title'),
+      "aciklama": t('lists.film_lists.psychological_thrillers.description'),
       "filmSayisi": 10,
       "filmler": [
         {
@@ -368,8 +379,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Quentin Tarantino Filmografisi",
-      "aciklama": "Diyalogları, müzik seçimleri ve şiddeti stilize kullanımıyla tanınan efsane yönetmenin en iyileri.",
+      "listeAdi": t('lists.film_lists.tarantino_filmography.title'),
+      "aciklama": t('lists.film_lists.tarantino_filmography.description'),
       "filmSayisi": 10,
       "filmler": [
         { "sira": 1, "filmAdi": "Pulp Fiction", "yil": 1994 },
@@ -385,8 +396,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Çocuklar İçin Olmayan Animasyon Başyapıtları",
-      "aciklama": "Animasyonun sadece bir tür değil, her türlü hikayeyi anlatabilecek bir sanat formu olduğunu kanıtlayan filmler.",
+      "listeAdi": t('lists.film_lists.adult_animation.title'),
+      "aciklama": t('lists.film_lists.adult_animation.description'),
       "filmSayisi": 11,
       "filmler": [
         {
@@ -469,8 +480,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Dünya Sinemasından Başyapıtlar",
-      "aciklama": "Hollywood'un ötesine geçerek farklı kültürlerin ve yönetmenlerin sinema sanatına kattığı eşsiz eserler.",
+      "listeAdi": t('lists.film_lists.world_cinema.title'),
+      "aciklama": t('lists.film_lists.world_cinema.description'),
       "filmSayisi": 12,
       "filmler": [
         { "sira": 1, "filmAdi": "Parasite", "yil": 2019, "ulke": "Güney Kore" },
@@ -488,8 +499,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Coen Kardeşler'in Unutulmazları",
-      "aciklama": "Kara mizahı, eksantrik karakterleri ve özgün senaryolarıyla tanınan yönetmen kardeşlerin en iyi işleri.",
+      "listeAdi": t('lists.film_lists.coen_brothers.title'),
+      "aciklama": t('lists.film_lists.coen_brothers.description'),
       "filmSayisi": 10,
       "filmler": [
         { "sira": 1, "filmAdi": "No Country for Old Men", "yil": 2007 },
@@ -505,8 +516,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Gülmek Garanti: Modern Komedi Klasikleri",
-      "aciklama": "Sadece güldürmekle kalmayan, zeki senaryoları ve unutulmaz karakterleriyle öne çıkan 21. yüzyıl komedileri.",
+      "listeAdi": t('lists.film_lists.modern_comedy.title'),
+      "aciklama": t('lists.film_lists.modern_comedy.description'),
       "filmSayisi": 10,
       "filmler": [
         { "sira": 1, "filmAdi": "The Grand Budapest Hotel", "yil": 2014, "yonetmen": "Wes Anderson" },
@@ -522,8 +533,8 @@ const filmListeleri = {
       ]
     },
     {
-      "listeAdi": "Epik Tarihi Dramalar",
-      "aciklama": "Geçmişin büyük olaylarını ve kişiliklerini görkemli bir sinematografiyle canlandıran, sürükleyici filmler.",
+      "listeAdi": t('lists.film_lists.epic_historical.title'),
+      "aciklama": t('lists.film_lists.epic_historical.description'),
       "filmSayisi": 10,
       "filmler": [
         { "sira": 1, "filmAdi": "Gladiator", "yil": 2000, "yonetmen": "Ridley Scott" },
@@ -539,7 +550,7 @@ const filmListeleri = {
       ]
     }
   ]
-};
+});
 
 interface Film {
   sira: number;
@@ -578,7 +589,7 @@ const Lists: React.FC = () => {
       const newFilmData = new Map(filmData);
       
       // Tüm filmleri topla
-      const allFilms = (filmListeleri.filmListeleri as any[]).flatMap(liste => liste.filmler);
+      const allFilms = (getFilmListeleri(t).filmListeleri as any[]).flatMap(liste => liste.filmler);
       const uniqueFilms = allFilms.filter((film: any, index: number, self: any[]) => 
         index === self.findIndex((f: any) => f.filmAdi === film.filmAdi)
       );
@@ -752,7 +763,7 @@ const Lists: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {filmListeleri.filmListeleri.map((liste: Liste, index: number) => {
+                {(getFilmListeleri(t).filmListeleri as Liste[]).map((liste: Liste, index: number) => {
                   const posterPath = getListePoster(liste);
                   return (
                     <div
@@ -776,7 +787,7 @@ const Lists: React.FC = () => {
                         
                         {/* Film Sayısı Badge */}
                         <div className="absolute top-3 right-3 bg-[#FE7743] text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">
-                          {liste.filmSayisi} film
+                          {t('lists.movie_count', { count: liste.filmSayisi })}
                         </div>
                       </div>
                       

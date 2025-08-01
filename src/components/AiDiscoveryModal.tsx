@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IonTextarea, IonModal } from '@ionic/react';
+import { useTranslation } from 'react-i18next';
 import { getMovieSuggestions, MovieSuggestion } from '../services/geminiService';
 import TopHeaderBar from './TopHeaderBar';
 import { useModal } from '../context/ModalContext';
@@ -11,6 +12,7 @@ interface AiDiscoveryModalProps {
 }
 
 const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMovieSelect }) => {
+  const { t } = useTranslation();
   const { openModal } = useModal();
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -93,7 +95,7 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
         {/* Header Bar */}
         <div className="flex items-center justify-center bg-background w-full h-[60px] p-4">
           <span className="text-h2 font-bold text-foreground">
-            AI Film Discovery
+            {t('ai.ai_film_discovery')}
           </span>
         </div>
         
@@ -103,8 +105,8 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
               <div className="text-center mb-3">
                 <p className="text-[#CCC] font-poppins text-[14px] leading-relaxed">
                   {suggestedMovies.length === 0 
-                    ? "Aklındaki filmi tarif et, yapay zeka sana en uygun önerileri getirsin!"
-                    : `İşte sana özel seçtiklerim! 🎬 ${retryCount > 0 ? `(Deneme ${retryCount}/${MAX_RETRIES})` : ''}`
+                    ? t('ai.ai_description')
+                    : `${t('ai.ai_suggestions')} ${retryCount > 0 ? `(${t('ai.attempt')} ${retryCount}/${MAX_RETRIES})` : ''}`
                   }
                 </p>
               </div>
@@ -117,13 +119,13 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                     {/* Metin Alanı */}
                     <div className="mb-8">
                       <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-3">
-                        Film Açıklaması
+                        {t('ai.film_description')}
                       </span>
                       <div className="relative">
                         <IonTextarea
                           value={description}
                           onIonInput={(e) => setDescription(e.detail.value!)}
-                          placeholder="Örnek: Uzayda geçen, robotları olan ve aşk hikayesi bulunan animasyon film..."
+                          placeholder={t('ai.film_description_placeholder')}
                           rows={6}
                           className="w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-[#D9D9D9] p-3 pr-10 text-black text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto border-0"
                           fill="solid"
@@ -166,7 +168,7 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                         }`}
                       >
                         <span className="flex items-center justify-center gap-2">
-                          🎬 Film Bul
+                          {t('ai.find_movies')}
                         </span>
                       </button>
                     </div>
@@ -179,10 +181,10 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                     </div>
                     <div className="text-center space-y-2">
                       <p className="text-[#F8F8FF] font-poppins font-semibold text-[18px]">
-                        Yapay Zeka Çalışıyor...
+                        {t('ai.ai_working')}
                       </p>
                       <p className="text-[#CCC] font-poppins text-[14px]">
-                        Senin için en uygun filmleri arıyorum ✨
+                        {t('ai.ai_searching')}
                       </p>
                     </div>
                   </div>
@@ -236,10 +238,10 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                       }`}
                     >
                       {isLoading 
-                        ? 'Düşünüyorum...' 
+                        ? t('ai.thinking')
                         : (retryCount >= MAX_RETRIES 
-                            ? `Tüm haklar kullanıldı (${retryCount}/${MAX_RETRIES})` 
-                            : `🔄 Yeniden Dene (${retryCount}/${MAX_RETRIES})`
+                            ? `${t('ai.all_attempts_used')} (${retryCount}/${MAX_RETRIES})` 
+                            : `${t('ai.try_again')} (${retryCount}/${MAX_RETRIES})`
                           )
                       }
                     </button>

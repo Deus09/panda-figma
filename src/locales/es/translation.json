@@ -74,7 +74,53 @@
     "stats": "Estadísticas",
     "movies_watched": "Películas Vistas",
     "episodes_watched": "Episodios Vistos",
-    "total_runtime": "Tiempo Total"
+    "total_runtime": "Tiempo Total",
+    "username_placeholder": "Nombre de Usuario",
+    "bio_placeholder": "Cuéntanos sobre ti...",
+    "join_date": "Fecha de Registro",
+    "avatar_gallery": "Galería de Avatares",
+    "saving": "Guardando...",
+    "statistical_dashboard": "Panel Estadístico",
+    "this_month": "Este Mes",
+    "watched_movies": "Películas Vistas",
+    "watched_series": "Series Vistas",
+    "average": "Promedio",
+    "per_series": "serie",
+    "total_episodes": "Episodios Totales",
+    "daily": "Diario",
+    "minutes": "min",
+    "total_duration": "Duración Total",
+    "quick_overview": "Vista Rápida",
+    "average_rating": "Calificación Promedio",
+    "favorite_genre": "Género Favorito",
+    "this_month_watched": "Visto Este Mes",
+    "film": "Película",
+    "series": "Serie",
+    "time_timeline": "Línea de Tiempo",
+    "nineties": "90s",
+    "twenties": "2000s",
+    "twenties_2020": "2020s",
+    "recent_activities": "Actividades Recientes",
+    "last_activities": "Últimas {{count}} actividades",
+    "badges_achievements": "Insignias y Logros",
+    "achievement_summary": "Resumen de Logros",
+    "earned": "Ganadas",
+    "remaining": "Restantes",
+    "next_target": "Próximo Objetivo",
+    "all_badges_earned": "🎉 ¡Todas las insignias ganadas!",
+    "very_close_to_target": "¡Muy cerca del objetivo! 🔥",
+    "perfect": "Perfecto",
+    "very_good": "Muy Bueno",
+    "good": "Bueno",
+    "average_quality": "Promedio",
+    "needs_improvement": "Necesita Mejora",
+    "user_levels": {
+      "rookie": "Novato",
+      "film_lover": "Amante del Cine",
+      "cinema_enthusiast": "Entusiasta del Cine",
+      "film_expert": "Experto en Cine",
+      "cinema_legend": "Leyenda del Cine"
+    }
   },
   "search": {
     "search_placeholder": "Buscar películas, series, actores...",
@@ -95,7 +141,51 @@
     "cinenar_lists": "Listas de Cinenar",
     "loading_lists": "Cargando listas...",
     "no_lists_available": "Aún no hay listas disponibles",
-    "movie_count": "{{count}} películas"
+    "movie_count": "{{count}} películas",
+    "imdb_top_10_legend": "Leyenda IMDb Top 10",
+    "imdb_top_10_description": "Las películas mejor calificadas de todos los tiempos, coronadas por las audiencias.",
+    "film_lists": {
+      "imdb_top_10": {
+        "title": "Leyenda IMDb Top 10",
+        "description": "Las películas mejor calificadas de todos los tiempos, coronadas por las audiencias."
+      },
+      "oscar_winners": {
+        "title": "Ganadores del Oscar a Mejor Película de los Últimos 10 Años",
+        "description": "Un desfile de clásicos modernos considerados dignos del premio 'Mejor Película' de la Academia."
+      },
+      "mind_bending_scifi": {
+        "title": "Películas de Ciencia Ficción que Hacen Pensar",
+        "description": "Clásicos modernos de ciencia ficción que cuestionan la realidad, expanden mentes y hacen pensar a los espectadores."
+      },
+      "psychological_thrillers": {
+        "title": "Thrillers Psicológicos con Giros Inesperados",
+        "description": "Películas que te mantienen adivinando hasta el final, con finales sorprendentes que se quedan en tu memoria."
+      },
+      "tarantino_filmography": {
+        "title": "Filmografía de Quentin Tarantino",
+        "description": "Las mejores obras del legendario director conocido por sus diálogos, elección de música y uso estilizado de la violencia."
+      },
+      "adult_animation": {
+        "title": "Obras Maestras de Animación No para Niños",
+        "description": "Películas que prueban que la animación no es solo un género, sino una forma de arte capaz de contar cualquier tipo de historia."
+      },
+      "world_cinema": {
+        "title": "Obras Maestras del Cine Mundial",
+        "description": "Obras únicas que diferentes culturas y directores han contribuido al arte del cine más allá de Hollywood."
+      },
+      "coen_brothers": {
+        "title": "Películas Inolvidables de los Hermanos Coen",
+        "description": "Las mejores obras de los hermanos directores conocidos por su humor negro, personajes excéntricos y guiones originales."
+      },
+      "modern_comedy": {
+        "title": "Risa Garantizada: Clásicos de Comedia Moderna",
+        "description": "Comedias del siglo XXI que no solo te hacen reír, sino que destacan por sus guiones inteligentes y personajes inolvidables."
+      },
+      "epic_historical": {
+        "title": "Dramas Históricos Épicos",
+        "description": "Películas convincentes que dan vida a los grandes eventos y personalidades del pasado con magnífica cinematografía."
+      }
+    }
   },
   "social": {
     "activity": "Actividad",
@@ -110,10 +200,22 @@
   },
   "ai": {
     "ai_discovery": "Descubrimiento IA",
+    "ai_film_discovery": "Descubrimiento de Películas IA",
     "recommendations": "Recomendaciones",
     "chat": "Chat",
     "ask_ai": "Preguntar a IA",
-    "ai_suggests": "IA Sugiere"
+    "ai_suggests": "IA Sugiere",
+    "ai_description": "¡Describe la película en tu mente y la IA te traerá las recomendaciones más adecuadas!",
+    "ai_working": "La IA está Trabajando...",
+    "ai_searching": "Buscando las películas más adecuadas para ti ✨",
+    "ai_suggestions": "¡Aquí están mis selecciones especiales para ti! 🎬",
+    "film_description": "Descripción de la Película",
+    "film_description_placeholder": "Ejemplo: Una película animada ambientada en el espacio con robots y una historia de amor...",
+    "find_movies": "🎬 Encontrar Películas",
+    "thinking": "Pensando...",
+    "try_again": "🔄 Intentar de Nuevo",
+    "all_attempts_used": "Todos los intentos utilizados",
+    "attempt": "Intento"
   },
   "tabs": {
     "watched": "Visto",
@@ -140,6 +242,71 @@
     "not_yet": "Aún No",
     "no_bio": "Aún no se ha añadido biografía.",
     "no_watched_content": "Aún no has visto ningún contenido.",
-    "empty_watchlist": "Tu lista de deseos está vacía."
+    "empty_watchlist": "Tu lista de deseos está vacía.",
+    "coming_soon": "Próximamente"
+  },
+  "genres": {
+    "action": "Acción",
+    "drama": "Drama",
+    "comedy": "Comedia",
+    "horror": "Terror",
+    "sci_fi": "Ciencia Ficción",
+    "romantic": "Romántico",
+    "thriller": "Suspenso",
+    "fantasy": "Fantasía",
+    "adventure": "Aventura",
+    "crime": "Crimen",
+    "documentary": "Documental",
+    "animation": "Animación"
+  },
+  "badges": {
+    "first_movie": {
+      "name": "Director Novato",
+      "description": "Se gana cuando añades tu primera película"
+    },
+    "comedy_expert": {
+      "name": "Experto en Comedia",
+      "description": "Se gana cuando ves 25 películas de comedia"
+    },
+    "drama_expert": {
+      "name": "Maestro del Drama",
+      "description": "Se gana cuando ves 25 películas de drama"
+    },
+    "action_expert": {
+      "name": "Héroe de Acción",
+      "description": "Se gana cuando ves 25 películas de acción"
+    },
+    "series_killer": {
+      "name": "Cazador de Series",
+      "description": "Se gana cuando completas todas las temporadas de una serie con al menos 2 temporadas"
+    },
+    "nostalgia_traveler": {
+      "name": "Viajero de la Nostalgia",
+      "description": "Se gana cuando ves 10 películas de antes de 1990"
+    },
+    "marathon_runner": {
+      "name": "Maratonista del Cine",
+      "description": "Se gana cuando ves más de 3 películas en un día"
+    },
+    "century_watcher": {
+      "name": "Espectador del Siglo",
+      "description": "Se gana cuando ves 100 películas"
+    },
+    "binge_watcher": {
+      "name": "Adicto a las Series",
+      "description": "Se gana cuando ves 50 episodios de TV"
+    },
+    "time_traveler": {
+      "name": "Maestro del Tiempo",
+      "description": "Se gana cuando ves 100 horas de contenido"
+    },
+    "critic_master": {
+      "name": "Maestro Crítico",
+      "description": "Se gana cuando escribes reseñas para 50 películas"
+    },
+    "collector": {
+      "name": "Coleccionista",
+      "description": "Se gana cuando añades 25 películas a tu lista de deseos"
+    }
   }
 }

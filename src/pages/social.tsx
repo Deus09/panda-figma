@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
+import { useTranslation } from 'react-i18next';
 import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import SocialTabSegment from '../components/SocialTabSegment';
@@ -7,6 +8,7 @@ import SocialTabSegment from '../components/SocialTabSegment';
 type SocialTabType = 'news' | 'reviews';
 
 const Social: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<SocialTabType>('news');
 
   const handleTabChange = (tab: SocialTabType) => {
@@ -16,7 +18,7 @@ const Social: React.FC = () => {
   return (
     <IonPage className="bg-background">
       {/* Header */}
-      <TopHeaderBar title="Social" />
+      <TopHeaderBar title={t('navigation.social')} />
       
       {/* Main Content */}
       <IonContent className="bg-background">
@@ -30,13 +32,13 @@ const Social: React.FC = () => {
           <div className="flex-1 px-4 pb-24">
             {activeTab === 'news' ? (
               <div className="text-center py-12">
-                <h3 className="text-h3 font-semibold text-foreground mb-2">News</h3>
-                <p className="text-muted-foreground">Coming Soon</p>
+                <h3 className="text-h3 font-semibold text-foreground mb-2">{t('tabs.news')}</h3>
+                <p className="text-muted-foreground">{t('empty_states.coming_soon')}</p>
               </div>
             ) : (
               <div className="text-center py-12">
-                <h3 className="text-h3 font-semibold text-foreground mb-2">Reviews</h3>
-                <p className="text-muted-foreground">Coming Soon</p>
+                <h3 className="text-h3 font-semibold text-foreground mb-2">{t('tabs.reviews')}</h3>
+                <p className="text-muted-foreground">{t('empty_states.coming_soon')}</p>
               </div>
             )}
           </div>
