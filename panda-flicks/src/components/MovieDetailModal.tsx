@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { IonToast } from '@ionic/react';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
+import { LocalStorageService } from '../services/localStorage';
 import ActorDetailModal from './ActorDetailModal';
 import { useModal } from '../context/ModalContext';
 
@@ -20,6 +22,8 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
   const [actorModalOpen, setActorModalOpen] = useState(false);
   const [selectedActorId, setSelectedActorId] = useState<number | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     if (open && movieId) {
@@ -103,6 +107,34 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
     setSelectedActorId(null);
   };
 
+  const handleWatchlistAdd = () => {
+    if (!movieDetails) return;
+
+    try {
+      LocalStorageService.saveMovieLog({
+        title: movieDetails.title,
+        date: new Date().toISOString(),
+        rating: '',
+        review: '',
+        poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : '',
+        type: 'watchlist',
+        mediaType: 'movie',
+        tmdbId: movieDetails.id,
+        contentType: 'movie',
+        runtime: movieDetails.runtime,
+        genres: movieDetails.genres?.map(g => g.name) || [],
+        releaseYear: movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : undefined
+      });
+
+      setToastMessage('Daha sonra izle listesine kaydedildi');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error adding to watchlist:', error);
+      setToastMessage('Kaydetme işlemi başarısız oldu');
+      setShowToast(true);
+    }
+  };
+
   const formatRuntime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -126,6 +158,17 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M12 19L5 12L12 5" stroke="#F8F8FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+
+        {/* Watchlist Button */}
+        <button
+          onClick={handleWatchlistAdd}
+          className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black bg-opacity-50 rounded-full hover:bg-opacity-70 transition-all duration-200"
+          aria-label="Daha sonra izle listesine ekle"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 50 50" fill="#F8F8FF">
+            <path d="M 12.8125 2 C 12.335938 2.089844 11.992188 2.511719 12 3 L 12 47 C 11.996094 47.359375 12.1875 47.691406 12.496094 47.871094 C 12.804688 48.054688 13.1875 48.054688 13.5 47.875 L 25 41.15625 L 36.5 47.875 C 36.8125 48.054688 37.195313 48.054688 37.503906 47.871094 C 37.8125 47.691406 38.003906 47.359375 38 47 L 38 3 C 38 2.449219 37.550781 2 37 2 L 13 2 C 12.96875 2 12.9375 2 12.90625 2 C 12.875 2 12.84375 2 12.8125 2 Z M 14 4 L 36 4 L 36 45.25 L 25.5 39.125 C 25.191406 38.945313 24.808594 38.945313 24.5 39.125 L 14 45.25 Z"></path>
           </svg>
         </button>
 
@@ -277,6 +320,17 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
           onClose={handleActorModalClose}
           actorId={selectedActorId}
           onMovieClick={handleSimilarMovieClick}
+        />
+
+        {/* Toast Notification */}
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={toastMessage}
+          duration={2000}
+          position="bottom"
+          color="success"
+          cssClass="custom-toast"
         />
       </div>
     </div>
