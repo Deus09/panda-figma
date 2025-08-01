@@ -27,6 +27,14 @@ const Profile: React.FC = () => {
     favoriteGenres: [] as string[]
   });
 
+  // Debug için state'leri logla
+  console.log('🔍 Profile Component Debug:', {
+    authLoading,
+    user: user?.email || 'Yok',
+    authProfile: authProfile?.username || 'Yok',
+    localProfile: profile?.username || 'Yok'
+  });
+
   // Avatar galerisi - Film karakterleri ve sinema ikonları
   const avatarGallery = [
     { id: 'scarface', url: 'https://i.imgur.com/VqNKQyJ.png', name: 'Tony Montana' },
@@ -45,58 +53,81 @@ const Profile: React.FC = () => {
   ];
 
   useEffect(() => {
+    console.log('🔄 Profile useEffect tetiklendi:', { authLoading, user: !!user });
+    
+    // Auth loading bittikten sonra profil yükleme işlemini yap
     if (!authLoading) {
+      console.log('✅ Auth loading bitti, profil yükleme başlıyor');
       if (user) {
+        console.log('👤 Kullanıcı var, profil yükleniyor...');
         // Kullanıcı giriş yapmışsa localStorage profilini yükle
         loadProfile();
         // Profil istatistiklerini güncelle
         LocalStorageService.updateProfileStats();
       } else {
+        console.log('❌ Kullanıcı yok, profil temizleniyor');
         // Kullanıcı giriş yapmamışsa profili temizle
         setProfile(null);
       }
+    } else {
+      console.log('⏳ Auth loading devam ediyor...');
     }
   }, [user, authLoading]);
 
   const loadProfile = () => {
-    const userProfile = LocalStorageService.getUserProfile();
-    if (userProfile) {
-      setProfile(userProfile);
-      setEditData({
-        username: userProfile.username || authProfile?.username || '',
-        fullName: userProfile.fullName || '',
-        bio: userProfile.bio || '',
-        favoriteGenres: userProfile.favoriteGenres
-      });
-      // Profil istatistiklerini güncelle
-      LocalStorageService.updateProfileStats();
-      // Güncellenmiş profili tekrar yükle
-      const updatedProfile = LocalStorageService.getUserProfile();
-      if (updatedProfile) {
-        setProfile(updatedProfile);
+    try {
+      console.log('🔄 Profil yükleniyor...');
+      const userProfile = LocalStorageService.getUserProfile();
+      if (userProfile) {
+        console.log('✅ Mevcut profil bulundu:', userProfile.username);
+        setProfile(userProfile);
+        setEditData({
+          username: userProfile.username || authProfile?.username || '',
+          fullName: userProfile.fullName || '',
+          bio: userProfile.bio || '',
+          favoriteGenres: userProfile.favoriteGenres
+        });
+        // Profil istatistiklerini güncelle
+        LocalStorageService.updateProfileStats();
+        // Güncellenmiş profili tekrar yükle
+        const updatedProfile = LocalStorageService.getUserProfile();
+        if (updatedProfile) {
+          setProfile(updatedProfile);
+        }
+      } else {
+        console.log('🆕 Yeni profil oluşturuluyor...');
+        // İlk kullanım için varsayılan profil oluştur
+        createDefaultProfile();
       }
-    } else {
-      // İlk kullanım için varsayılan profil oluştur
+    } catch (error) {
+      console.error('❌ Profil yükleme hatası:', error);
+      // Hata durumunda varsayılan profil oluştur
       createDefaultProfile();
     }
   };
 
   const createDefaultProfile = () => {
-    const defaultProfile = LocalStorageService.createUserProfile({
-      username: authProfile?.username || 'CinemaLover',
-      fullName: '',
-      bio: '',
-      joinDate: new Date().toISOString(),
-      favoriteMovies: [],
-      favoriteGenres: []
-    });
-    setProfile(defaultProfile);
-    setEditData({
-      username: defaultProfile.username,
-      fullName: defaultProfile.fullName || '',
-      bio: defaultProfile.bio || '',
-      favoriteGenres: defaultProfile.favoriteGenres
-    });
+    try {
+      console.log('🆕 Varsayılan profil oluşturuluyor...');
+      const defaultProfile = LocalStorageService.createUserProfile({
+        username: authProfile?.username || 'CinemaLover',
+        fullName: '',
+        bio: '',
+        joinDate: new Date().toISOString(),
+        favoriteMovies: [],
+        favoriteGenres: []
+      });
+      console.log('✅ Varsayılan profil oluşturuldu:', defaultProfile.username);
+      setProfile(defaultProfile);
+      setEditData({
+        username: defaultProfile.username,
+        fullName: defaultProfile.fullName || '',
+        bio: defaultProfile.bio || '',
+        favoriteGenres: defaultProfile.favoriteGenres
+      });
+    } catch (error) {
+      console.error('❌ Varsayılan profil oluşturma hatası:', error);
+    }
   };
 
   const generateInitialsAvatar = (name: string): string => {
@@ -672,7 +703,8 @@ const Profile: React.FC = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FE7743]"></div>
-            <p className="text-gray-400">{t('common.loading')}</p>
+            <p className="text-gray-400">Yükleniyor...</p>
+            <p className="text-xs text-gray-500">Auth durumu kontrol ediliyor</p>
           </div>
         </div>
         <BottomNavBar />
@@ -733,7 +765,8 @@ const Profile: React.FC = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FE7743]"></div>
-            <p className="text-gray-400">{t('profile.my_profile')} {t('common.loading')}</p>
+            <p className="text-gray-400">Profil yükleniyor...</p>
+            <p className="text-xs text-gray-500">Kullanıcı bilgileri hazırlanıyor</p>
           </div>
         </div>
         <BottomNavBar />

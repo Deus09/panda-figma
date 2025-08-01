@@ -94,11 +94,13 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
 
-    // Google OAuth callback handling
+    // Google OAuth callback handling - sadece ana sayfada çalışsın
     const handleOAuthCallback = async () => {
       const hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        alert('OAuth token bulundu! Hash: ' + hash.substring(0, 50) + '...');
+      const currentPath = window.location.pathname;
+      
+      // Sadece ana sayfa veya root'ta OAuth callback'i işle
+      if (hash && hash.includes('access_token') && (currentPath === '/' || currentPath === '/home')) {
         console.log('🔄 OAuth callback detected in App.tsx');
         console.log('🔗 Hash:', hash);
         

@@ -7,19 +7,19 @@ import { supabase } from '../services/supabaseClient';
 const AuthCallback: React.FC = () => {
   const history = useHistory();
   const { t } = useTranslation();
+  const [isProcessing, setIsProcessing] = React.useState(false);
 
   useEffect(() => {
+    // Eğer zaten işlem yapılıyorsa, tekrar çalıştırma
+    if (isProcessing) {
+      return;
+    }
+    
+    setIsProcessing(true);
     const handleAuthCallback = async () => {
-      // İlk olarak alert ile test edelim
-      alert('AuthCallback component çalışıyor! URL: ' + window.location.href);
-      
       console.log('🔄 AuthCallback başladı');
       console.log('📍 Mevcut URL:', window.location.href);
       console.log('🔗 Hash:', window.location.hash);
-      
-      // Debug için console.warn da deneyelim
-      console.warn('⚠️ DEBUG: AuthCallback çalışıyor');
-      console.error('🔴 DEBUG: Bu da error log testi');
       
       try {
         // URL fragment'indeki hash token'ları işle
@@ -37,7 +37,6 @@ const AuthCallback: React.FC = () => {
         });
 
         if (accessToken) {
-          alert('Access token bulundu: ' + accessToken.substring(0, 20) + '...');
           console.log('✅ Access token bulundu, session kuruluyor...');
           
           // Token'ları Supabase session'ına set et
@@ -100,7 +99,7 @@ const AuthCallback: React.FC = () => {
     };
 
     handleAuthCallback();
-  }, [history]);
+  }, [history, isProcessing]);
 
   return (
     <IonPage>
@@ -110,13 +109,7 @@ const AuthCallback: React.FC = () => {
           <div className="text-center">
             <p className="text-lg font-medium text-foreground">{t('auth.signing_in_with_google')}</p>
             <p className="text-sm text-muted-foreground mt-2">
-              AuthCallback Component Çalışıyor ✅
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              URL: {window.location.href}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Hash: {window.location.hash || 'Hash yok'}
+              Giriş yapılıyor...
             </p>
           </div>
         </div>

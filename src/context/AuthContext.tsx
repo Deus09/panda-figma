@@ -26,22 +26,76 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // Debug için loading state'ini izle
+  useEffect(() => {
+    console.log('🔄 AuthContext: Loading state değişti:', loading);
+  }, [loading]);
 
   useEffect(() => {
+    console.log('🚀 AuthContext: useEffect başladı');
+    
+    // İlk yükleme sırasında mevcut session'ı kontrol et
+    const getInitialSession = async () => {
+      console.log('🔄 AuthContext: getInitialSession fonksiyonu çağrıldı');
+      
+      try {
+        console.log('🔄 AuthContext: İlk session kontrolü başlıyor...');
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        console.log('📦 AuthContext: İlk session alındı:', !!initialSession);
+        setSession(initialSession);
+        const currentUser = initialSession?.user ?? null;
+        console.log('👤 AuthContext: Kullanıcı:', currentUser?.email || 'Yok');
+        setUser(currentUser);
+        
+        if (currentUser) {
+          console.log('🔄 AuthContext: Profil yükleniyor...');
+          await getProfile(currentUser);
+        } else {
+          console.log('❌ AuthContext: Kullanıcı yok, profil temizleniyor');
+          setProfile(null);
+        }
+      } catch (error) {
+        console.error('❌ AuthContext: İlk session kontrolü hatası:', error);
+      } finally {
+        console.log('✅ AuthContext: Loading false yapılıyor');
+        setLoading(false);
+      }
+    };
+
+    // Hemen çalıştır
+    getInitialSession();
+    
+    // Fallback: 5 saniye sonra loading'i false yap
+    const fallbackTimer = setTimeout(() => {
+      console.log('⚠️ AuthContext: Fallback timer tetiklendi, loading false yapılıyor');
+      setLoading(false);
+    }, 5000);
+    
+    return () => {
+      clearTimeout(fallbackTimer);
+    };
+
     // Supabase'in onAuthStateChange listener'ını kuruyoruz.
     // Bu, kullanıcı giriş yaptığında, çıkış yaptığında veya oturum yenilendiğinde
     // otomatik olarak tetiklenir.
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 AuthContext: onAuthStateChange tetiklendi:', event);
+      console.log('📦 AuthContext: Session:', !!session);
       setSession(session);
       const currentUser = session?.user ?? null;
+      console.log('👤 AuthContext: Kullanıcı:', currentUser?.email || 'Yok');
       setUser(currentUser);
       
       // Eğer bir kullanıcı varsa, onun profil bilgilerini veritabanından çek.
       if (currentUser) {
+        console.log('🔄 AuthContext: Profil yükleniyor...');
         await getProfile(currentUser);
       } else {
-        setProfile(null); // Kullanıcı yoksa (çıkış yapmışsa) profili temizle.
+        console.log('❌ AuthContext: Kullanıcı yok, profil temizleniyor');
+        setProfile(null); // Kullanıcı yoksa (çıkış yapmışsa) profili temizleniyor.
       }
+      console.log('✅ AuthContext: Loading false yapılıyor');
       setLoading(false);
     });
 
@@ -55,34 +109,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Kullanıcının profil bilgilerini 'profiles' tablosundan çeken fonksiyon.
   const getProfile = async (user: User) => {
     try {
+      console.log('🔄 AuthContext: getProfile çağrıldı, user ID:', user.id);
       const { data, error, status } = await supabase
         .from('profiles')
         .select(`username, avatar_url`)
         .eq('id', user.id)
         .single();
 
+      console.log('📦 AuthContext: getProfile response:', { data, error, status });
+
       if (error && status !== 406) {
         throw error;
       }
 
       if (data) {
+        console.log('✅ AuthContext: Profil bulundu:', data.username);
         setProfile(data);
+      } else {
+        console.log('❌ AuthContext: Profil bulunamadı');
+        setProfile(null);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('❌ AuthContext: getProfile hatası:', error);
+      setProfile(null);
     }
   };
 
   // Google ile giriş fonksiyonu
   const signInWithGoogle = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+      if (error) {
+        console.error('Error signing in with Google:', error);
+        setLoading(false);
       }
-    });
-    if (error) {
+      // Başarılı giriş durumunda loading state'i onAuthStateChange'de false yapılacak
+    } catch (error) {
       console.error('Error signing in with Google:', error);
       setLoading(false);
     }
@@ -90,9 +158,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Çıkış fonksiyonu
   const signOut = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+        setLoading(false);
+      }
+      // Başarılı çıkış durumunda loading state'i onAuthStateChange'de false yapılacak
+    } catch (error) {
       console.error('Error signing out:', error);
       setLoading(false);
     }
