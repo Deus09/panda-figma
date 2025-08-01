@@ -16,7 +16,7 @@ import styles from './explore.module.css';
 const Explore: React.FC = () => {
   const { openModal } = useModal();
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'flicks' | 'series'>('flicks');
+  const [activeTab, setActiveTab] = useState<'filmler' | 'series'>('filmler');
   const [movies, setMovies] = useState<TMDBMovieResult[]>([]);
   const [series, setSeries] = useState<TMDBMovieResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,7 +106,7 @@ const Explore: React.FC = () => {
       setGenreResults([]);
       
       // Yeni sekmeye göre doğru tür ID'sini bul ve API çağrısı yap
-      if (activeTab === 'flicks') {
+      if (activeTab === 'filmler') {
         const genreId = MOVIE_GENRES[genreName];
         if (genreId) {
           loadMoviesByGenre(genreId, 1);
@@ -229,7 +229,7 @@ const Explore: React.FC = () => {
     let genreId: number | undefined;
     
     // Aktif sekmeye göre doğru tür ID'sini al
-    if (activeTab === 'flicks') {
+    if (activeTab === 'filmler') {
       genreId = MOVIE_GENRES[genreName];
       if (genreId) {
         await loadMoviesByGenre(genreId, 1);
@@ -262,7 +262,7 @@ const Explore: React.FC = () => {
       // Arama kutusundaki türün adını al
       const genreName = search.trim();
       
-      if (activeTab === 'flicks') {
+      if (activeTab === 'filmler') {
         const genreId = MOVIE_GENRES[genreName];
         if (genreId) {
           await loadMoviesByGenre(genreId, nextPage);
@@ -328,7 +328,7 @@ const Explore: React.FC = () => {
     setTimeout(() => setIsSearchFocused(false), 200);
   };
 
-  const currentData = isGenreMode ? genreResults : (activeTab === 'flicks' ? movies : series);
+  const currentData = isGenreMode ? genreResults : (activeTab === 'filmler' ? movies : series);
   const currentLoading = isGenreMode ? genreLoading : loading;
 
   // Arama sonuçlarını filtrele
@@ -355,7 +355,7 @@ const Explore: React.FC = () => {
   return (
     <IonPage className={styles.explorePage}>
       <IonContent className={styles.exploreContent}>
-        <TopHeaderBar title="Panda Explore" />
+        <TopHeaderBar title="Cinenar Keşfet" />
         <div className="flex flex-col items-center w-full pt-6 pb-2 px-0">
           {/* Searchbar */}
           <div className="w-full max-w-[332px] flex flex-row items-center bg-[#EFEEEA] rounded-[12px] px-[15px] py-[4px] gap-[8px] mb-4">
@@ -447,7 +447,7 @@ const Explore: React.FC = () => {
                     <div
                       key={item.id}
                       className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
-                      onClick={() => activeTab === 'flicks' || isGenreMode ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
+                      onClick={() => activeTab === 'filmler' || isGenreMode ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
                     >
                       <img
                         src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}

@@ -1,6 +1,6 @@
-# Panda Flicks - LocalStorage Entegrasyonu
+# Cinenar - LocalStorage Entegrasyonu
 
-Bu döküman, Panda Flicks uygulamasındaki localStorage entegrasyonunu açıklar.
+Bu döküman, Cinenar uygulamasındaki localStorage entegrasyonunu açıklar.
 
 ## 🚀 Özellikler
 
@@ -196,9 +196,9 @@ clearAllData();
 
 ```typescript
 const STORAGE_KEYS = {
-  MOVIE_LOGS: 'panda-flicks-movie-logs',
-  USER_PREFERENCES: 'panda-flicks-user-preferences',
-  LAST_ACTIVE_TAB: 'panda-flicks-last-active-tab'
+  MOVIE_LOGS: 'cinenar-movie-logs',
+  USER_PREFERENCES: 'cinenar-user-preferences',
+  LAST_ACTIVE_TAB: 'cinenar-last-active-tab'
 };
 ```
 

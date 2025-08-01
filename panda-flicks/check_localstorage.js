@@ -1,5 +1,5 @@
 // localStorage verilerini kontrol et
-const logs = JSON.parse(localStorage.getItem('panda-flicks-movie-logs') || '[]');
+const logs = JSON.parse(localStorage.getItem('cinenar-movie-logs') || '[]');
 console.log('Total logs:', logs.length);
 console.log('TV logs:');
 logs.filter(log => log.mediaType === 'tv').forEach(log => {

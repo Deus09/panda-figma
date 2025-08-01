@@ -11,6 +11,8 @@ export const createDemoData = () => {
       review: 'Mükemmel bir bilim kurgu filmi! Görsel efektler ve hikaye muhteşem.',
       poster: 'https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg',
       type: 'watched' as const,
+      mediaType: 'movie' as const,
+      contentType: 'movie' as const,
       tmdbId: 603
     },
     {
@@ -20,6 +22,8 @@ export const createDemoData = () => {
       review: 'Nolan\'ın başyapıtı. Zihin büken bir hikaye ve mükemmel oyunculuk.',
       poster: 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
       type: 'watched' as const,
+      mediaType: 'movie' as const,
+      contentType: 'movie' as const,
       tmdbId: 27205
     },
     {
@@ -29,6 +33,8 @@ export const createDemoData = () => {
       review: 'Hem duygusal hem bilimsel olarak etkileyici. Hans Zimmer\'ın müzikleri harika.',
       poster: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
       type: 'watched' as const,
+      mediaType: 'movie' as const,
+      contentType: 'movie' as const,
       tmdbId: 157336
     },
     {
@@ -38,6 +44,8 @@ export const createDemoData = () => {
       review: 'İzlemek için sabırsızlanıyorum!',
       poster: 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg',
       type: 'watchlist' as const,
+      mediaType: 'movie' as const,
+      contentType: 'movie' as const,
       tmdbId: 693134
     },
     {
@@ -47,6 +55,8 @@ export const createDemoData = () => {
       review: 'Christopher Nolan\'ın yeni filmi için çok heyecanlıyım.',
       poster: 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
       type: 'watchlist' as const,
+      mediaType: 'movie' as const,
+      contentType: 'movie' as const,
       tmdbId: 872585
     }
   ];
@@ -69,7 +79,7 @@ export const createDemoData = () => {
 
 // localStorage'daki mevcut verileri konsola yazdır
 export const logStorageData = () => {
-  console.log('=== PANDA FLICKS STORAGE DATA ===');
+  console.log('=== CINENAR STORAGE DATA ===');
   console.log('Movie Logs:', LocalStorageService.getMovieLogs());
   console.log('User Preferences:', LocalStorageService.getUserPreferences());
   console.log('Last Active Tab:', LocalStorageService.getLastActiveTab());

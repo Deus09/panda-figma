@@ -1,4 +1,4 @@
-## 🌐 Panda Flicks - Çoklu Dil Desteği Eklendi
+## 🌐 Cinenar - Çoklu Dil Desteği Eklendi
 
 ### ✅ Tamamlanan İşlemler
 

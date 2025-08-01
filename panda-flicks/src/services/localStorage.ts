@@ -1,4 +1,4 @@
-// Local Storage Service for Panda Flicks
+// Local Storage Service for Cinenar
 // Manages persistent storage of movie logs and user preferences
 
 export interface MovieLog {
@@ -71,10 +71,10 @@ export interface UserProfile {
 }
 
 const STORAGE_KEYS = {
-  MOVIE_LOGS: 'panda-flicks-movie-logs',
-  USER_PREFERENCES: 'panda-flicks-user-preferences',
-  USER_PROFILE: 'panda-flicks-user-profile',
-  LAST_ACTIVE_TAB: 'panda-flicks-last-active-tab'
+  MOVIE_LOGS: 'cinenar-movie-logs',
+  USER_PREFERENCES: 'cinenar-user-preferences',
+  USER_PROFILE: 'cinenar-user-profile',
+  LAST_ACTIVE_TAB: 'cinenar-last-active-tab'
 } as const;
 
 export class LocalStorageService {

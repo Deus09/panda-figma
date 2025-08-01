@@ -1,7 +1,7 @@
-# Panda Flicks - AI Coding Agent Instructions
+# Cinenar - AI Coding Agent Instructions
 
 ## Project Overview
-Panda Flicks is a movie/TV tracking app built with **Ionic React + Capacitor** for cross-platform deployment. The architecture combines Ionic's mobile-first components with React patterns, using TMDB API for movie data and localStorage for persistence.
+Cinenar is a movie/TV tracking app built with **Ionic React + Capacitor** for cross-platform deployment. The architecture combines Ionic's mobile-first components with React patterns, using TMDB API for movie data and localStorage for persistence.
 
 ## Key Architecture Patterns
 

@@ -728,7 +728,7 @@ const Lists: React.FC = () => {
   return (
     <IonPage className={styles.listsPage}>
       <IonContent className={styles.listsContent}>
-        <TopHeaderBar title="Panda Lists" />
+        <TopHeaderBar title="Cinenar Listeler" />
         {/* Ana Liste Görünümü */}
         {!showListeDetail ? (
           <div className="p-4 pb-24">

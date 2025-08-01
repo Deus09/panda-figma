@@ -4,7 +4,7 @@
 (() => {
   const cleanBreakingBadData = () => {
     try {
-      const logs = JSON.parse(localStorage.getItem('panda-flicks-movie-logs') || '[]');
+      const logs = JSON.parse(localStorage.getItem('cinenar-movie-logs') || '[]');
       console.log('🔍 Temizleme öncesi log sayısı:', logs.length);
       
       // Breaking Bad verilerini filtrele (seriesId: 1396)
@@ -23,7 +23,7 @@
       });
       
       // Temizlenmiş veriyi geri kaydet
-      localStorage.setItem('panda-flicks-movie-logs', JSON.stringify(filteredLogs));
+      localStorage.setItem('cinenar-movie-logs', JSON.stringify(filteredLogs));
       
       console.log('✅ Breaking Bad verileri temizlendi');
       console.log('📊 Temizleme sonrası log sayısı:', filteredLogs.length);
