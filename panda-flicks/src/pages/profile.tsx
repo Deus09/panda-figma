@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import MovieCard from '../components/MovieCard';
 import MoviePosterCard from '../components/MoviePosterCard';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import LocalStorageService, { UserProfile } from '../services/localStorage';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../services/supabaseClient';
@@ -11,6 +13,7 @@ import styles from './profile.module.css';
 const Profile: React.FC = () => {
   // AuthContext'ten kullanıcı bilgilerini al
   const { user, profile: authProfile, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+  const { t } = useTranslation();
   
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -662,13 +665,13 @@ const Profile: React.FC = () => {
     return (
       <div className="flex flex-col min-h-screen bg-[#1A1A1A] text-white">
         <TopHeaderBar 
-          title="Panda Profile" 
+          title={t('profile.my_profile')} 
           showBackButton={false}
         />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FE7743]"></div>
-            <p className="text-gray-400">Yükleniyor...</p>
+            <p className="text-gray-400">{t('common.loading')}</p>
           </div>
         </div>
         <BottomNavBar />
@@ -681,7 +684,7 @@ const Profile: React.FC = () => {
     return (
       <div className="flex flex-col min-h-screen bg-[#1A1A1A] text-white">
         <TopHeaderBar 
-          title="Panda Profile" 
+          title={t('profile.my_profile')} 
           showBackButton={false}
         />
         <div className="flex-1 flex items-center justify-center px-6">
@@ -719,13 +722,13 @@ const Profile: React.FC = () => {
     return (
       <div className="flex flex-col min-h-screen bg-[#1A1A1A] text-white">
         <TopHeaderBar 
-          title="Panda Profile" 
+          title={t('profile.my_profile')} 
           showBackButton={false}
         />
         <div className="flex-1 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FE7743]"></div>
-            <p className="text-gray-400">Profil yükleniyor...</p>
+            <p className="text-gray-400">{t('profile.my_profile')} {t('common.loading')}</p>
           </div>
         </div>
         <BottomNavBar />
@@ -736,7 +739,7 @@ const Profile: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[#1A1A1A] text-white">
       <TopHeaderBar 
-        title="Panda Profile" 
+        title={t('profile.my_profile')} 
         showBackButton={false}
       />
       
@@ -920,10 +923,19 @@ const Profile: React.FC = () => {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
                 </svg>
-                <span>Çıkış Yap</span>
+                <span>{t('profile.logout')}</span>
               </button>
             </div>
           )}
+        </div>
+
+        {/* Dil Ayarları */}
+        <div className="bg-[#222] rounded-[20px] p-6 mb-6 shadow-lg">
+          <div className="flex items-center mb-4">
+            <div className="w-1 h-6 bg-[#FE7743] rounded-full mr-3"></div>
+            <h2 className="text-xl font-bold text-white font-poppins">{t('profile.language')}</h2>
+          </div>
+          <LanguageSwitcher />
         </div>
 
         {/* İstatistiksel Gösterge Paneli (Dashboard) */}

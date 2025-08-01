@@ -93,6 +93,21 @@ const App: React.FC = () => {
     } else {
       document.documentElement.classList.remove('dark');
     }
+
+    // Google OAuth callback handling
+    const handleOAuthCallback = async () => {
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        alert('OAuth token bulundu! Hash: ' + hash.substring(0, 50) + '...');
+        console.log('🔄 OAuth callback detected in App.tsx');
+        console.log('🔗 Hash:', hash);
+        
+        // AuthCallback sayfasına yönlendir
+        window.location.href = '/auth/callback' + hash;
+      }
+    };
+
+    handleOAuthCallback();
   }, []);
 
   return (
@@ -116,6 +131,9 @@ const App: React.FC = () => {
               <Profile />
             </Route>
             <Route exact path="/auth/callback">
+              <AuthCallback />
+            </Route>
+            <Route exact path="/test-auth">
               <AuthCallback />
             </Route>
             <Route exact path="/series/:seriesId" component={SeriesDetailPage} />

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   IonModal, 
   IonHeader, 
@@ -31,6 +32,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
   initialFilters, 
   onApplyFilters 
 }) => {
+  const { t } = useTranslation();
   const [tempFilters, setTempFilters] = useState<FilterOptions>(initialFilters);
 
   // Sıfırlama fonksiyonu
@@ -74,16 +76,16 @@ const FilterModal: React.FC<FilterModalProps> = ({
             onClick={handleReset}
             className="text-[#FE7743] text-[16px] font-semibold font-poppins hover:text-[#FE7743]/80 transition-colors"
           >
-            Sıfırla
+            {t('common.cancel')}
           </button>
           <h2 className="text-[20px] font-bold font-poppins text-[#F8F8FF]">
-            Filtrele ve Sırala
+            {t('search.filter')}
           </h2>
           <button 
             onClick={onDidDismiss}
             className="text-[#F8F8FF] text-[16px] font-semibold font-poppins hover:text-[#F8F8FF]/70 transition-colors"
           >
-            Kapat
+            {t('common.close')}
           </button>
         </div>
 
@@ -92,13 +94,13 @@ const FilterModal: React.FC<FilterModalProps> = ({
           {/* İçerik Türü Filtresi */}
           <div>
             <h3 className="text-[18px] font-semibold font-poppins text-[#F8F8FF] mb-4">
-              İçerik Türü
+              {t('movies.movies')}
             </h3>
             <div className="flex gap-2">
               {[
-                { value: 'all', label: 'Tümü' },
-                { value: 'movie', label: 'Film' },
-                { value: 'tv', label: 'Dizi' }
+                { value: 'all', label: t('common.all', 'Tümü') },
+                { value: 'movie', label: t('movies.movie') },
+                { value: 'tv', label: t('movies.tv_show') }
               ].map((option) => (
                 <button
                   key={option.value}
@@ -121,13 +123,13 @@ const FilterModal: React.FC<FilterModalProps> = ({
           {/* Sıralama Filtresi */}
           <div>
             <h3 className="text-[18px] font-semibold font-poppins text-[#F8F8FF] mb-4">
-              Sırala
+              {t('search.sort_by')}
             </h3>
             <div className="flex gap-2">
               {[
-                { value: 'date_desc', label: 'Tarih' },
-                { value: 'rating_desc', label: 'Puan' },
-                { value: 'alpha_asc', label: 'Alfabetik' }
+                { value: 'date_desc', label: t('movies.release_date', 'Tarih') },
+                { value: 'rating_desc', label: t('movies.rating') },
+                { value: 'alpha_asc', label: t('common.alphabetical', 'Alfabetik') }
               ].map((option) => (
                 <button
                   key={option.value}
@@ -154,7 +156,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             onClick={handleApply}
             className="w-full py-4 rounded-[12px] bg-[#FE7743] text-[#F8F8FF] text-[18px] font-bold font-poppins hover:bg-[#FE7743]/90 transition-colors shadow-lg"
           >
-            Sonuçları Göster
+            {t('search.search_results', 'Sonuçları Göster')}
           </button>
         </div>
       </div>

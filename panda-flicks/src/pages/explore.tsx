@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IonContent, IonPage, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
 import TopHeaderBar from '../components/TopHeaderBar';
 import ExploreTabSegment from '../components/ExploreTabSegment';
@@ -14,6 +15,7 @@ import styles from './explore.module.css';
 
 const Explore: React.FC = () => {
   const { openModal } = useModal();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'flicks' | 'series'>('flicks');
   const [movies, setMovies] = useState<TMDBMovieResult[]>([]);
   const [series, setSeries] = useState<TMDBMovieResult[]>([]);

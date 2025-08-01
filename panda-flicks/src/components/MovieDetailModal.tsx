@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IonToast } from '@ionic/react';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import { LocalStorageService } from '../services/localStorage';
@@ -14,6 +15,7 @@ interface MovieDetailModalProps {
 
 const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movieId }) => {
   const { openModal, closeModal } = useModal();
+  const { t } = useTranslation();
   const [movieDetails, setMovieDetails] = useState<TMDBMovieDetails | null>(null);
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
   const [loading, setLoading] = useState(false);
@@ -354,7 +356,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                       <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                     <span className="font-poppins font-medium text-sm">
-                      {logStatus === 'watched' ? 'İzlendi' : 'İzledim'}
+                      {logStatus === 'watched' ? t('movies.watched') : t('movies.watch')}
                     </span>
                   </button>
 
@@ -379,7 +381,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
                         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       <span className="font-poppins font-medium text-sm">
-                        {logStatus === 'watchlist' ? 'Listede' : 'Listeme Ekle'}
+                        {logStatus === 'watchlist' ? t('lists.in_list') : t('lists.add_to_list')}
                       </span>
                     </button>
                   )}

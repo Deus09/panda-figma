@@ -1,22 +1,24 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import iconHome from '../assets/icon-home.svg';
 import iconExplore from '../assets/icon-explore.svg';
 import iconSocial from '../assets/icon-social.svg';
 import iconLists from '../assets/icon-lists.svg';
 import iconProfile from '../assets/icon-profile.svg';
 
-const navItems = [
-  { icon: iconHome, label: 'Home', path: '/home' },
-  { icon: iconExplore, label: 'Explore', path: '/explore' },
-  { icon: iconSocial, label: 'Social', path: '/social' },
-  { icon: iconLists, label: 'Lists', path: '/lists' },
-  { icon: iconProfile, label: 'Profile', path: '/profile' },
-];
-
 const BottomNavBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   const history = useHistory();
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const navItems = [
+    { icon: iconHome, label: t('navigation.home'), path: '/home' },
+    { icon: iconExplore, label: t('navigation.explore'), path: '/explore' },
+    { icon: iconSocial, label: t('navigation.social'), path: '/social' },
+    { icon: iconLists, label: t('navigation.lists'), path: '/lists' },
+    { icon: iconProfile, label: t('navigation.profile'), path: '/profile' },
+  ];
 
   return (
     <nav className={`fixed bottom-0 left-0 w-full bg-background border-t border-border flex flex-row justify-between items-center px-[10px] py-[8px] z-50 rounded-t-[27px] h-[85px] ${className}`} style={{ minHeight: 85 }}>

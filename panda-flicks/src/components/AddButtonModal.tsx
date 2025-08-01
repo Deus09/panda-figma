@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IonDatetime, IonModal, IonItem, IonLabel, IonThumbnail, IonCheckbox, IonButton, IonList } from '@ionic/react';
 import { searchMovies, TMDBMovieResult, TMDBCastMember, getSeriesDetails, searchAll, TMDBMultiSearchResponse, TMDBSearchResult, getSeasonDetails, SeasonDetails as TMDBSeasonDetails } from '../services/tmdb';
 import { improveComment, chatWithCast } from '../services/gemini';
@@ -28,6 +29,7 @@ interface AddButtonModalProps {
 
 const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect, prefillData }) => {
   // Modal view states
+  const { t } = useTranslation();
   type ModalView = 'search' | 'episodes';
   const [view, setView] = useState<ModalView>('search');
   
