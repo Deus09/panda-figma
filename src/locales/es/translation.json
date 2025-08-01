@@ -34,7 +34,7 @@
     "movies": "Películas",
     "tv_show": "Serie de TV",
     "tv_shows": "Series de TV",
-    "series": "Series",
+    "series": "Serie",
     "episode": "Episodio",
     "season": "Temporada",
     "cast": "Reparto",
@@ -45,9 +45,9 @@
     "genre": "Género",
     "genres": "Géneros",
     "rating": "Calificación",
-    "release_date": "Fecha de Lanzamiento",
+    "release_date": "Fecha de Estreno",
     "runtime": "Duración",
-    "overview": "Sinopsis",
+    "overview": "Resumen",
     "synopsis": "Sinopsis",
     "trailer": "Tráiler",
     "watch": "Ver",
@@ -56,8 +56,8 @@
     "favorites": "Favoritos",
     "popular": "Popular",
     "trending": "Tendencia",
-    "top_rated": "Mejor Calificadas",
-    "upcoming": "Próximas",
+    "top_rated": "Mejor Calificado",
+    "upcoming": "Próximamente",
     "now_playing": "En Cartelera"
   },
   "profile": {
@@ -87,11 +87,15 @@
   "lists": {
     "my_lists": "Mis Listas",
     "create_list": "Crear Lista",
-    "list_name": "Nombre de la Lista",
-    "add_to_list": "Agregar a Lista",
-    "remove_from_list": "Remover de Lista",
+    "list_name": "Nombre de Lista",
+    "add_to_list": "Añadir a Lista",
+    "remove_from_list": "Quitar de Lista",
     "empty_list": "Esta lista está vacía",
-    "in_list": "En Lista"
+    "in_list": "En Lista",
+    "cinenar_lists": "Listas de Cinenar",
+    "loading_lists": "Cargando listas...",
+    "no_lists_available": "Aún no hay listas disponibles",
+    "movie_count": "{{count}} películas"
   },
   "social": {
     "activity": "Actividad",
@@ -110,5 +114,32 @@
     "chat": "Chat",
     "ask_ai": "Preguntar a IA",
     "ai_suggests": "IA Sugiere"
+  },
+  "tabs": {
+    "watched": "Visto",
+    "watchlist": "Lista de Deseos",
+    "movies": "Películas",
+    "series": "Series",
+    "all": "Todo",
+    "persons": "Actores",
+    "news": "Noticias",
+    "reviews": "Reseñas"
+  },
+  "auth": {
+    "sign_in_with_google": "Iniciar sesión con Google",
+    "signing_in_with_google": "Iniciando sesión con Google...",
+    "track_movies_description": "Inicia sesión para rastrear tu historial de películas y series, crear listas favoritas e interactuar con otros usuarios.",
+    "welcome": "¡Bienvenido!"
+  },
+  "empty_states": {
+    "no_content": "No se encontró contenido",
+    "no_movies": "Aún no se han añadido películas",
+    "no_series": "Aún no se han añadido series",
+    "add_first_content": "Añade tu primer contenido",
+    "start_tracking": "Comienza tu viaje de seguimiento",
+    "not_yet": "Aún No",
+    "no_bio": "Aún no se ha añadido biografía.",
+    "no_watched_content": "Aún no has visto ningún contenido.",
+    "empty_watchlist": "Tu lista de deseos está vacía."
   }
 }

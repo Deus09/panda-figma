@@ -1,4 +1,5 @@
 import { IonContent, IonPage } from '@ionic/react';
+import { useTranslation } from 'react-i18next';
 import TopHeaderBar from '../components/TopHeaderBar';
 import MovieCard from '../components/MovieCard';
 import SeriesGroupCard from '../components/SeriesGroupCard';
@@ -22,6 +23,7 @@ export type FilterOptions = {
 // movies array ve mock MovieCard renderlarını kaldır
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
   const { openModal } = useModal();
   const history = useHistory();
   const [activeTab, setActiveTab] = useState<'watched' | 'watchlist'>('watched');
@@ -214,7 +216,7 @@ const Home: React.FC = () => {
             {posterLibraryData.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">
-                  {activeTab === 'watched' ? 'Henüz izlediğin bir içerik yok.' : 'İzleme listeniz boş.'}
+                  {activeTab === 'watched' ? t('empty_states.no_watched_content') : t('empty_states.empty_watchlist')}
                 </p>
               </div>
             ) : (

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type SearchTabType = 'all' | 'movies' | 'series' | 'persons';
 
@@ -13,11 +14,13 @@ interface SearchTabSegmentProps {
 }
 
 const SearchTabSegment: React.FC<SearchTabSegmentProps> = ({ activeTab, onTabChange, counts }) => {
+  const { t } = useTranslation();
+  
   const tabs = [
-    { key: 'all' as SearchTabType, label: 'Tümü', count: counts.movies + counts.series + counts.persons },
-    { key: 'movies' as SearchTabType, label: 'Filmler', count: counts.movies },
-    { key: 'series' as SearchTabType, label: 'Diziler', count: counts.series },
-    { key: 'persons' as SearchTabType, label: 'Oyuncular', count: counts.persons },
+    { key: 'all' as SearchTabType, label: t('tabs.all'), count: counts.movies + counts.series + counts.persons },
+    { key: 'movies' as SearchTabType, label: t('tabs.movies'), count: counts.movies },
+    { key: 'series' as SearchTabType, label: t('tabs.series'), count: counts.series },
+    { key: 'persons' as SearchTabType, label: t('tabs.persons'), count: counts.persons },
   ];
 
   return (

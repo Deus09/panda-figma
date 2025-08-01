@@ -91,7 +91,11 @@
     "add_to_list": "Add to List",
     "remove_from_list": "Remove from List",
     "empty_list": "This list is empty",
-    "in_list": "In List"
+    "in_list": "In List",
+    "cinenar_lists": "Cinenar Lists",
+    "loading_lists": "Loading lists...",
+    "no_lists_available": "No lists available yet",
+    "movie_count": "{{count}} movies"
   },
   "social": {
     "activity": "Activity",
@@ -110,5 +114,32 @@
     "chat": "Chat",
     "ask_ai": "Ask AI",
     "ai_suggests": "AI Suggests"
+  },
+  "tabs": {
+    "watched": "Watched",
+    "watchlist": "Watchlist",
+    "movies": "Movies",
+    "series": "Series",
+    "all": "All",
+    "persons": "Actors",
+    "news": "News",
+    "reviews": "Reviews"
+  },
+  "auth": {
+    "sign_in_with_google": "Sign in with Google",
+    "signing_in_with_google": "Signing in with Google...",
+    "track_movies_description": "Sign in to track your movie and TV show viewing history, create favorite lists, and interact with other users.",
+    "welcome": "Welcome!"
+  },
+  "empty_states": {
+    "no_content": "No content found",
+    "no_movies": "No movies added yet",
+    "no_series": "No series added yet",
+    "add_first_content": "Add your first content",
+    "start_tracking": "Start your tracking journey",
+    "not_yet": "Not Yet",
+    "no_bio": "No biography added yet.",
+    "no_watched_content": "You haven't watched any content yet.",
+    "empty_watchlist": "Your watchlist is empty."
   }
 }

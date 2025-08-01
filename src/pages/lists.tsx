@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IonContent, IonPage } from '@ionic/react';
+import { useTranslation } from 'react-i18next';
 import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import MovieDetailModal from '../components/MovieDetailModal';
@@ -561,6 +562,7 @@ interface Liste {
 }
 
 const Lists: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedListe, setSelectedListe] = useState<Liste | null>(null);
   const [showListeDetail, setShowListeDetail] = useState(false);
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
@@ -728,7 +730,7 @@ const Lists: React.FC = () => {
   return (
     <IonPage className={styles.listsPage}>
       <IonContent className={styles.listsContent}>
-        <TopHeaderBar title="Cinenar Listeler" />
+        <TopHeaderBar title={t('lists.cinenar_lists')} />
         {/* Ana Liste Görünümü */}
         {!showListeDetail ? (
           <div className="p-4 pb-24">

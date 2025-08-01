@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { IonContent, IonPage, IonSpinner } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../services/supabaseClient';
 
 const AuthCallback: React.FC = () => {
   const history = useHistory();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -106,7 +108,7 @@ const AuthCallback: React.FC = () => {
         <div className="flex flex-col items-center justify-center h-full space-y-4">
           <IonSpinner name="dots" color="primary" className="w-12 h-12" />
           <div className="text-center">
-            <p className="text-lg font-medium text-foreground">Google ile giriş yapılıyor...</p>
+            <p className="text-lg font-medium text-foreground">{t('auth.signing_in_with_google')}</p>
             <p className="text-sm text-muted-foreground mt-2">
               AuthCallback Component Çalışıyor ✅
             </p>

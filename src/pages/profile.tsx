@@ -277,11 +277,11 @@ const Profile: React.FC = () => {
 
   // En çok izlenen tür
   const getFavoriteGenre = () => {
-    if (!profile) return 'Henüz Yok';
+    if (!profile) return t('empty_states.not_yet');
     const logs = LocalStorageService.getMovieLogs();
     const watchedLogs = logs.filter(log => log.type === 'watched' && log.genres);
     
-    if (watchedLogs.length === 0) return 'Henüz Yok';
+    if (watchedLogs.length === 0) return t('empty_states.not_yet');
     
     const genreCounts: { [key: string]: number } = {};
     
@@ -294,7 +294,7 @@ const Profile: React.FC = () => {
       }
     });
     
-    if (Object.keys(genreCounts).length === 0) return 'Henüz Yok';
+    if (Object.keys(genreCounts).length === 0) return t('empty_states.not_yet');
     
     const favoriteGenre = Object.entries(genreCounts)
       .sort(([,a], [,b]) => b - a)[0][0];
@@ -697,9 +697,9 @@ const Profile: React.FC = () => {
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white">Hoş Geldiniz!</h2>
+            <h2 className="text-2xl font-bold text-white">{t('auth.welcome')}</h2>
             <p className="text-gray-400 text-center leading-relaxed">
-              Film ve dizi izleme geçmişinizi takip etmek, favori listelerinizi oluşturmak ve diğer kullanıcılarla etkileşime geçmek için giriş yapın.
+              {t('auth.track_movies_description')}
             </p>
             <button
               onClick={signInWithGoogle}
@@ -711,7 +711,7 @@ const Profile: React.FC = () => {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              <span>Google ile Giriş Yap</span>
+              <span>{t('auth.sign_in_with_google')}</span>
             </button>
           </div>
         </div>
@@ -823,7 +823,7 @@ const Profile: React.FC = () => {
                   />
                 ) : (
                   <p className="text-gray-300 text-sm leading-relaxed font-poppins">
-                    {profile.bio || "Henüz bir biyografi eklenmemiş."}
+                    {profile.bio || t('empty_states.no_bio')}
                   </p>
                 )}
               </div>
@@ -1226,7 +1226,7 @@ const Profile: React.FC = () => {
                     <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
                   </svg>
                   <p className="text-gray-400 text-xs text-center font-poppins">
-                    Henüz film yok
+                    {t('empty_states.no_movies')}
                   </p>
                 </div>
               )}
