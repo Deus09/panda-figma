@@ -428,7 +428,7 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
         <p className="text-red-500 mb-4">{error}</p>
         <button 
           onClick={() => window.location.reload()} 
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
         >
           {t('social.try_again')}
         </button>
@@ -445,7 +445,7 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
         <h3 className="text-lg font-semibold text-foreground">{t('social.all_reviews')}</h3>
         <button
           onClick={() => setShowFilterModal(true)}
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 text-sm font-medium"
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 text-sm font-medium"
         >
           {t('social.filter')}
         </button>

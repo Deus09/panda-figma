@@ -247,6 +247,8 @@
     "chat_with_cast": "Chat con el Reparto",
     "chat_with_cast_loading": "Cargando Información del Reparto...",
     "chat_with_cast_no_tmdb": "ID de TMDB No Encontrado",
+    "chat_with_actor": "Chatear con {{actorName}}",
+    "chat_with_actor_excited": "¡Chatear con {{actorName}}! 🎭",
     "improve_comment": "Mejorar Comentario",
     "chat_started": "Chat iniciado",
     "chat_error": "Error al iniciar chat"

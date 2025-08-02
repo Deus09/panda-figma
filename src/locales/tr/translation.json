@@ -247,6 +247,8 @@
     "chat_with_cast": "Oyuncu ile Sohbet Et",
     "chat_with_cast_loading": "Oyuncu Bilgisi Yükleniyor...",
     "chat_with_cast_no_tmdb": "TMDB ID Bulunamadı",
+    "chat_with_actor": "{{actorName}} ile Sohbet Et",
+    "chat_with_actor_excited": "{{actorName}} ile Konuş! 🎭",
     "improve_comment": "Yorumu Geliştir",
     "chat_started": "Sohbet başlatıldı",
     "chat_error": "Sohbet başlatılırken hata oluştu"

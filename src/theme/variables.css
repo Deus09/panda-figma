@@ -57,3 +57,38 @@
   --chart-5: 30 66% 32%;
 }
 /* YENİ TEMA KODU BİTİŞİ */
+
+/* Force primary color for buttons */
+.bg-primary {
+  background-color: hsl(22 93% 64%) !important;
+}
+
+.text-primary-foreground {
+  color: hsl(0 0% 0%) !important;
+}
+
+.hover\:bg-primary\/90:hover {
+  background-color: hsl(22 93% 64% / 0.9) !important;
+}
+
+/* Override Ionic's primary color */
+:root {
+  --ion-color-primary: hsl(22 93% 64%) !important;
+  --ion-color-primary-rgb: 251, 146, 60 !important;
+  --ion-color-primary-contrast: hsl(0 0% 0%) !important;
+  --ion-color-primary-contrast-rgb: 0, 0, 0 !important;
+  --ion-color-primary-shade: hsl(22 93% 54%) !important;
+  --ion-color-primary-tint: hsl(22 93% 74%) !important;
+}
+
+/* Override Ionic button styles */
+ion-button.button-solid {
+  --background: hsl(22 93% 64%) !important;
+  --background-activated: hsl(22 93% 54%) !important;
+  --background-focused: hsl(22 93% 64%) !important;
+  --background-hover: hsl(22 93% 74%) !important;
+  --color: hsl(0 0% 0%) !important;
+  --color-activated: hsl(0 0% 0%) !important;
+  --color-focused: hsl(0 0% 0%) !important;
+  --color-hover: hsl(0 0% 0%) !important;
+}
