@@ -38,7 +38,7 @@ html, body {
   }
   
   .safe-area-bottom {
-    padding-bottom: max(var(--ion-safe-area-bottom), 20px);
+    padding-bottom: max(var(--ion-safe-area-bottom), 8px);
   }
 }
 
@@ -61,9 +61,9 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 69px;
-  padding-top: 8px;
-  padding-bottom: calc(8px + var(--ion-safe-area-bottom, 0px));
+  min-height: 59px;
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 
 /* Custom animations */
