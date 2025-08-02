@@ -17,6 +17,7 @@ import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, g
 import SeasonAccordion from './SeasonAccordion';
 import CastChatModal from './CastChatModal';
 import CastSelectionModal from './CastSelectionModal';
+import AnimatedChatIcon from './AnimatedChatIcon';
 
 interface DetailViewModalProps {
   isOpen: boolean;
@@ -596,23 +597,54 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
               )}
               
               {/* Chat with Cast Button */}
-              <IonButton 
-                expand="block" 
-                size="large"
-                className="mt-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0"
-                onClick={handleCastChatClick}
-                disabled={!logDetails?.tmdbId || movieCast.length === 0}
-              >
-                <IonIcon icon={chatbubbles} slot="start" className="text-primary-foreground" />
-                {!logDetails?.tmdbId 
-                  ? t('ai.chat_with_cast_no_tmdb') 
-                  : movieCast.length === 0 
-                    ? t('ai.chat_with_cast_loading') 
-                    : movieCast.length > 0 
-                      ? getDynamicChatButtonText(movieCast[0], logDetails?.title || '')
-                      : t('ai.chat_with_cast')
-                }
-              </IonButton>
+              <div className="mt-6 relative group">
+                <IonButton
+                  expand="block"
+                  size="large"
+                  className={`relative overflow-hidden font-semibold rounded-2xl shadow-xl transition-all duration-500 border-0 backdrop-blur-sm px-0 py-0 ${
+                    !logDetails?.tmdbId || movieCast.length === 0
+                      ? 'bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-[#ff9800] via-[#ffb300] to-[#ffd740] hover:from-[#ffa726] hover:to-[#ffe082] text-white hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1'
+                  }`}
+                  onClick={handleCastChatClick}
+                  disabled={!logDetails?.tmdbId || movieCast.length === 0}
+                  style={{ minHeight: 56 }}
+                >
+                  {/* Animated background gradient */}
+                  {(!logDetails?.tmdbId || movieCast.length === 0) ? null : (
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#ff9800]/20 via-[#ffd740]/20 to-[#ffb300]/20 animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  )}
+                  {/* Animated chat icon with dots */}
+                  <span className="pl-5 pr-2 flex items-center">
+                    <AnimatedChatIcon className={`${!logDetails?.tmdbId || movieCast.length === 0 ? 'opacity-40' : 'opacity-100'}`} />
+                  </span>
+                  {/* Button text with proper capitalization and emoji styling */}
+                  <span className="relative z-10 text-base font-semibold tracking-wide flex-1 text-center flex items-center justify-center gap-2 select-none">
+                    <span className="truncate">
+                      {!logDetails?.tmdbId
+                        ? t('ai.chat_with_cast_no_tmdb')
+                        : movieCast.length === 0
+                          ? t('ai.chat_with_cast_loading')
+                          : movieCast.length > 0
+                            ? getDynamicChatButtonText(movieCast[0], logDetails?.title || '')
+                            : t('ai.chat_with_cast')
+                      }
+                    </span>
+                    {/* Emoji with special styling */}
+                    {movieCast.length > 0 && logDetails?.tmdbId && (
+                      <span className="text-xl animate-pulse ml-1">✨</span>
+                    )}
+                  </span>
+                  {/* Shine effect on hover - only when enabled */}
+                  {(!logDetails?.tmdbId || movieCast.length === 0) ? null : (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  )}
+                </IonButton>
+                {/* Subtle glow effect - only when enabled */}
+                {(!logDetails?.tmdbId || movieCast.length === 0) ? null : (
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#ff9800]/20 via-[#ffd740]/20 to-[#ffb300]/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                )}
+              </div>
             </div>
           </div>
         )}
