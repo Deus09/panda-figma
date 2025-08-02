@@ -18,19 +18,17 @@ const Social: React.FC = () => {
 
   return (
     <IonPage className="bg-background">
-      {/* Header */}
-      <TopHeaderBar title={t('navigation.social')} />
-      
-      {/* Main Content */}
-      <IonContent className="bg-background" scrollEvents={true}>
-        <div className="flex flex-col h-full">
+      <IonContent fullscreen className="bg-background relative" scrollEvents={true}>
+        <div className="bg-background min-h-screen flex flex-col items-center">
+          <TopHeaderBar title={t('navigation.social')} />
+          
           {/* Tab Segment */}
-          <div className="flex justify-center pt-6 pb-4">
+          <div className="flex justify-center pt-6 pb-4 w-full">
             <SocialTabSegment activeTab={activeTab} onTabChange={handleTabChange} />
           </div>
           
           {/* Tab Content */}
-          <div className="flex-1 px-4 pb-24">
+          <div className="flex-1 px-4 pb-24 w-full">
             {activeTab === 'news' ? (
               <div className="text-center py-12">
                 <h3 className="text-h3 font-semibold text-foreground mb-2">{t('tabs.news')}</h3>
@@ -40,11 +38,9 @@ const Social: React.FC = () => {
               <ReviewsTabSegment />
             )}
           </div>
+          <BottomNavBar />
         </div>
       </IonContent>
-      
-      {/* Bottom Navigation */}
-      <BottomNavBar />
     </IonPage>
   );
 };
