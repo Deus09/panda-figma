@@ -252,7 +252,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
         {/* Back Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 left-4 z-10 w-6 h-6 flex items-center justify-center"
+          className="absolute top-12 left-4 z-10 w-6 h-6 flex items-center justify-center"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M12 19L5 12L12 5" stroke="#F8F8FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -260,7 +260,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
         </button>
 
         {/* Action Buttons - Sağ Üst */}
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
+        <div className="absolute top-12 right-4 z-10 flex gap-2">
           {/* İzledim Butonu */}
           <button
             onClick={handleWatchedToggle}
