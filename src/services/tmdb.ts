@@ -122,6 +122,35 @@ export interface TMDBMultiSearchResponse {
   persons: TMDBSearchResult[];
 }
 
+export interface TMDBReview {
+  id: string;
+  author: string;
+  author_details: {
+    name: string;
+    username: string;
+    avatar_path?: string;
+    rating?: number;
+  };
+  content: string;
+  created_at: string;
+  updated_at: string;
+  url: string;
+  movieInfo?: {
+    id: number;
+    title: string;
+    poster_path?: string;
+    mediaType: 'movie' | 'tv' | 'person';
+  };
+}
+
+export interface TMDBReviewsResponse {
+  id: number;
+  page: number;
+  results: TMDBReview[];
+  total_pages: number;
+  total_results: number;
+}
+
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'your-api-key-here';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -716,5 +745,117 @@ export const getSeasonDetails = async (seriesId: number, seasonNumber: number): 
   } catch (error) {
     console.error(`Error fetching details for season ${seasonNumber} of series ID ${seriesId}:`, error);
     throw error;
+  }
+};
+
+export const getMovieReviews = async (movieId: number, page: number = 1): Promise<TMDBReviewsResponse> => {
+  const cacheKey = `movie_reviews:${movieId}:${page}`;
+  const now = Date.now();
+
+  // Check cache first
+  if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
+    console.log(`CACHE HIT: Returning movie reviews ${movieId} page ${page} from cache.`);
+    return cache.get(cacheKey);
+  }
+
+  console.log(`CACHE MISS: Fetching movie reviews ${movieId} page ${page} from API.`);
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/${movieId}/reviews?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch movie reviews: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Cache the result
+    cache.set(cacheKey, data);
+    cacheTimestamps.set(cacheKey, now);
+
+    return data;
+  } catch (error) {
+    console.error(`Error fetching movie reviews for ID ${movieId}:`, error);
+    throw new Error('Failed to load movie reviews. Please try again.');
+  }
+};
+
+export const getSeriesReviews = async (seriesId: number, page: number = 1): Promise<TMDBReviewsResponse> => {
+  const cacheKey = `series_reviews:${seriesId}:${page}`;
+  const now = Date.now();
+
+  // Check cache first
+  if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
+    console.log(`CACHE HIT: Returning series reviews ${seriesId} page ${page} from cache.`);
+    return cache.get(cacheKey);
+  }
+
+  console.log(`CACHE MISS: Fetching series reviews ${seriesId} page ${page} from API.`);
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/${seriesId}/reviews?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch series reviews: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Cache the result
+    cache.set(cacheKey, data);
+    cacheTimestamps.set(cacheKey, now);
+
+    return data;
+  } catch (error) {
+    console.error(`Error fetching series reviews for ID ${seriesId}:`, error);
+    throw new Error('Failed to load series reviews. Please try again.');
+  }
+};
+
+export const getPopularMoviesWithReviews = async (): Promise<TMDBMovieResult[]> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch popular movies: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return (data.results || []).map((movie: any) => ({
+      id: movie.id,
+      title: movie.title,
+      release_date: movie.release_date,
+      poster_path: movie.poster_path
+    }));
+  } catch (error) {
+    console.error('Error fetching popular movies:', error);
+    throw new Error('Failed to load popular movies. Please try again.');
+  }
+};
+
+export const getPopularSeriesWithReviews = async (): Promise<TMDBMovieResult[]> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch popular series: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return (data.results || []).map((series: any) => ({
+      id: series.id,
+      title: series.name, // TV serileri için name kullanılır
+      release_date: series.first_air_date, // TV serileri için first_air_date kullanılır
+      poster_path: series.poster_path
+    }));
+  } catch (error) {
+    console.error('Error fetching popular series:', error);
+    throw new Error('Failed to load popular series. Please try again.');
   }
 };

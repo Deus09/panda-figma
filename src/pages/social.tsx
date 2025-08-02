@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import TopHeaderBar from '../components/TopHeaderBar';
 import BottomNavBar from '../components/BottomNavBar';
 import SocialTabSegment from '../components/SocialTabSegment';
+import ReviewsTabSegment from '../components/ReviewsTabSegment';
 
 type SocialTabType = 'news' | 'reviews';
 
@@ -36,10 +37,7 @@ const Social: React.FC = () => {
                 <p className="text-muted-foreground">{t('empty_states.coming_soon')}</p>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <h3 className="text-h3 font-semibold text-foreground mb-2">{t('tabs.reviews')}</h3>
-                <p className="text-muted-foreground">{t('empty_states.coming_soon')}</p>
-              </div>
+              <ReviewsTabSegment />
             )}
           </div>
         </div>
