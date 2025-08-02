@@ -22,7 +22,7 @@ const Social: React.FC = () => {
       <TopHeaderBar title={t('navigation.social')} />
       
       {/* Main Content */}
-      <IonContent className="bg-background">
+      <IonContent className="bg-background" scrollEvents={true}>
         <div className="flex flex-col h-full">
           {/* Tab Segment */}
           <div className="flex justify-center pt-6 pb-4">

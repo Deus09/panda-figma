@@ -21,7 +21,7 @@ const BottomNavBar: React.FC<{ className?: string }> = ({ className = '' }) => {
   ];
 
   return (
-    <nav className={`fixed bottom-0 left-0 w-full bg-background border-t border-border flex flex-row justify-between items-center px-[10px] py-[8px] z-50 rounded-t-[27px] h-[85px] ${className}`} style={{ minHeight: 85 }}>
+    <nav className={`fixed bottom-0 left-0 w-full bg-background border-t border-border flex flex-row justify-between items-center px-[10px] py-[8px] z-50 rounded-t-[27px] h-[85px] safe-area-bottom ${className}`} style={{ minHeight: 85 }}>
       {navItems.map((item, idx) => {
         const isActive = item.path && location.pathname.startsWith(item.path);
         return (

@@ -740,7 +740,7 @@ const Lists: React.FC = () => {
 
   return (
     <IonPage className={styles.listsPage}>
-      <IonContent className={styles.listsContent}>
+      <IonContent className={styles.listsContent} scrollEvents={true}>
         <TopHeaderBar title={t('lists.cinenar_lists')} />
         {/* Ana Liste Görünümü */}
         {!showListeDetail ? (

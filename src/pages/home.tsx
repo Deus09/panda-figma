@@ -189,7 +189,7 @@ const Home: React.FC = () => {
   }
   return (
     <IonPage className="bg-background">
-      <IonContent fullscreen className="bg-background relative">
+      <IonContent fullscreen className="bg-background relative" scrollEvents={true}>
         <div className="bg-background min-h-screen flex flex-col items-center">
           <TopHeaderBar />
           {/* Tab Segment + Filter */}
