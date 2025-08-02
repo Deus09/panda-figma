@@ -54,7 +54,7 @@ const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
   return (
     <>
             <button
-        className="fixed bottom-[110px] right-[20px] w-[56px] h-[56px] rounded-full bg-[#FE7743] flex items-center justify-center shadow-[0_8px_24px_0_rgba(0,0,0,0.15),0_2px_4px_0_rgba(0,0,0,0.2)] z-50 hover:bg-[#e66a3a] transition-all duration-200 hover:scale-105 active:scale-95"
+        className="fixed bottom-[90px] right-[20px] w-[56px] h-[56px] rounded-full bg-[#FE7743] flex items-center justify-center shadow-[0_8px_24px_0_rgba(0,0,0,0.15),0_2px_4px_0_rgba(0,0,0,0.2)] z-50 hover:bg-[#e66a3a] transition-all duration-200 hover:scale-105 active:scale-95"
         onClick={() => setOpen(true)}
         aria-label="Add"
       >
