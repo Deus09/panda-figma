@@ -20,7 +20,9 @@
     "previous": "Anterior",
     "done": "Hecho",
     "all": "Todo",
-    "alphabetical": "Alfabético"
+    "alphabetical": "Alfabético",
+    "my_review": "Mi Reseña",
+    "no_cast_found": "No se encontraron miembros del reparto"
   },
   "navigation": {
     "home": "Inicio",
@@ -217,6 +219,8 @@
     "all_attempts_used": "Todos los intentos utilizados",
     "attempt": "Intento",
     "chat_with_cast": "Chat con el Reparto",
+    "chat_with_cast_loading": "Cargando Información del Reparto...",
+    "chat_with_cast_no_tmdb": "ID de TMDB No Encontrado",
     "improve_comment": "Mejorar Comentario",
     "chat_started": "Chat iniciado",
     "chat_error": "Error al iniciar chat"

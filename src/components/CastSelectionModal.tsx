@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TMDBCastMember, getMovieCast } from '../services/tmdb';
 
 interface CastSelectionModalProps {
@@ -16,6 +17,7 @@ const CastSelectionModal: React.FC<CastSelectionModalProps> = ({
   movieTitle,
   onCastSelect
 }) => {
+  const { t } = useTranslation();
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +61,7 @@ const CastSelectionModal: React.FC<CastSelectionModalProps> = ({
       <div className="bg-[#222] rounded-[16px] shadow-[0_8px_24px_0_rgba(0,0,0,0.15)] p-6 w-[90vw] max-w-[350px] max-h-[80vh] overflow-hidden animate-fadeIn">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-white font-poppins text-[18px] font-semibold">Chat with Cast</h2>
+          <h2 className="text-white font-poppins text-[18px] font-semibold">{t('ai.chat_with_cast')}</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center text-white hover:text-[#FE7743] transition-colors"
@@ -82,7 +84,7 @@ const CastSelectionModal: React.FC<CastSelectionModalProps> = ({
           ) : error ? (
             <div className="text-red-400 text-center py-8 font-poppins">{error}</div>
           ) : cast.length === 0 ? (
-            <div className="text-[#EFEEEA] text-center py-8 font-poppins">No cast members found</div>
+            <div className="text-[#EFEEEA] text-center py-8 font-poppins">{t('common.no_cast_found')}</div>
           ) : (
             <div className="space-y-3">
               {cast.map((castMember) => (

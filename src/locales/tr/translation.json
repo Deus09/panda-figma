@@ -20,7 +20,9 @@
     "previous": "Önceki",
     "done": "Tamam",
     "all": "Tümü",
-    "alphabetical": "Alfabetik"
+    "alphabetical": "Alfabetik",
+    "my_review": "Yorumum",
+    "no_cast_found": "Oyuncu bulunamadı"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -217,6 +219,8 @@
     "all_attempts_used": "Tüm haklar kullanıldı",
     "attempt": "Deneme",
     "chat_with_cast": "Oyuncu ile Sohbet Et",
+    "chat_with_cast_loading": "Oyuncu Bilgisi Yükleniyor...",
+    "chat_with_cast_no_tmdb": "TMDB ID Bulunamadı",
     "improve_comment": "Yorumu Geliştir",
     "chat_started": "Sohbet başlatıldı",
     "chat_error": "Sohbet başlatılırken hata oluştu"

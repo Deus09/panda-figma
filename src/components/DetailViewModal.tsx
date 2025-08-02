@@ -11,6 +11,7 @@ import {
   IonButtons
 } from '@ionic/react';
 import { close, star, calendar, chatbubbles, play } from 'ionicons/icons';
+import { useTranslation } from 'react-i18next';
 import { LocalStorageService, MovieLog } from '../services/localStorage';
 import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, getMovieCast, TMDBCastMember } from '../services/tmdb';
 import SeasonAccordion from './SeasonAccordion';
@@ -30,6 +31,8 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
   itemId, 
   itemType 
 }) => {
+  const { t } = useTranslation();
+  
   // State for different content types
   const [logDetails, setLogDetails] = useState<MovieLog | null>(null);
   const [seriesApiData, setSeriesApiData] = useState<TMDBSeriesDetails & { seasons: SeasonDetails[] } | null>(null);
@@ -204,7 +207,7 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
       <IonModal isOpen={isOpen} onDidDismiss={onClose}>
         <IonHeader>
           <IonToolbar>
-            <IonTitle>Yükleniyor...</IonTitle>
+            <IonTitle>{t('common.loading')}</IonTitle>
             <IonButtons slot="end">
               <IonButton fill="clear" onClick={onClose}>
                 <IonIcon icon={close} />
@@ -214,7 +217,7 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
         </IonHeader>
         <IonContent className="bg-background">
           <div className="flex items-center justify-center h-full">
-            <div className="text-foreground">Yükleniyor...</div>
+            <div className="text-foreground">{t('common.loading')}</div>
           </div>
         </IonContent>
       </IonModal>
@@ -263,7 +266,7 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
             <div className="p-6 space-y-6">
               {logDetails.review && (
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-3">Yorumum</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">{t('common.my_review')}</h3>
                   <p className="text-white/80 leading-relaxed">{logDetails.review}</p>
                 </div>
               )}
@@ -272,12 +275,17 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
               <IonButton 
                 expand="block" 
                 size="large"
-                className="mt-6"
+                className="mt-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 onClick={handleCastChatClick}
                 disabled={!logDetails?.tmdbId || movieCast.length === 0}
               >
-                <IonIcon icon={chatbubbles} slot="start" />
-                {!logDetails?.tmdbId ? 'TMDB ID Bulunamadı' : movieCast.length === 0 ? 'Oyuncu Bilgisi Yükleniyor...' : 'Oyuncularla Chat'}
+                <IonIcon icon={chatbubbles} slot="start" className="text-white" />
+                {!logDetails?.tmdbId 
+                  ? t('ai.chat_with_cast_no_tmdb') 
+                  : movieCast.length === 0 
+                    ? t('ai.chat_with_cast_loading') 
+                    : t('ai.chat_with_cast')
+                }
               </IonButton>
             </div>
           </div>

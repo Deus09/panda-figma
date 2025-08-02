@@ -20,7 +20,9 @@
     "previous": "Previous",
     "done": "Done",
     "all": "All",
-    "alphabetical": "Alphabetical"
+    "alphabetical": "Alphabetical",
+    "my_review": "My Review",
+    "no_cast_found": "No cast members found"
   },
   "navigation": {
     "home": "Home",
@@ -217,6 +219,8 @@
     "all_attempts_used": "All attempts used",
     "attempt": "Attempt",
     "chat_with_cast": "Chat with Cast",
+    "chat_with_cast_loading": "Loading Cast Information...",
+    "chat_with_cast_no_tmdb": "TMDB ID Not Found",
     "improve_comment": "Improve Comment",
     "chat_started": "Chat started",
     "chat_error": "Error starting chat"
