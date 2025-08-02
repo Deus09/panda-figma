@@ -59,41 +59,41 @@ const FilterModal: React.FC<FilterModalProps> = ({
     <IonModal 
       isOpen={isOpen} 
       onDidDismiss={onDidDismiss}
-      initialBreakpoint={0.6}
-      breakpoints={[0, 0.4, 0.6, 0.8]}
+      initialBreakpoint={0.5}
+      breakpoints={[0, 0.4, 0.5, 0.7]}
       className="filter-modal"
     >
-      {/* Ana Modal Container - Uygulamanın tema renkleriyle */}
-      <div className="bg-[#222] text-[#F8F8FF] h-full rounded-t-[24px] relative">
-        {/* Pull Indicator */}
-        <div className="flex justify-center pt-4 pb-3">
-          <div className="w-12 h-1.5 bg-[#555] rounded-full"></div>
+      {/* Ana Modal Container - Sadece Dark Mode */}
+      <div className="bg-[#1a1a1a] text-gray-100 h-full rounded-t-[20px] relative">
+        {/* Pull Indicator - Daha ince */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-8 h-1 bg-gray-600 rounded-full"></div>
         </div>
 
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#333]">
+        {/* Modal Header - Daha kompakt */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
           <button 
             onClick={handleReset}
-            className="text-[#FE7743] text-[16px] font-semibold font-poppins hover:text-[#FE7743]/80 transition-colors"
+            className="text-sm font-medium text-orange-500 hover:text-orange-400 transition-colors"
           >
             {t('common.cancel')}
           </button>
-          <h2 className="text-[20px] font-bold font-poppins text-[#F8F8FF]">
+          <h2 className="text-lg font-semibold text-gray-100">
             {t('search.filter')}
           </h2>
           <button 
             onClick={onDidDismiss}
-            className="text-[#F8F8FF] text-[16px] font-semibold font-poppins hover:text-[#F8F8FF]/70 transition-colors"
+            className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
           >
             {t('common.close')}
           </button>
         </div>
 
-        {/* Modal Content */}
-        <div className="px-6 py-6 space-y-6">
+        {/* Modal Content - Daha kompakt spacing */}
+        <div className="px-4 py-4 space-y-5">
           {/* İçerik Türü Filtresi */}
           <div>
-            <h3 className="text-[18px] font-semibold font-poppins text-[#F8F8FF] mb-4">
+            <h3 className="text-sm font-medium text-gray-300 mb-3">
               {t('movies.movies')}
             </h3>
             <div className="flex gap-2">
@@ -108,10 +108,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
                     ...prev, 
                     contentType: option.value as 'all' | 'movie' | 'tv' 
                   }))}
-                  className={`flex-1 py-3 px-4 rounded-[12px] text-[16px] font-semibold font-poppins transition-all duration-200 ${
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     tempFilters.contentType === option.value
-                      ? 'bg-[#FE7743] text-[#F8F8FF] shadow-lg'
-                      : 'bg-[#333] text-[#B0B0B0] hover:bg-[#404040] hover:text-[#F8F8FF]'
+                      ? 'bg-orange-500 text-white shadow-sm'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-gray-100'
                   }`}
                 >
                   {option.label}
@@ -122,7 +122,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
           {/* Sıralama Filtresi */}
           <div>
-            <h3 className="text-[18px] font-semibold font-poppins text-[#F8F8FF] mb-4">
+            <h3 className="text-sm font-medium text-gray-300 mb-3">
               {t('search.sort_by')}
             </h3>
             <div className="flex gap-2">
@@ -137,10 +137,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
                     ...prev, 
                     sortBy: option.value as 'date_desc' | 'rating_desc' | 'alpha_asc' 
                   }))}
-                  className={`flex-1 py-3 px-4 rounded-[12px] text-[16px] font-semibold font-poppins transition-all duration-200 ${
+                  className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     tempFilters.sortBy === option.value
-                      ? 'bg-[#FE7743] text-[#F8F8FF] shadow-lg'
-                      : 'bg-[#333] text-[#B0B0B0] hover:bg-[#404040] hover:text-[#F8F8FF]'
+                      ? 'bg-orange-500 text-white shadow-sm'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-gray-100'
                   }`}
                 >
                   {option.label}
@@ -150,11 +150,11 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="px-6 pb-6">
+        {/* Modal Footer - Daha kompakt */}
+        <div className="px-4 pb-4">
           <button 
             onClick={handleApply}
-            className="w-full py-4 rounded-[12px] bg-[#FE7743] text-[#F8F8FF] text-[18px] font-bold font-poppins hover:bg-[#FE7743]/90 transition-colors shadow-lg"
+            className="w-full py-3 rounded-lg bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition-colors shadow-sm"
           >
             {t('search.search_results', 'Sonuçları Göster')}
           </button>
