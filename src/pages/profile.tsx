@@ -35,16 +35,72 @@ const Profile: React.FC = () => {
     localProfile: profile?.username || 'Yok'
   });
 
-  // Avatar galerisi - Film karakterleri ve sinema ikonları
+  // Avatar galerisi - SVG tabanlı sinema ikonları
   const avatarGallery = [
-    { id: 'cinema', url: 'https://placehold.co/120x120/FE7743/FFFFFF?text=🎬', name: 'Cinema' },
-    { id: 'popcorn', url: 'https://placehold.co/120x120/4ECDC4/FFFFFF?text=🍿', name: 'Popcorn' },
-    { id: 'film', url: 'https://placehold.co/120x120/96CEB4/FFFFFF?text=🎭', name: 'Film' },
-    { id: 'star', url: 'https://placehold.co/120x120/FFEAA7/000000?text=⭐', name: 'Star' },
-    { id: 'heart', url: 'https://placehold.co/120x120/DDA0DD/FFFFFF?text=❤️', name: 'Heart' },
-    { id: 'movie', url: 'https://placehold.co/120x120/FF6B6B/FFFFFF?text=🎥', name: 'Movie' },
-    { id: 'tv', url: 'https://placehold.co/120x120/45B7D1/FFFFFF?text=📺', name: 'TV' },
-    { id: 'trophy', url: 'https://placehold.co/120x120/FDCB6E/000000?text=🏆', name: 'Trophy' }
+    { 
+      id: 'cinema', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#FE7743"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">🎬</text>
+      </svg>`, 
+      name: 'Cinema' 
+    },
+    { 
+      id: 'popcorn', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#4ECDC4"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">🍿</text>
+      </svg>`, 
+      name: 'Popcorn' 
+    },
+    { 
+      id: 'film', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#96CEB4"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">🎭</text>
+      </svg>`, 
+      name: 'Film' 
+    },
+    { 
+      id: 'star', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#FFEAA7"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#000000" text-anchor="middle">⭐</text>
+      </svg>`, 
+      name: 'Star' 
+    },
+    { 
+      id: 'heart', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#DDA0DD"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">❤️</text>
+      </svg>`, 
+      name: 'Heart' 
+    },
+    { 
+      id: 'movie', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#FF6B6B"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">🎥</text>
+      </svg>`, 
+      name: 'Movie' 
+    },
+    { 
+      id: 'tv', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#45B7D1"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" text-anchor="middle">📺</text>
+      </svg>`, 
+      name: 'TV' 
+    },
+    { 
+      id: 'trophy', 
+      svg: `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="24" fill="#FDCB6E"/>
+        <text x="24" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#000000" text-anchor="middle">🏆</text>
+      </svg>`, 
+      name: 'Trophy' 
+    }
   ];
 
   const popularGenres = [
@@ -928,26 +984,24 @@ const Profile: React.FC = () => {
             <div className="mt-6 pt-4 border-t border-[#333]">
               <p className="text-[#FE7743] text-sm mb-3">{t('profile.avatar_gallery')}</p>
               <div className="grid grid-cols-4 gap-3">
-                {avatarGallery.map((avatar) => (
-                  <button
-                    key={avatar.id}
-                    onClick={() => handleAvatarGallerySelect(avatar.url)}
-                    className={`${styles.avatarSelectionButton} w-12 h-12 rounded-full border-2 overflow-hidden ${
-                      avatarPreview === avatar.url ? styles.selected : 'border-gray-600'
-                    }`}
-                  >
-                    <img
-                      src={avatar.url}
-                      alt={avatar.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Resim yüklenemezse placeholder göster
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://placehold.co/48x48/333/FE7743?text=${avatar.name.charAt(0)}`;
-                      }}
-                    />
-                  </button>
-                ))}
+                {avatarGallery.map((avatar) => {
+                  const dataUrl = `data:image/svg+xml,${encodeURIComponent(avatar.svg)}`;
+                  return (
+                    <button
+                      key={avatar.id}
+                      onClick={() => handleAvatarGallerySelect(dataUrl)}
+                      className={`${styles.avatarSelectionButton} w-12 h-12 rounded-full border-2 overflow-hidden ${
+                        avatarPreview === dataUrl ? styles.selected : 'border-gray-600'
+                      }`}
+                    >
+                      <img
+                        src={dataUrl}
+                        alt={avatar.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -980,27 +1034,7 @@ const Profile: React.FC = () => {
 
           {/* Çıkış Yap Butonu - Kullanıcı giriş yapmışsa göster */}
           {user && !isEditing && (
-            <div className="mt-4 pt-4 border-t border-[#333] space-y-3">
-              <button
-                onClick={() => {
-                  // Rozetleri sıfırla
-                  if (profile) {
-                    const updatedProfile = LocalStorageService.updateUserProfile({
-                      badges: LocalStorageService.getBadgeTemplates(),
-                      earnedBadgeCount: 0
-                    });
-                    if (updatedProfile) {
-                      setProfile(updatedProfile);
-                    }
-                  }
-                }}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                </svg>
-                <span>Reset Badges (Test)</span>
-              </button>
+            <div className="mt-4 pt-4 border-t border-[#333]">
               <button
                 onClick={signOut}
                 className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2"
