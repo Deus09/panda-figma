@@ -221,7 +221,10 @@
     "no_reviews_match": "No reviews match your filters.",
     "clear": "Clear",
     "close": "Close",
-    "view_original_review": "View original review on TMDB"
+    "view_original_review": "View original review on TMDB",
+    "no_more_reviews": "No more reviews to load",
+    "pull_to_refresh": "Pull to refresh",
+    "refreshing": "Refreshing..."
   },
   "ai": {
     "ai_discovery": "AI Discovery",

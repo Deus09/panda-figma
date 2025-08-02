@@ -221,7 +221,10 @@
     "no_reviews_match": "No hay reseñas que coincidan con tus filtros.",
     "clear": "Limpiar",
     "close": "Cerrar",
-    "view_original_review": "Ver reseña original en TMDB"
+    "view_original_review": "Ver reseña original en TMDB",
+    "no_more_reviews": "No hay más reseñas para cargar",
+    "pull_to_refresh": "Desliza hacia abajo para actualizar",
+    "refreshing": "Actualizando..."
   },
   "ai": {
     "ai_discovery": "Descubrimiento IA",

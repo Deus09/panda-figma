@@ -221,7 +221,10 @@
     "no_reviews_match": "Filtrelerinize uygun yorum bulunamadı.",
     "clear": "Temizle",
     "close": "Kapat",
-    "view_original_review": "TMDB'de orijinal yorumu görüntüle"
+    "view_original_review": "TMDB'de orijinal yorumu görüntüle",
+    "no_more_reviews": "Yüklenecek başka yorum yok",
+    "pull_to_refresh": "Yenilemek için aşağı çekin",
+    "refreshing": "Yenileniyor..."
   },
   "ai": {
     "ai_discovery": "AI Keşfi",

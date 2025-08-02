@@ -39,6 +39,16 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
   const [selectedContent, setSelectedContent] = useState<TMDBSearchResult | null>(null);
   const [showFullReviewModal, setShowFullReviewModal] = useState(false);
   const [selectedReview, setSelectedReview] = useState<TMDBReview | null>(null);
+  
+  // Infinite scroll için state'ler
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMoreReviews, setHasMoreReviews] = useState(true);
+  const [popularMovies, setPopularMovies] = useState<TMDBMovieResult[]>([]);
+  const [popularSeries, setPopularSeries] = useState<TMDBMovieResult[]>([]);
+  const [currentMovieIndex, setCurrentMovieIndex] = useState(0);
+  const [currentSeriesIndex, setCurrentSeriesIndex] = useState(0);
+  const [currentMoviePage, setCurrentMoviePage] = useState(1);
+  const [currentSeriesPage, setCurrentSeriesPage] = useState(1);
 
   // Popular filmleri ve dizileri yükle ve yorumlarını çek
   useEffect(() => {
@@ -50,32 +60,55 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
     applyFilters();
   }, [allReviews, filter]);
 
+  // Scroll event listener ekle
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Sayfanın %80'ine geldiğinde yeni yorumlar yükle
+      if (scrollTop + windowHeight >= documentHeight * 0.8) {
+        if (hasMoreReviews && !loadingMore) {
+          console.log('Scroll threshold reached, loading more reviews...');
+          loadMoreReviews();
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasMoreReviews, loadingMore]);
+
   const loadInitialReviews = async () => {
     setLoading(true);
     setError(null);
     try {
-      const [popularMovies, popularSeries] = await Promise.all([
+      const [moviesData, seriesData] = await Promise.all([
         getPopularMoviesWithReviews(),
         getPopularSeriesWithReviews()
       ]);
       
+      // Popular listeleri state'e kaydet
+      setPopularMovies(moviesData);
+      setPopularSeries(seriesData);
+      
       const allReviewsData: TMDBReview[] = [];
       
-      // İlk 10 popüler filmin yorumlarını çek (2 sayfa)
-      for (let i = 0; i < Math.min(10, popularMovies.length); i++) {
+      // İlk 10 popüler filmin yorumlarını çek (2 sayfa her biri)
+      for (let i = 0; i < Math.min(10, moviesData.length); i++) {
         try {
           // İlk sayfa
-          const response1 = await getMovieReviews(popularMovies[i].id, 1);
-          console.log(`Movie "${popularMovies[i].title}" page 1 has ${response1.results.length} reviews`);
+          const response1 = await getMovieReviews(moviesData[i].id, 1);
+          console.log(`Movie "${moviesData[i].title}" page 1 has ${response1.results.length} reviews`);
           
           // İkinci sayfa (eğer varsa)
           let response2 = null;
           if (response1.total_pages > 1) {
-            response2 = await getMovieReviews(popularMovies[i].id, 2);
-            console.log(`Movie "${popularMovies[i].title}" page 2 has ${response2.results.length} reviews`);
+            response2 = await getMovieReviews(moviesData[i].id, 2);
+            console.log(`Movie "${moviesData[i].title}" page 2 has ${response2.results.length} reviews`);
           }
           
-          // Her yoruma film bilgisini ekle
           const allMovieReviews = [
             ...response1.results,
             ...(response2 ? response2.results : [])
@@ -84,33 +117,32 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
           const reviewsWithMovieInfo = allMovieReviews.map(review => ({
             ...review,
             movieInfo: {
-              id: popularMovies[i].id,
-              title: popularMovies[i].title,
-              poster_path: popularMovies[i].poster_path,
+              id: moviesData[i].id,
+              title: moviesData[i].title,
+              poster_path: moviesData[i].poster_path,
               mediaType: 'movie' as const
             }
           }));
           allReviewsData.push(...reviewsWithMovieInfo);
         } catch (err) {
-          console.error(`Error loading reviews for ${popularMovies[i].title}:`, err);
+          console.error(`Error loading reviews for ${moviesData[i].title}:`, err);
         }
       }
 
-      // İlk 10 popüler dizinin yorumlarını çek (2 sayfa)
-      for (let i = 0; i < Math.min(10, popularSeries.length); i++) {
+      // İlk 10 popüler dizinin yorumlarını çek (2 sayfa her biri)
+      for (let i = 0; i < Math.min(10, seriesData.length); i++) {
         try {
           // İlk sayfa
-          const response1 = await getSeriesReviews(popularSeries[i].id, 1);
-          console.log(`Series "${popularSeries[i].title}" page 1 has ${response1.results.length} reviews`);
+          const response1 = await getSeriesReviews(seriesData[i].id, 1);
+          console.log(`Series "${seriesData[i].title}" page 1 has ${response1.results.length} reviews`);
           
           // İkinci sayfa (eğer varsa)
           let response2 = null;
           if (response1.total_pages > 1) {
-            response2 = await getSeriesReviews(popularSeries[i].id, 2);
-            console.log(`Series "${popularSeries[i].title}" page 2 has ${response2.results.length} reviews`);
+            response2 = await getSeriesReviews(seriesData[i].id, 2);
+            console.log(`Series "${seriesData[i].title}" page 2 has ${response2.results.length} reviews`);
           }
           
-          // Her yoruma dizi bilgisini ekle
           const allSeriesReviews = [
             ...response1.results,
             ...(response2 ? response2.results : [])
@@ -119,15 +151,15 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
           const reviewsWithSeriesInfo = allSeriesReviews.map(review => ({
             ...review,
             movieInfo: {
-              id: popularSeries[i].id,
-              title: popularSeries[i].title,
-              poster_path: popularSeries[i].poster_path,
+              id: seriesData[i].id,
+              title: seriesData[i].title,
+              poster_path: seriesData[i].poster_path,
               mediaType: 'tv' as const
             }
           }));
           allReviewsData.push(...reviewsWithSeriesInfo);
         } catch (err) {
-          console.error(`Error loading reviews for ${popularSeries[i].title}:`, err);
+          console.error(`Error loading reviews for ${seriesData[i].title}:`, err);
         }
       }
       
@@ -144,6 +176,12 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
       
       setAllReviews(sortedReviews);
       setFilteredReviews(sortedReviews);
+      
+      // Infinite scroll için index'leri ayarla
+      setCurrentMovieIndex(10);
+      setCurrentSeriesIndex(10);
+      setCurrentMoviePage(3);
+      setCurrentSeriesPage(3);
     } catch (err) {
       setError('Failed to load reviews');
       console.error('Error loading initial reviews:', err);
@@ -228,10 +266,131 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
     }
   };
 
+  const loadMoreReviews = async () => {
+    if (loadingMore || !hasMoreReviews) return;
+    
+    setLoadingMore(true);
+    const newReviews: TMDBReview[] = [];
+    
+    try {
+      // Mevcut state değerlerini al
+      const currentMovieIdx = currentMovieIndex;
+      const currentSeriesIdx = currentSeriesIndex;
+      const currentMoviePg = currentMoviePage;
+      const currentSeriesPg = currentSeriesPage;
+      
+      // Film yorumlarını yükle (birden fazla sayfa)
+      if (currentMovieIdx < popularMovies.length) {
+        const movie = popularMovies[currentMovieIdx];
+        try {
+          // Mevcut sayfa ve sonraki 2 sayfa
+          const pagesToLoad = [currentMoviePg];
+          if (currentMoviePg + 1 <= 5) pagesToLoad.push(currentMoviePg + 1);
+          if (currentMoviePg + 2 <= 5) pagesToLoad.push(currentMoviePg + 2);
+          
+          for (const page of pagesToLoad) {
+            const response = await getMovieReviews(movie.id, page);
+            console.log(`Loading more movie reviews: "${movie.title}" page ${page} has ${response.results.length} reviews`);
+            
+            if (response.results.length > 0) {
+              const reviewsWithMovieInfo = response.results.map(review => ({
+                ...review,
+                movieInfo: {
+                  id: movie.id,
+                  title: movie.title,
+                  poster_path: movie.poster_path,
+                  mediaType: 'movie' as const
+                }
+              }));
+              newReviews.push(...reviewsWithMovieInfo);
+            }
+            
+            // Eğer bu filmin son sayfasıysa, döngüden çık
+            if (page >= response.total_pages) break;
+          }
+          
+          // Bir sonraki filme geç
+          setCurrentMovieIndex(currentMovieIdx + 1);
+          setCurrentMoviePage(1);
+        } catch (err) {
+          console.error(`Error loading more reviews for ${movie.title}:`, err);
+          setCurrentMovieIndex(currentMovieIdx + 1);
+          setCurrentMoviePage(1);
+        }
+      }
+      
+      // Dizi yorumlarını yükle (birden fazla sayfa)
+      if (currentSeriesIdx < popularSeries.length) {
+        const series = popularSeries[currentSeriesIdx];
+        try {
+          // Mevcut sayfa ve sonraki 2 sayfa
+          const pagesToLoad = [currentSeriesPg];
+          if (currentSeriesPg + 1 <= 5) pagesToLoad.push(currentSeriesPg + 1);
+          if (currentSeriesPg + 2 <= 5) pagesToLoad.push(currentSeriesPg + 2);
+          
+          for (const page of pagesToLoad) {
+            const response = await getSeriesReviews(series.id, page);
+            console.log(`Loading more series reviews: "${series.title}" page ${page} has ${response.results.length} reviews`);
+            
+            if (response.results.length > 0) {
+              const reviewsWithSeriesInfo = response.results.map(review => ({
+                ...review,
+                movieInfo: {
+                  id: series.id,
+                  title: series.title,
+                  poster_path: series.poster_path,
+                  mediaType: 'tv' as const
+                }
+              }));
+              newReviews.push(...reviewsWithSeriesInfo);
+            }
+            
+            // Eğer bu dizinin son sayfasıysa, döngüden çık
+            if (page >= response.total_pages) break;
+          }
+          
+          // Bir sonraki dizine geç
+          setCurrentSeriesIndex(currentSeriesIdx + 1);
+          setCurrentSeriesPage(1);
+        } catch (err) {
+          console.error(`Error loading more reviews for ${series.title}:`, err);
+          setCurrentSeriesIndex(currentSeriesIdx + 1);
+          setCurrentSeriesPage(1);
+        }
+      }
+      
+      // Eğer hem film hem dizi listelerinin sonuna geldiysek, daha fazla yorum yok
+      const nextMovieIdx = currentMovieIdx >= popularMovies.length ? currentMovieIdx : currentMovieIdx + 1;
+      const nextSeriesIdx = currentSeriesIdx >= popularSeries.length ? currentSeriesIdx : currentSeriesIdx + 1;
+      
+      if (nextMovieIdx >= popularMovies.length && nextSeriesIdx >= popularSeries.length) {
+        setHasMoreReviews(false);
+        console.log('No more reviews available - reached end of all content');
+      }
+      
+      // Yeni yorumları mevcut listeye ekle ve sırala
+      if (newReviews.length > 0) {
+        const updatedReviews = [...allReviews, ...newReviews].sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        
+        setAllReviews(updatedReviews);
+        console.log(`Loaded ${newReviews.length} more reviews. Total: ${updatedReviews.length}`);
+      }
+      
+    } catch (err) {
+      console.error('Error loading more reviews:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   const handleLoadMore = async (event: CustomEvent<void>) => {
-    // Burada daha fazla yorum yüklenebilir
+    await loadMoreReviews();
     (event.target as HTMLIonInfiniteScrollElement).complete();
   };
+
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -279,6 +438,8 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
 
   return (
     <div className={`space-y-4 ${className}`}>
+
+
       {/* Filter Button */}
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold text-foreground">{t('social.all_reviews')}</h3>
@@ -402,12 +563,18 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
           ))}
           
           {/* Infinite Scroll */}
-          <IonInfiniteScroll onIonInfinite={handleLoadMore}>
+          <IonInfiniteScroll 
+            onIonInfinite={handleLoadMore}
+            disabled={!hasMoreReviews || loadingMore}
+            threshold="50px"
+          >
             <IonInfiniteScrollContent
               loadingSpinner="crescent"
-              loadingText={t('social.loading_reviews')}
+              loadingText={loadingMore ? t('social.loading_reviews') : hasMoreReviews ? t('social.loading_reviews') : t('social.no_more_reviews')}
             />
           </IonInfiniteScroll>
+          
+
         </div>
       )}
 
