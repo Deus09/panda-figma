@@ -114,7 +114,7 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
         {/* Back Button */}
         <button
           onClick={closeModal}
-          className="absolute top-4 left-4 z-10 w-6 h-6 flex items-center justify-center"
+          className="absolute top-12 left-4 z-10 w-6 h-6 flex items-center justify-center"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M12 19L5 12L12 5" stroke="#F8F8FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
