@@ -10,7 +10,13 @@
     "tailwind:build": "postcss src/index.css -o src/tailwind.output.css",
     "test.e2e": "cypress run",
     "test.unit": "vitest",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:playwright": "playwright test",
+    "test:playwright:ui": "playwright test --ui",
+    "test:playwright:debug": "playwright test --debug",
+    "test:playwright:trace": "playwright test --trace on",
+    "test:playwright:report": "playwright show-report",
+    "test:playwright:install": "playwright install"
   },
   "dependencies": {
     "@capacitor/app": "7.0.1",
@@ -35,6 +41,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "7.4.2",
+    "@playwright/test": "^1.54.2",
     "@testing-library/dom": ">=7.21.4",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^16.2.0",
