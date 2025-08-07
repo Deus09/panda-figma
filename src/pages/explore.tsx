@@ -36,6 +36,9 @@ const Explore: React.FC = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
+  // Scroll pozisyonu koruma için ref
+  const contentRef = React.useRef<HTMLIonContentElement>(null);
+  
   // Search states
   const [searchResults, setSearchResults] = useState<TMDBMultiSearchResponse>({
     movies: [],
@@ -168,14 +171,23 @@ const Explore: React.FC = () => {
   };
 
   const loadMoviesByGenre = async (genreId: number, page: number = 1) => {
-    setGenreLoading(true);
+    if (page === 1) {
+      setGenreLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
     setError(null);
+    
     try {
       const data = await getMoviesByGenre(genreId, page);
       if (page === 1) {
         setGenreResults(data.results);
       } else {
-        setGenreResults(prev => [...prev, ...data.results]);
+        // Yeni verileri eklerken React batch update kullan
+        setGenreResults(prev => {
+          const newResults = [...prev, ...data.results];
+          return newResults;
+        });
       }
       setSelectedGenre(genreId);
       setCurrentPage(data.page);
@@ -184,20 +196,32 @@ const Explore: React.FC = () => {
       setError('Failed to load movies by genre');
       console.error('Error loading movies by genre:', err);
     } finally {
-      setGenreLoading(false);
-      setIsLoadingMore(false);
+      if (page === 1) {
+        setGenreLoading(false);
+      } else {
+        setIsLoadingMore(false);
+      }
     }
   };
 
   const loadSeriesByGenre = async (genreId: number, page: number = 1) => {
-    setGenreLoading(true);
+    if (page === 1) {
+      setGenreLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
     setError(null);
+    
     try {
       const data = await getSeriesByGenre(genreId, page);
       if (page === 1) {
         setGenreResults(data.results);
       } else {
-        setGenreResults(prev => [...prev, ...data.results]);
+        // Yeni verileri eklerken React batch update kullan
+        setGenreResults(prev => {
+          const newResults = [...prev, ...data.results];
+          return newResults;
+        });
       }
       setSelectedGenre(genreId);
       setCurrentPage(data.page);
@@ -206,8 +230,11 @@ const Explore: React.FC = () => {
       setError('Failed to load series by genre');
       console.error('Error loading series by genre:', err);
     } finally {
-      setGenreLoading(false);
-      setIsLoadingMore(false);
+      if (page === 1) {
+        setGenreLoading(false);
+      } else {
+        setIsLoadingMore(false);
+      }
     }
   };
 
@@ -354,7 +381,7 @@ const Explore: React.FC = () => {
 
   return (
     <IonPage className={styles.explorePage}>
-      <IonContent className={styles.exploreContent} scrollEvents={true}>
+      <IonContent ref={contentRef} className={styles.exploreContent} scrollEvents={true}>
         <TopHeaderBar title={`Cinenar ${t('navigation.explore')}`} />
         <div className="flex flex-col items-center w-full pt-6 pb-2 px-0">
           {/* Searchbar */}
@@ -430,7 +457,7 @@ const Explore: React.FC = () => {
         <div className="flex flex-col items-center pb-24">
           {!isSearchMode ? (
             // Normal Keşif Modu veya Genre Filtresi
-            currentLoading ? (
+            currentLoading && currentData.length === 0 ? (
               <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
                 {Array.from({ length: 9 }, (_, index) => (
                   <SkeletonLoader key={index} type="poster" />
@@ -442,17 +469,23 @@ const Explore: React.FC = () => {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
-                  {currentData.map((item) => (
+                <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2" style={{ 
+                  willChange: 'contents', 
+                  contain: 'layout style paint',
+                  minHeight: 'fit-content' 
+                }}>
+                  {currentData.map((item, index) => (
                     <div
-                      key={item.id}
+                      key={`${item.id}-${index}`}
                       className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
                       onClick={() => activeTab === 'filmler' || isGenreMode ? handleMovieClick(item.id) : handleSeriesClick(item.id)}
+                      style={{ contain: 'layout style paint' }}
                     >
                       <img
                         src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
                         alt={item.title}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     </div>
                   ))}
@@ -462,7 +495,8 @@ const Explore: React.FC = () => {
                 {isGenreMode && (
                   <IonInfiniteScroll
                     onIonInfinite={loadMoreData}
-                    threshold="100px"
+                    threshold="200px"
+                    position="bottom"
                     disabled={currentPage >= totalPages || isLoadingMore}
                   >
                     <IonInfiniteScrollContent
