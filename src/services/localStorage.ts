@@ -33,6 +33,14 @@ export interface UserPreferences {
   darkMode: boolean;
   language: string;
   defaultView: 'watched' | 'watchlist';
+  fcmToken?: string;
+  notificationPreferences?: {
+    enabled: boolean;
+    newReleases: boolean;
+    watchlistReminders: boolean;
+    seasonFinales: boolean;
+    recommendations: boolean;
+  };
 }
 
 export interface Badge {

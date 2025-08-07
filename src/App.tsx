@@ -12,6 +12,8 @@ import Lists from './pages/lists';
 import Profile from './pages/profile';
 import Social from './pages/social';
 import AuthCallback from './pages/AuthCallback';
+import NotificationSettingsPage from './pages/NotificationSettingsPage';
+import PushNotificationTestPage from './pages/PushNotificationTestPage';
 import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
@@ -19,6 +21,7 @@ import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
 import SeriesDetailPage from './pages/SeriesDetailPage';
+import { initializePushNotifications } from './services/pushNotifications';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -94,6 +97,18 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
 
+    // Push notifications initialization
+    const initPushNotifications = async () => {
+      try {
+        await initializePushNotifications();
+        console.log('✅ Push notifications initialized successfully');
+      } catch (error) {
+        console.error('❌ Failed to initialize push notifications:', error);
+      }
+    };
+
+    initPushNotifications();
+
     // Google OAuth callback handling - sadece ana sayfada çalışsın
     const handleOAuthCallback = async () => {
       const hash = window.location.hash;
@@ -115,38 +130,92 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <ModalProvider>
-        <IonApp className="bg-background text-foreground">
-          <IonReactRouter>
-            <Route exact path="/home">
-              <Home />
-            </Route>
-            <Route exact path="/explore">
-              <Explore />
-            </Route>
-            <Route exact path="/lists">
-              <Lists />
-            </Route>
-            <Route exact path="/social">
-              <Social />
-            </Route>
-            <Route exact path="/profile">
-              <Profile />
-            </Route>
-            <Route exact path="/auth/callback">
-              <AuthCallback />
-            </Route>
-            <Route exact path="/test-auth">
-              <AuthCallback />
-            </Route>
-            <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
-            <Route exact path="/">
-              <Redirect to="/home" />
-            </Route>
-          </IonReactRouter>
-          <ModalRenderer />
-        </IonApp>
+        <AppContent />
       </ModalProvider>
     </AuthProvider>
+  );
+};
+
+const AppContent: React.FC = () => {
+  const { openModal } = useModal();
+
+  useEffect(() => {
+    // Push notification event listeners
+    const handlePushNotificationReceived = (event: CustomEvent) => {
+      console.log('Push notification received while app is open:', event.detail);
+      // Burada toast notification gösterebiliriz
+    };
+
+    const handlePushNotificationAction = (event: CustomEvent) => {
+      console.log('Push notification action:', event.detail);
+      const { data } = event.detail;
+      
+      if (data.deepLink) {
+        // Deep link işleme
+        console.log('Handling deep link:', data.deepLink);
+      }
+    };
+
+    const handlePushNotificationContent = (event: CustomEvent) => {
+      console.log('Opening content from push notification:', event.detail);
+      const { contentType, id, tmdbId } = event.detail;
+      
+      // Modal ile content'i aç
+      if (contentType && id) {
+        openModal(contentType, id);
+      }
+    };
+
+    // Event listener'ları ekle
+    document.addEventListener('push-notification-received', handlePushNotificationReceived);
+    document.addEventListener('push-notification-action', handlePushNotificationAction);
+    document.addEventListener('push-notification-content', handlePushNotificationContent);
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('push-notification-received', handlePushNotificationReceived);
+      document.removeEventListener('push-notification-action', handlePushNotificationAction);
+      document.removeEventListener('push-notification-content', handlePushNotificationContent);
+    };
+  }, [openModal]);
+
+  return (
+    <IonApp className="bg-background text-foreground">
+      <IonReactRouter>
+        <Route exact path="/home">
+          <Home />
+        </Route>
+        <Route exact path="/explore">
+          <Explore />
+        </Route>
+        <Route exact path="/lists">
+          <Lists />
+        </Route>
+        <Route exact path="/social">
+          <Social />
+        </Route>
+        <Route exact path="/profile">
+          <Profile />
+        </Route>
+        <Route exact path="/notifications">
+          <NotificationSettingsPage />
+        </Route>
+        <Route exact path="/push-test">
+          <PushNotificationTestPage />
+        </Route>
+        <Route exact path="/auth/callback">
+          <AuthCallback />
+        </Route>
+        <Route exact path="/test-auth">
+          <AuthCallback />
+        </Route>
+        <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
+        <Route exact path="/">
+          <Redirect to="/home" />
+        </Route>
+      </IonReactRouter>
+      <ModalRenderer />
+    </IonApp>
   );
 };
 

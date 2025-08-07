@@ -1047,6 +1047,21 @@ const Profile: React.FC = () => {
             </div>
           )}
 
+          {/* Bildirim Ayarları Butonu - Kullanıcı giriş yapmışsa göster */}
+          {user && !isEditing && (
+            <div className="mt-4">
+              <button
+                onClick={() => window.location.href = '/notifications'}
+                className="w-full bg-[#333] hover:bg-[#444] text-white py-3 rounded-xl font-medium transition-colors flex items-center justify-center space-x-2 border border-[#444]"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7A7,7 0 0,1 20,14V16A1,1 0 0,0 21,17H22V19H2V17H3A1,1 0 0,0 4,16V14A7,7 0 0,1 11,7V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M6,14A5,5 0 0,0 11,9H13A5,5 0 0,0 18,14V16H6V14M10.5,19A1.5,1.5 0 0,0 12,20.5A1.5,1.5 0 0,0 13.5,19"/>
+                </svg>
+                <span>{t('profile.notification_settings')}</span>
+              </button>
+            </div>
+          )}
+
           {/* Çıkış Yap Butonu - Kullanıcı giriş yapmışsa göster */}
           {user && !isEditing && (
             <div className="mt-4 pt-4 border-t border-[#333]">
