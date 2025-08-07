@@ -429,5 +429,21 @@
     "ai_working": "AI is working...",
     "ai_success": "AI suggestions ready!",
     "ai_error": "Error getting AI suggestions"
+  },
+  "network": {
+    "offline": "No Internet Connection",
+    "online": "Online",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "wifi": "WiFi",
+    "cellular": "Cellular",
+    "connection_restored": "Internet connection restored",
+    "connection_lost": "Internet connection lost",
+    "network_error": "Network error",
+    "no_connection": "No internet connection. Please check your connection.",
+    "timeout_error": "Connection timed out. Please try again.",
+    "server_error": "Unable to connect to server. Please try again later.",
+    "retry": "Retry",
+    "using_cached_data": "Showing cached data"
   }
 }

@@ -17,10 +17,13 @@ import PushNotificationTestPage from './pages/PushNotificationTestPage';
 import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
+import { NetworkProvider } from './context/NetworkContext';
+import { OfflineIndicator } from './components/NetworkIndicator';
 import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
 import SeriesDetailPage from './pages/SeriesDetailPage';
+import NetworkTestPage from './pages/NetworkTestPage';
 import { initializePushNotifications } from './services/pushNotifications';
 
 /* Core CSS required for Ionic components to work properly */
@@ -129,9 +132,11 @@ const App: React.FC = () => {
 
   return (
     <AuthProvider>
-      <ModalProvider>
-        <AppContent />
-      </ModalProvider>
+      <NetworkProvider>
+        <ModalProvider>
+          <AppContent />
+        </ModalProvider>
+      </NetworkProvider>
     </AuthProvider>
   );
 };
@@ -181,6 +186,7 @@ const AppContent: React.FC = () => {
 
   return (
     <IonApp className="bg-background text-foreground">
+      <OfflineIndicator />
       <IonReactRouter>
         <Route exact path="/home">
           <Home />
@@ -210,6 +216,9 @@ const AppContent: React.FC = () => {
           <AuthCallback />
         </Route>
         <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
+        <Route exact path="/network-test">
+          <NetworkTestPage />
+        </Route>
         <Route exact path="/">
           <Redirect to="/home" />
         </Route>

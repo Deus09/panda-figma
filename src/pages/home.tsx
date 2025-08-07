@@ -7,6 +7,7 @@ import BottomNavBar from '../components/BottomNavBar';
 import FabAddButton from '../components/FabAddButton';
 import FilterModal from '../components/FilterModal';
 import DetailViewModal from '../components/DetailViewModal';  // 🎯 YENİ IMPORT
+import { NetworkStatusIndicator } from '../components/NetworkIndicator';
 import fabAdd from '../assets/fab-add.svg';
 import React, { useState, useEffect, useMemo } from 'react';
 import TabSegment from '../components/TabSegment';
@@ -198,8 +199,9 @@ const Home: React.FC = () => {
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <TabSegment activeTab={activeTab} onTabChange={handleTabChange} />
             </div>
-            {/* Filter button positioned on the right */}
-            <div className="flex justify-end">
+            {/* Filter button and Network indicator positioned on the right */}
+            <div className="flex items-center gap-2">
+              <NetworkStatusIndicator showWhenOnline={false} />
               <button 
                 className="w-7 h-7 rounded-full bg-card border border-border shadow-sm flex items-center justify-center transition-colors p-0" 
                 aria-label="Filter"

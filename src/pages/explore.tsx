@@ -9,6 +9,7 @@ import CategoryChip from '../components/CategoryChip';
 import BottomNavBar from '../components/BottomNavBar';
 import SkeletonLoader from '../components/SkeletonLoader';
 import AiDiscoveryModal from '../components/AiDiscoveryModal';
+import { useNetworkErrorHandler } from '../components/NetworkErrorHandler';
 import { getPopularMovies, getPopularSeries, searchAll, getMoviesByGenre, getSeriesByGenre, searchMovies, searchSeries, TMDBMovieResult, TMDBMultiSearchResponse, TMDBSearchResult, TMDBPaginatedResponse } from '../services/tmdb';
 import { useModal } from '../context/ModalContext';
 import styles from './explore.module.css';
@@ -16,6 +17,7 @@ import styles from './explore.module.css';
 const Explore: React.FC = () => {
   const { openModal } = useModal();
   const { t } = useTranslation();
+  const { handleNetworkError, NetworkErrorComponent } = useNetworkErrorHandler();
   const [activeTab, setActiveTab] = useState<'filmler' | 'series'>('filmler');
   const [movies, setMovies] = useState<TMDBMovieResult[]>([]);
   const [series, setSeries] = useState<TMDBMovieResult[]>([]);
@@ -314,7 +316,9 @@ const Explore: React.FC = () => {
       const data = await getPopularMovies();
       setMovies(data);
     } catch (err) {
-      setError('Failed to load movies');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load movies';
+      setError(errorMessage);
+      handleNetworkError(errorMessage);
       console.error('Error loading movies:', err);
     } finally {
       setLoading(false);
@@ -328,7 +332,9 @@ const Explore: React.FC = () => {
       const data = await getPopularSeries();
       setSeries(data);
     } catch (err) {
-      setError('Failed to load series');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load series';
+      setError(errorMessage);
+      handleNetworkError(errorMessage);
       console.error('Error loading series:', err);
     } finally {
       setLoading(false);
@@ -598,6 +604,9 @@ const Explore: React.FC = () => {
           open={isAiModalOpen}
           onClose={() => setIsAiModalOpen(false)}
         />
+        
+        {/* Network Error Handler */}
+        <NetworkErrorComponent />
       </IonContent>
     </IonPage>
   );

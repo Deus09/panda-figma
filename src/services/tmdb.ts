@@ -1,4 +1,5 @@
 
+import { NetworkService } from './networkService';
 
 export interface TMDBMovieResult {
   id: number;
@@ -154,6 +155,38 @@ export interface TMDBReviewsResponse {
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'your-api-key-here';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
+// Network aware API wrapper
+const fetchWithNetworkCheck = async (url: string, options?: RequestInit): Promise<Response> => {
+  const networkStatus = await NetworkService.checkNetworkForApiCall();
+  
+  if (!networkStatus.canMakeRequest) {
+    throw new Error('No network connection available. Please check your internet connection.');
+  }
+  
+  // Bağlantı tipine göre timeout ayarla
+  const quality = NetworkService.getDataQualityRecommendation(networkStatus.networkType);
+  const timeout = quality === 'low' ? 15000 : quality === 'medium' ? 10000 : 5000;
+  
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`Network request timeout (${timeout}ms). Please try again.`);
+    }
+    throw error;
+  }
+};
+
 // Genel önbellekleme sistemi
 const cache = new Map<string, any>();
 const cacheTimestamps = new Map<string, number>();
@@ -191,7 +224,7 @@ export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> =>
       return cached;
     }
 
-    const response = await fetch(
+    const response = await fetchWithNetworkCheck(
       `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
     

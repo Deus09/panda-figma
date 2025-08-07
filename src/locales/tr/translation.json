@@ -429,5 +429,21 @@
     "ai_working": "Yapay zeka çalışıyor...",
     "ai_success": "Yapay zeka önerileri hazır!",
     "ai_error": "Yapay zeka önerisi alınırken hata oluştu"
+  },
+  "network": {
+    "offline": "İnternet Bağlantısı Yok",
+    "online": "Çevrimiçi",
+    "connected": "Bağlı",
+    "disconnected": "Bağlantı Kesildi",
+    "wifi": "WiFi",
+    "cellular": "Mobil Veri",
+    "connection_restored": "İnternet bağlantısı yeniden kuruldu",
+    "connection_lost": "İnternet bağlantısı kesildi",
+    "network_error": "Ağ hatası",
+    "no_connection": "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.",
+    "timeout_error": "Bağlantı zaman aşımına uğradı. Lütfen tekrar deneyin.",
+    "server_error": "Sunucuya bağlanılamıyor. Lütfen daha sonra tekrar deneyin.",
+    "retry": "Tekrar Dene",
+    "using_cached_data": "Önbelleğe alınmış veriler gösteriliyor"
   }
 }
