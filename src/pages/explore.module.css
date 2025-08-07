@@ -26,4 +26,32 @@ ion-page {
 :global(.ion-content) {
   --background: #0C1117 !important;
   background-color: #0C1117 !important;
+}
+
+/* Swiper Virtualized Grid Styles */
+:global(.virtualizedMovieSwiper) {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+:global(.virtualizedMovieSwiper .swiper-wrapper) {
+  background: transparent !important;
+}
+
+:global(.virtualizedMovieSwiper .swiper-slide) {
+  background: transparent !important;
+  opacity: 1 !important;
+  transform: none !important;
+  will-change: transform;
+}
+
+/* Optimizasyon için Swiper sanallaştırma stilleri */
+:global(.virtualizedMovieSwiper .swiper-virtual-wrapper) {
+  background: transparent !important;
+}
+
+/* Scroll performansı için optimizasyon */
+:global(.virtualizedMovieSwiper) {
+  contain: layout style paint;
+  transform: translateZ(0);
 } 

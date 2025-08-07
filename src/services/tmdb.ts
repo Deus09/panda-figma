@@ -314,21 +314,35 @@ export const getMovieCast = async (movieId: number): Promise<TMDBCastMember[]> =
 
 export const getPopularMovies = async (): Promise<TMDBMovieResult[]> => {
   try {
-    const response = await fetch(
-      `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+    // 5 sayfa çekerek yaklaşık 100 film elde ediyoruz (20 film/sayfa)
+    const pages = [1, 2, 3, 4, 5];
+    const allMovies: TMDBMovieResult[] = [];
+    
+    // Parallel API çağrıları yaparak performansı artırıyoruz
+    const promises = pages.map(page => 
+      fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`)
     );
     
-    if (!response.ok) {
-      throw new Error(`Failed to fetch popular movies: ${response.status}`);
+    const responses = await Promise.all(promises);
+    
+    // Tüm response'ları kontrol et ve verileri birleştir
+    for (const response of responses) {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch popular movies: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const mappedMovies = (data.results || []).map((movie: any) => ({
+        id: movie.id,
+        title: movie.title,
+        release_date: movie.release_date,
+        poster_path: movie.poster_path
+      }));
+      
+      allMovies.push(...mappedMovies);
     }
     
-    const data = await response.json();
-    return (data.results || []).map((movie: any) => ({
-      id: movie.id,
-      title: movie.title,
-      release_date: movie.release_date,
-      poster_path: movie.poster_path
-    }));
+    return allMovies;
   } catch (error) {
     console.error('Error fetching popular movies:', error);
     throw new Error('Failed to load popular movies. Please try again.');
@@ -393,22 +407,36 @@ export const getSeriesByGenre = async (genreId: number, page: number = 1): Promi
 
 export const getPopularSeries = async (): Promise<TMDBMovieResult[]> => {
   try {
-    const response = await fetch(
-      `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+    // 5 sayfa çekerek yaklaşık 100 dizi elde ediyoruz (20 dizi/sayfa)
+    const pages = [1, 2, 3, 4, 5];
+    const allSeries: TMDBMovieResult[] = [];
+    
+    // Parallel API çağrıları yaparak performansı artırıyoruz
+    const promises = pages.map(page => 
+      fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`)
     );
     
-    if (!response.ok) {
-      throw new Error(`Failed to fetch popular series: ${response.status}`);
+    const responses = await Promise.all(promises);
+    
+    // Tüm response'ları kontrol et ve verileri birleştir
+    for (const response of responses) {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch popular series: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      // TV series results have different structure, map them to our interface
+      const mappedSeries = (data.results || []).map((series: any) => ({
+        id: series.id,
+        title: series.name, // TV series use 'name' instead of 'title'
+        release_date: series.first_air_date, // TV series use 'first_air_date'
+        poster_path: series.poster_path
+      }));
+      
+      allSeries.push(...mappedSeries);
     }
     
-    const data = await response.json();
-    // TV series results have different structure, map them to our interface
-    return (data.results || []).map((series: any) => ({
-      id: series.id,
-      title: series.name, // TV series use 'name' instead of 'title'
-      release_date: series.first_air_date, // TV series use 'first_air_date'
-      poster_path: series.poster_path
-    }));
+    return allSeries;
   } catch (error) {
     console.error('Error fetching popular series:', error);
     throw new Error('Failed to load popular series. Please try again.');

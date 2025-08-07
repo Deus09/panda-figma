@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IonContent, IonPage, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
+import { IonContent, IonPage } from '@ionic/react';
 import TopHeaderBar from '../components/TopHeaderBar';
 import ExploreTabSegment from '../components/ExploreTabSegment';
 import SearchTabSegment from '../components/SearchTabSegment';
@@ -40,6 +40,11 @@ const Explore: React.FC = () => {
   
   // Scroll pozisyonu koruma için ref
   const contentRef = React.useRef<HTMLIonContentElement>(null);
+  const gridContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Infinite scroll için intersection observer
+  const loadingRef = useRef<HTMLDivElement>(null);
+  const isLoadingRef = useRef<boolean>(false);
   
   // Search states
   const [searchResults, setSearchResults] = useState<TMDBMultiSearchResponse>({
@@ -278,12 +283,12 @@ const Explore: React.FC = () => {
   };
 
   // Infinite scroll için veri yükleme fonksiyonu
-  const loadMoreData = async (event: any) => {
-    if (isLoadingMore || currentPage >= totalPages || !selectedGenre || !isGenreMode) {
-      event.target.complete();
+  const loadMoreData = useCallback(async () => {
+    if (isLoadingRef.current || currentPage >= totalPages || !selectedGenre || !isGenreMode) {
       return;
     }
 
+    isLoadingRef.current = true;
     setIsLoadingMore(true);
     const nextPage = currentPage + 1;
     
@@ -305,9 +310,33 @@ const Explore: React.FC = () => {
     } catch (error) {
       console.error('Error loading more data:', error);
     } finally {
-      event.target.complete();
+      isLoadingRef.current = false;
+      setIsLoadingMore(false);
     }
-  };
+  }, [currentPage, totalPages, selectedGenre, isGenreMode, search, activeTab, MOVIE_GENRES, SERIES_GENRES]);
+
+  // Intersection Observer için infinite scroll
+  useEffect(() => {
+    if (!isGenreMode || !loadingRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && !isLoadingRef.current && currentPage < totalPages) {
+          loadMoreData();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '200px', // 200px önce yükleme başlasın
+        threshold: 0.1
+      }
+    );
+
+    observer.observe(loadingRef.current);
+
+    return () => observer.disconnect();
+  }, [isGenreMode, currentPage, totalPages, loadMoreData]);
 
   const loadMovies = async () => {
     setLoading(true);
@@ -475,6 +504,7 @@ const Explore: React.FC = () => {
               </div>
             ) : (
               <>
+                {/* Normal Grid Yapısı - Geçici olarak Swiper yerine */}
                 <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2" style={{ 
                   willChange: 'contents', 
                   contain: 'layout style paint',
@@ -488,28 +518,35 @@ const Explore: React.FC = () => {
                       style={{ contain: 'layout style paint' }}
                     >
                       <img
-                        src={item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
-                        alt={item.title}
+                        src={item.poster_path ? `https://image.tmdb.org/t/p/w342${item.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                        alt={item.title || 'Movie'}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://placehold.co/90x135?text=No+Image';
+                        }}
                       />
                     </div>
                   ))}
                 </div>
                 
-                {/* Infinite Scroll - Sadece genre modunda göster */}
-                {isGenreMode && (
-                  <IonInfiniteScroll
-                    onIonInfinite={loadMoreData}
-                    threshold="200px"
-                    position="bottom"
-                    disabled={currentPage >= totalPages || isLoadingMore}
+                {/* Infinite Scroll Loading Indicator - Sadece genre modunda göster */}
+                {isGenreMode && currentPage < totalPages && (
+                  <div 
+                    ref={loadingRef}
+                    className="flex justify-center py-6"
                   >
-                    <IonInfiniteScrollContent
-                      loadingSpinner="bubbles"
-                      loadingText={t('common.loading')}
-                    />
-                  </IonInfiniteScroll>
+                    {isLoadingMore ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-500"></div>
+                        <span className="text-gray-400 font-poppins">Yükleniyor...</span>
+                      </div>
+                    ) : (
+                      <div className="text-gray-500 font-poppins text-sm">
+                        Scroll yaparak daha fazla içerik yükleyin
+                      </div>
+                    )}
+                  </div>
                 )}
               </>
             )
@@ -522,51 +559,61 @@ const Explore: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px] max-w-[332px] mx-auto mt-2">
-                {/* Film Sonuçları */}
-                {filteredResults.movies.map((movie) => (
-                  <div
-                    key={`movie-${movie.id}`}
-                    className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
-                    onClick={() => handleMovieClick(movie.id)}
-                  >
-                    <img
-                      src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
-                      alt={movie.title}
-                      className="w-full h-full object-cover"
+              <div className="max-w-[332px] mx-auto mt-2">
+                <div className="grid grid-cols-3 gap-x-[18px] gap-y-[18px]">
+                  {/* Film Sonuçları */}
+                  {filteredResults.movies.map((movie) => (
+                    <div
+                      key={`movie-${movie.id}`}
+                      className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
+                      onClick={() => handleMovieClick(movie.id)}
+                    >
+                      <img
+                        src={movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                        alt={movie.title || 'Movie'}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://placehold.co/90x135?text=No+Image';
+                        }}
+                      />
+                    </div>
+                  ))}
+                  
+                  {/* Dizi Sonuçları */}
+                  {filteredResults.series.map((series) => (
+                    <div
+                      key={`series-${series.id}`}
+                      className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
+                      onClick={() => handleSeriesClick(series.id)}
+                    >
+                      <img
+                        src={series.poster_path ? `https://image.tmdb.org/t/p/w342${series.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
+                        alt={series.name || series.title || 'Series'}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://placehold.co/90x135?text=No+Image';
+                        }}
+                      />
+                    </div>
+                  ))}
+                  
+                  {/* Oyuncu Sonuçları */}
+                  {filteredResults.persons.map((person) => (
+                    <PersonCard
+                      key={`person-${person.id}`}
+                      person={person}
+                      onClick={handlePersonClick}
                     />
-                  </div>
-                ))}
-                
-                {/* Dizi Sonuçları */}
-                {filteredResults.series.map((series) => (
-                  <div
-                    key={`series-${series.id}`}
-                    className="w-[90px] h-[135px] rounded-[10px] overflow-hidden cursor-pointer hover:opacity-80 transition-opacity bg-gray-800"
-                    onClick={() => handleSeriesClick(series.id)}
-                  >
-                    <img
-                      src={series.poster_path ? `https://image.tmdb.org/t/p/w500${series.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}
-                      alt={series.name || series.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ))}
-                
-                {/* Oyuncu Sonuçları */}
-                {filteredResults.persons.map((person) => (
-                  <PersonCard
-                    key={`person-${person.id}`}
-                    person={person}
-                    onClick={handlePersonClick}
-                  />
-                ))}
+                  ))}
+                </div>
                 
                 {/* Sonuç bulunamadı */}
                 {filteredResults.movies.length === 0 && 
                  filteredResults.series.length === 0 && 
                  filteredResults.persons.length === 0 && (
-                  <div className="col-span-3 text-center text-gray-400 py-8">
+                  <div className="text-center text-gray-400 py-8">
                     <p className="font-poppins">{t('search.no_results')}</p>
                   </div>
                 )}
