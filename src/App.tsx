@@ -1,19 +1,25 @@
 import { Redirect, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import {
   IonApp,
   setupIonicReact,
-  IonModal
+  IonModal,
+  IonSpinner
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/home';
-import Explore from './pages/explore';
-import Lists from './pages/lists';
-import Profile from './pages/profile';
-import Social from './pages/social';
-import AuthCallback from './pages/AuthCallback';
-import NotificationSettingsPage from './pages/NotificationSettingsPage';
-import PushNotificationTestPage from './pages/PushNotificationTestPage';
+
+// Lazy-loaded pages for code splitting
+const Home = lazy(() => import('./pages/home'));
+const Explore = lazy(() => import('./pages/explore'));
+const Lists = lazy(() => import('./pages/lists'));
+const Profile = lazy(() => import('./pages/profile'));
+const Social = lazy(() => import('./pages/social'));
+const AuthCallback = lazy(() => import('./pages/AuthCallback'));
+const NotificationSettingsPage = lazy(() => import('./pages/NotificationSettingsPage'));
+const PushNotificationTestPage = lazy(() => import('./pages/PushNotificationTestPage'));
+const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage'));
+const NetworkTestPage = lazy(() => import('./pages/NetworkTestPage'));
+
 import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
 import { AuthProvider } from './context/AuthContext';
@@ -22,8 +28,6 @@ import { OfflineIndicator } from './components/NetworkIndicator';
 import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
-import SeriesDetailPage from './pages/SeriesDetailPage';
-import NetworkTestPage from './pages/NetworkTestPage';
 import { initializePushNotifications } from './services/pushNotifications';
 
 /* Core CSS required for Ionic components to work properly */
@@ -188,40 +192,46 @@ const AppContent: React.FC = () => {
     <IonApp className="bg-background text-foreground">
       <OfflineIndicator />
       <IonReactRouter>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/explore">
-          <Explore />
-        </Route>
-        <Route exact path="/lists">
-          <Lists />
-        </Route>
-        <Route exact path="/social">
-          <Social />
-        </Route>
-        <Route exact path="/profile">
-          <Profile />
-        </Route>
-        <Route exact path="/notifications">
-          <NotificationSettingsPage />
-        </Route>
-        <Route exact path="/push-test">
-          <PushNotificationTestPage />
-        </Route>
-        <Route exact path="/auth/callback">
-          <AuthCallback />
-        </Route>
-        <Route exact path="/test-auth">
-          <AuthCallback />
-        </Route>
-        <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
-        <Route exact path="/network-test">
-          <NetworkTestPage />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
+        <Suspense fallback={
+          <div className="suspense-fallback">
+            <IonSpinner name="crescent" />
+          </div>
+        }>
+          <Route exact path="/home">
+            <Home />
+          </Route>
+          <Route exact path="/explore">
+            <Explore />
+          </Route>
+          <Route exact path="/lists">
+            <Lists />
+          </Route>
+          <Route exact path="/social">
+            <Social />
+          </Route>
+          <Route exact path="/profile">
+            <Profile />
+          </Route>
+          <Route exact path="/notifications">
+            <NotificationSettingsPage />
+          </Route>
+          <Route exact path="/push-test">
+            <PushNotificationTestPage />
+          </Route>
+          <Route exact path="/auth/callback">
+            <AuthCallback />
+          </Route>
+          <Route exact path="/test-auth">
+            <AuthCallback />
+          </Route>
+          <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
+          <Route exact path="/network-test">
+            <NetworkTestPage />
+          </Route>
+          <Route exact path="/">
+            <Redirect to="/home" />
+          </Route>
+        </Suspense>
       </IonReactRouter>
       <ModalRenderer />
     </IonApp>

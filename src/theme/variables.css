@@ -92,3 +92,19 @@ ion-button.button-solid {
   --color-focused: hsl(0 0% 0%) !important;
   --color-hover: hsl(0 0% 0%) !important;
 }
+
+/* Suspense Fallback Styles */
+.suspense-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background: hsl(var(--background));
+}
+
+.suspense-fallback ion-spinner {
+  --color: hsl(var(--primary));
+  width: 32px;
+  height: 32px;
+}
