@@ -1,19 +1,20 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
 import App from './App';
 import './index.css';
-import './i18n'; // i18n konfigürasyonunu aktif et
+import { initializeI18n } from './i18n'; // i18n dinamik başlatma
 
-const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
-);
+// i18n'i başlat ve app'i render et
+const startApp = async () => {
+  await initializeI18n();
+  
+  const container = document.getElementById('root');
+  const root = createRoot(container!);
+  root.render(
+    <React.StrictMode>
+  <App />
+    </React.StrictMode>
+  );
+};
+
+startApp().catch(console.error);

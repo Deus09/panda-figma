@@ -445,5 +445,22 @@
     "server_error": "Sunucuya bağlanılamıyor. Lütfen daha sonra tekrar deneyin.",
     "retry": "Tekrar Dene",
     "using_cached_data": "Önbelleğe alınmış veriler gösteriliyor"
+  },
+  "errors": {
+    "title": "Beklenmeyen Hata",
+    "subtitle": "Üzgünüz, bir şeyler yanlış gitti. Tekrar deneyin veya ana sayfaya dönün.",
+    "retry": "Yeniden Dene", 
+    "go_home": "Ana Sayfaya Dön",
+    "report": "Hata Bildir",
+    "refresh": "Sayfayı Yenile",
+    "clear_cache": "Önbelleği Temizle",
+    "error_id": "Hata ID: {{id}}",
+    "network_error": "İnternet bağlantısı sorunu",
+    "api_error": "Sunucu hatası",
+    "generic_error": "Bilinmeyen hata",
+    "copied_to_clipboard": "Hata raporu panoya kopyalandı",
+    "details_toggle": "Teknik Detayları Göster/Gizle",
+    "session_expired": "Oturumunuzun süresi doldu",
+    "access_denied": "Erişim reddedildi"
   }
 }

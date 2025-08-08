@@ -29,6 +29,8 @@ import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
 import { initializePushNotifications } from './services/pushNotifications';
+import { useGlobalErrorHandler } from './hooks/useGlobalErrorHandler';
+import GlobalErrorBoundary from './components/errors/GlobalErrorBoundary';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -92,6 +94,13 @@ const ModalRenderer: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  // Initialize global error handling
+  useGlobalErrorHandler({
+    onError: (error, context) => {
+      console.warn('Global error caught:', error.message, context);
+    }
+  });
+
   useEffect(() => {
     // Dark mode theme system initialization
     const preferences = LocalStorageService.getUserPreferences();
@@ -190,50 +199,52 @@ const AppContent: React.FC = () => {
 
   return (
     <IonApp className="bg-background text-foreground">
-      <OfflineIndicator />
-      <IonReactRouter>
-        <Suspense fallback={
-          <div className="suspense-fallback">
-            <IonSpinner name="crescent" />
-          </div>
-        }>
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path="/explore">
-            <Explore />
-          </Route>
-          <Route exact path="/lists">
-            <Lists />
-          </Route>
-          <Route exact path="/social">
-            <Social />
-          </Route>
-          <Route exact path="/profile">
-            <Profile />
-          </Route>
-          <Route exact path="/notifications">
-            <NotificationSettingsPage />
-          </Route>
-          <Route exact path="/push-test">
-            <PushNotificationTestPage />
-          </Route>
-          <Route exact path="/auth/callback">
-            <AuthCallback />
-          </Route>
-          <Route exact path="/test-auth">
-            <AuthCallback />
-          </Route>
-          <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
-          <Route exact path="/network-test">
-            <NetworkTestPage />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/home" />
-          </Route>
-        </Suspense>
-      </IonReactRouter>
-      <ModalRenderer />
+      <GlobalErrorBoundary>
+        <OfflineIndicator />
+        <IonReactRouter>
+          <Suspense fallback={
+            <div className="suspense-fallback">
+              <IonSpinner name="crescent" />
+            </div>
+          }>
+            <Route exact path="/home">
+              <Home />
+            </Route>
+            <Route exact path="/explore">
+              <Explore />
+            </Route>
+            <Route exact path="/lists">
+              <Lists />
+            </Route>
+            <Route exact path="/social">
+              <Social />
+            </Route>
+            <Route exact path="/profile">
+              <Profile />
+            </Route>
+            <Route exact path="/notifications">
+              <NotificationSettingsPage />
+            </Route>
+            <Route exact path="/push-test">
+              <PushNotificationTestPage />
+            </Route>
+            <Route exact path="/auth/callback">
+              <AuthCallback />
+            </Route>
+            <Route exact path="/test-auth">
+              <AuthCallback />
+            </Route>
+            <Route exact path="/series/:seriesId" component={SeriesDetailPage} />
+            <Route exact path="/network-test">
+              <NetworkTestPage />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </Suspense>
+        </IonReactRouter>
+        <ModalRenderer />
+      </GlobalErrorBoundary>
     </IonApp>
   );
 };

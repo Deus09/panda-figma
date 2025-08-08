@@ -151,6 +151,42 @@ Notlar:
 - Production ortamında CI pipeline’da `.env` veya gizli yönetimi (örn. GitHub Actions Secrets) aracılığıyla enjekte edilmelidir.
 - Daha ileri güvenlik için backend proxy katmanı eklenebilir (yazma/özel istekler için gereklidir).
 
+## Performance & Bundle Optimization
+
+Uygulama optimize edilmiş chunk stratejisi kullanır:
+
+### Bundle Analizi
+```bash
+# Bundle boyutlarını ve eşikleri kontrol et
+npm run analyze:size
+
+# Detaylı görselleştirme için
+npm run build:analyze
+npm run analyze:open
+```
+
+### Size Limits
+- **Ana chunk**: < 250 KB gzip (şu an: ~80 KB)
+- **Toplam JS**: < 800 KB gzip
+- **i18n**: Dinamik yükleme (dil başına ~5 KB)
+
+### Kod Bölme Stratejisi
+- `react-vendors`: React ekosistemi
+- `ionic-core`: Ionic bileşenleri
+- `capacitor`: Native plugin'ler
+- `supabase`: Backend istemcisi
+- `i18n`: Çeviri yönetimi
+- Route-level splitting: Her sayfa ayrı chunk
+
+### Performans İzleme
+```bash
+# CI size kontrolü
+npm run size:check
+
+# Development boyut raporu
+npm run build && npm run analyze:size
+```
+
 ## Project Structure
 
 ```

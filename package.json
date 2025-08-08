@@ -5,16 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-  "prebuild": "node scripts/check-env.cjs",
-  "build": "npm run prebuild && vite build",
+    "prebuild": "node scripts/check-env.cjs",
+    "build": "npm run prebuild && vite build",
+    "build:analyze": "npm run build && npm run analyze:size",
     "serve": "vite preview",
     "tailwind:build": "postcss src/index.css -o src/tailwind.output.css",
+    "analyze:size": "node scripts/analyze-bundle.cjs",
+    "analyze:open": "open dist/bundle-analyzer.html || xdg-open dist/bundle-analyzer.html || start dist/bundle-analyzer.html",
+    "size:check": "size-limit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:unit:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-  "pretest:e2e": "playwright install chromium webkit",
-  "test:e2e:deps": "playwright install-deps",
+    "pretest:e2e": "playwright install chromium webkit",
+    "test:e2e:deps": "playwright install-deps",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "PWDEBUG=1 playwright test",
     "test:e2e:trace": "playwright test --trace on",
@@ -52,6 +56,7 @@
   "devDependencies": {
     "@capacitor/cli": "7.4.2",
     "@playwright/test": "^1.54.2",
+    "@size-limit/preset-app": "^11.2.0",
     "@testing-library/dom": ">=7.21.4",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^16.2.0",
@@ -73,6 +78,8 @@
     "jsdom": "^22.1.0",
     "msw": "^2.10.4",
     "postcss": "^8.5.6",
+    "rollup-plugin-visualizer": "^6.0.3",
+    "size-limit": "^11.2.0",
     "tailwindcss": "^3.4.1",
     "terser": "^5.4.0",
     "typescript": "^5.1.6",
@@ -83,5 +90,21 @@
   "overrides": {
     "rollup": "4.44.0"
   },
+  "size-limit": [
+    {
+      "name": "Main Bundle",
+      "path": "dist/assets/index-*.js",
+      "limit": "250 kB",
+      "gzip": true,
+      "running": false
+    },
+    {
+      "name": "Total JS",
+      "path": "dist/assets/*.js",
+      "limit": "800 kB",
+      "gzip": true,
+      "running": false
+    }
+  ],
   "description": "An Ionic project"
 }

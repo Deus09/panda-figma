@@ -65,7 +65,7 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/line-clamp'),
+    // @tailwindcss/line-clamp artık dahili - kaldırıldı
   ],
 };
 

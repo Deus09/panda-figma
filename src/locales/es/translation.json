@@ -429,5 +429,22 @@
     "ai_working": "IA trabajando...",
     "ai_success": "¡Sugerencias de IA listas!",
     "ai_error": "Error al obtener sugerencias de IA"
+  },
+  "errors": {
+    "title": "Algo salió mal",
+    "subtitle": "Lo sentimos, ocurrió un error inesperado. Inténtalo de nuevo o regresa al inicio.",
+    "retry": "Intentar de nuevo",
+    "go_home": "Ir al Inicio", 
+    "report": "Reportar Error",
+    "refresh": "Actualizar Página",
+    "clear_cache": "Limpiar Caché",
+    "error_id": "ID de Error: {{id}}",
+    "network_error": "Problema de conexión de red",
+    "api_error": "Error del servidor",
+    "generic_error": "Error desconocido",
+    "copied_to_clipboard": "Reporte de error copiado al portapapeles",
+    "details_toggle": "Mostrar/Ocultar Detalles Técnicos",
+    "session_expired": "Tu sesión ha expirado",
+    "access_denied": "Acceso denegado"
   }
 }

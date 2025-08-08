@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import AddButtonModal from './AddButtonModal';
+import React, { useState, lazy, Suspense } from 'react';
+const AddButtonModal = lazy(() => import('./AddButtonModal'));
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
 import ToastNotification from './ToastNotification';
@@ -69,18 +69,20 @@ const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
           />
         </svg>
       </button>
-      <AddButtonModal 
-        open={open} 
-        onClose={() => setOpen(false)} 
-        onSave={(log?: any) => {
-          if (log && log.selectedMovie && log.tmdbId) {
-            handleSave(log.selectedMovie, log.tmdbId);
-          } else {
-            handleSave();
-          }
-        }}
-        onAddMovieLog={onAddMovieLog}
-      />
+      <Suspense fallback={<div>Loading...</div>}>
+        <AddButtonModal 
+          open={open} 
+          onClose={() => setOpen(false)} 
+          onSave={(log?: any) => {
+            if (log && log.selectedMovie && log.tmdbId) {
+              handleSave(log.selectedMovie, log.tmdbId);
+            } else {
+              handleSave();
+            }
+          }}
+          onAddMovieLog={onAddMovieLog}
+        />
+      </Suspense>
       {/* Toast Notification */}
       <ToastNotification
         isOpen={showToast}

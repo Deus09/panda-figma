@@ -445,5 +445,22 @@
     "server_error": "Unable to connect to server. Please try again later.",
     "retry": "Retry",
     "using_cached_data": "Showing cached data"
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "subtitle": "We're sorry, an unexpected error occurred. Please try again or return to home.",
+    "retry": "Try Again",
+    "go_home": "Go to Home",
+    "report": "Report Error",
+    "refresh": "Refresh Page",
+    "clear_cache": "Clear Cache",
+    "error_id": "Error ID: {{id}}",
+    "network_error": "Network connection issue",
+    "api_error": "Server error",
+    "generic_error": "Unknown error",
+    "copied_to_clipboard": "Error report copied to clipboard",
+    "details_toggle": "Show/Hide Technical Details",
+    "session_expired": "Your session has expired",
+    "access_denied": "Access denied"
   }
 }
