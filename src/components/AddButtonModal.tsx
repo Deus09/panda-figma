@@ -9,6 +9,47 @@ import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
 import { MovieLogDraft } from '../types/drafts';
 
+interface SelectedItemBase {
+  id: number; // TMDB id veya episode id
+  tmdbId?: number;
+  title?: string;
+  name?: string;
+  poster?: string;
+  poster_path?: string | null;
+  media_type?: 'movie' | 'tv';
+  mediaType?: 'movie' | 'tv';
+  content_type?: 'movie' | 'tv';
+  contentType?: 'movie' | 'tv';
+  character?: string;
+  first_air_date?: string;
+  release_date?: string;
+  genre_ids?: number[];
+  adult?: boolean;
+  original_language?: string;
+  original_title?: string;
+  overview?: string;
+  popularity?: number;
+  vote_average?: number;
+  vote_count?: number;
+  backdrop_path?: string | null;
+  origin_country?: string[];
+  original_name?: string;
+  isEpisode?: boolean;
+  episode_number?: number;
+  season_number?: number;
+  air_date?: string;
+  runtime?: number;
+  seriesPoster?: string;
+  seriesName?: string;
+  // Extended episode/series selection fields
+  allSelectedEpisodes?: Array<{ id: number; episode_number: number; name?: string; still_path?: string | null }>;
+  seriesTitle?: string;
+  seasonNumber?: number; // camelCase usage in component
+  episodeNumber?: number; // camelCase usage in component
+  episodeId?: number;
+  seriesId?: string;
+}
+
 interface AddButtonModalProps {
   open: boolean;
   onClose: () => void;
@@ -56,31 +97,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   // Yeni state'ler - Akıllı veri aktarımı için
   const [title, setTitle] = useState('');
   const [poster, setPoster] = useState('');
-  interface SelectedItemBase {
-    id: number; // TMDB id veya episode id
-    tmdbId?: number;
-    title?: string;
-    name?: string;
-    poster?: string;
-    poster_path?: string | null;
-  media_type?: string; // TMDB ham alanı; daraltma mediaType üzerinden
-    mediaType?: 'movie' | 'tv';
-    contentType?: 'movie' | 'tv';
-    runtime?: number;
-    seriesId?: string;
-    seriesTitle?: string;
-    seriesPoster?: string;
-    seasonNumber?: number;
-    episodeNumber?: number;
-    episodeId?: number;
-    allSelectedEpisodes?: Array<{
-      id: number;
-      name: string;
-      episode_number: number;
-      still_path?: string | null;
-      runtime?: number | null;
-    }>;
-  }
+  
   type SelectedItem = SelectedItemBase | null;
   const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
@@ -108,10 +125,10 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       setSelectedSeason(null);
       setCheckedEpisodes(new Set());
       setSearch('');
-      setSelectedMovie(null);
-  // setSelectedMovie(null); // kaldırıldı
-  // setSelectedMovie(null);
-  // setSelectedMovie(null);
+      setSelectedItem(null);
+  // setSelectedItem(null); // kaldırıldı
+  // setSelectedItem(null);
+  // setSelectedItem(null);
       setTmdbId(null);
       setRating(0);
       setHoverRating(null);
@@ -173,7 +190,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
   const handleCancel = () => {
     setSearch('');
-    setSelectedMovie(null);
+    setSelectedItem(null);
     setTmdbId(null);
     setRating(0);
     setHoverRating(null);
@@ -227,7 +244,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     // Eğer film ise selectedMovie'yi de set et
     if (item.media_type === 'movie' || item.mediaType === 'movie') {
   // selectedMovie state kaldırıldı; item referansı yeterli
-                    // setSelectedMovie(null);
+                    
     }
     
     // Seçim yapıldıktan sonra search view'a dön ve form alanlarını aktif hale getir
@@ -573,7 +590,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                     setSelectedItem(null);
                     setTitle('');
                     setPoster('');
-                    setSelectedMovie(null);
+                    setSelectedItem(null);
                     setTmdbId(null);
                   }}
                   className="text-[#FE7743] text-sm font-medium hover:text-[#FE7743]/80"
