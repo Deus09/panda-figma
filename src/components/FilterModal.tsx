@@ -23,14 +23,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const { t } = useTranslation();
   const [tempFilters, setTempFilters] = useState<FilterOptions>(initialFilters);
 
-  // Sıfırlama fonksiyonu
-  const handleReset = () => {
-    setTempFilters({
-      contentType: 'all',
-      sortBy: 'date_desc'
-    });
-  };
-
   // Filtreleri uygulama
   const handleApply = () => {
     onApplyFilters(tempFilters);
@@ -59,22 +51,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
         </div>
 
         {/* Modal Header - Daha kompakt */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
-          <button 
-            onClick={handleReset}
-            className="text-sm font-medium text-orange-500 hover:text-orange-400 transition-colors"
-          >
-            {t('common.cancel')}
-          </button>
+        <div className="flex items-center justify-center px-4 py-3 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-gray-100">
             {t('search.filter')}
           </h2>
-          <button 
-            onClick={onDidDismiss}
-            className="text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
-          >
-            {t('common.close')}
-          </button>
         </div>
 
         {/* Modal Content - Daha kompakt spacing */}
