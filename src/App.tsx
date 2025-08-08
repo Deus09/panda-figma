@@ -23,6 +23,7 @@ const NetworkTestPage = lazy(() => import('./pages/NetworkTestPage'));
 
 import LocalStorageService from './services/localStorage';
 import { ModalProvider, useModal } from './context/ModalContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { NetworkProvider } from './context/NetworkContext';
 import { OfflineIndicator } from './components/NetworkIndicator';
@@ -50,15 +51,13 @@ import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
 /**
- * Ionic Dark Mode
+ * Ionic Dark Mode - Her zaman dark tema
  * -----------------------------------------------------
  * For more info, please see:
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+import '@ionic/react/css/palettes/dark.always.css';
 
 /* Theme variables */
 import './theme/variables.css';
@@ -103,16 +102,16 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-    // Dark mode theme system initialization
+    // Dark mode theme system initialization - Her zaman dark tema
     const preferences = LocalStorageService.getUserPreferences();
-    const isDarkMode = preferences.darkMode !== false; // Default to dark mode
     
-    // Apply dark mode class to document element
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    // Her zaman dark mode uygula
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('dark');
+    
+    // User preferences'ta darkMode'u true yap
+    const updatedPrefs = { ...preferences, darkMode: true };
+    LocalStorageService.saveUserPreferences(updatedPrefs);
 
     // Push notifications initialization - skip in development
     const initPushNotifications = async () => {
@@ -151,13 +150,15 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <AuthProvider>
-      <NetworkProvider>
-        <ModalProvider>
-          <AppContent />
-        </ModalProvider>
-      </NetworkProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <NetworkProvider>
+          <ModalProvider>
+            <AppContent />
+          </ModalProvider>
+        </NetworkProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

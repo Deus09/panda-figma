@@ -1,35 +1,36 @@
-/* YENİ TEMA KODU BAŞLANGICI */
+/* DARK TEMA - HER ZAMAN DARK TEMA */
 :root {
-  --background: 0 0% 100%;           /* Beyaz */
-  --foreground: 0 0% 15%;            /* Koyu gri */
-  --card: 0 0% 100%;                 /* Beyaz */
-  --card-foreground: 0 0% 15%;       /* Koyu gri */
-  --popover: 0 0% 100%;              /* Beyaz */
-  --popover-foreground: 0 0% 15%;    /* Koyu gri */
-  --primary: 22 93% 64%;             /* Ana Turuncu/Sarı Renk */
+  --background: 0 0% 9%;             /* Çok koyu gri */
+  --foreground: 0 0% 95%;            /* Açık gri */
+  --card: 0 0% 14%;                  /* Koyu gri */
+  --card-foreground: 0 0% 95%;       /* Açık gri */
+  --popover: 0 0% 14%;               /* Koyu gri */
+  --popover-foreground: 0 0% 95%;    /* Açık gri */
+  --primary: 22 93% 64%;             /* Ana turuncu */
   --primary-foreground: 0 0% 0%;     /* Siyah */
-  --secondary: 210 40% 95%;          /* Açık gri */
-  --secondary-foreground: 220 13% 26%; /* Koyu gri */
-  --muted: 210 40% 98%;              /* Çok açık gri */
-  --muted-foreground: 215 16% 47%;   /* Orta gri */
-  --accent: 50 50% 95%;              /* Açık sarı */
-  --accent-foreground: 30 66% 32%;   /* Koyu turuncu */
-  --destructive: 0 84% 60%;          /* Kırmızı/Hata Rengi */
+  --secondary: 0 0% 14%;             /* Koyu gri */
+  --secondary-foreground: 0 0% 95%;  /* Açık gri */
+  --muted: 0 0% 14%;                 /* Koyu gri */
+  --muted-foreground: 0 0% 65%;      /* Orta gri */
+  --accent: 30 66% 32%;              /* Koyu turuncu */
+  --accent-foreground: 50 50% 85%;   /* Açık sarı */
+  --destructive: 0 84% 60%;          /* Kırmızı */
   --destructive-foreground: 0 0% 100%; /* Beyaz */
-  --border: 214 32% 91%;             /* Açık gri kenarlık */
-  --input: 214 32% 91%;              /* Açık gri input */
+  --border: 0 0% 24%;                /* Koyu gri kenarlık */
+  --input: 0 0% 24%;                 /* Koyu gri input */
   --ring: 22 93% 64%;                /* Ana turuncu */
-  --chart-1: 22 93% 64%;
+  --chart-1: 45 80% 75%;
   --chart-2: 40 82% 55%;
-  --chart-3: 35 77% 49%;
-  --chart-4: 30 66% 32%;
-  --chart-5: 28 60% 28%;
+  --chart-3: 30 66% 32%;
+  --chart-4: 35 77% 49%;
+  --chart-5: 30 66% 32%;
   --font-sans: Poppins, ui-sans-serif, sans-serif, system-ui;
   --font-serif: "Source Serif 4", serif;
   --font-mono: Cousine, ui-monospace, monospace;
   --radius: 0.375rem;
 }
 
+/* Dark class'ı da aynı değerlere sahip */
 .dark {
   --background: 0 0% 9%;             /* Çok koyu gri */
   --foreground: 0 0% 95%;            /* Açık gri */
@@ -56,7 +57,6 @@
   --chart-4: 35 77% 49%;
   --chart-5: 30 66% 32%;
 }
-/* YENİ TEMA KODU BİTİŞİ */
 
 /* Force primary color for buttons */
 .bg-primary {

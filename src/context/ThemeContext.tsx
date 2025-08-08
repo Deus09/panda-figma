@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-type Theme = 'light' | 'dark';
+type Theme = 'dark';
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,51 +15,22 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  // localStorage'dan tema tercihini al, yoksa sistem tercihini kontrol et
+  // Her zaman dark tema kullan
   const getInitialTheme = (): Theme => {
-    try {
-      // Önce 'theme' key'ini kontrol et
-      const savedTheme = localStorage.getItem('theme') as Theme | null;
-      if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
-        return savedTheme;
-      }
-      
-      // Sonra user preferences'taki darkMode'u kontrol et
-      const userPrefsStr = localStorage.getItem('moviloi-user-preferences');
-      if (userPrefsStr) {
-        try {
-          const userPrefs = JSON.parse(userPrefsStr);
-          if (typeof userPrefs.darkMode === 'boolean') {
-            return userPrefs.darkMode ? 'dark' : 'light';
-          }
-        } catch (error) {
-          console.error('Error parsing user preferences:', error);
-        }
-      }
-      
-      // Sistem tercihini kontrol et
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-      
-      return 'light';
-    } catch (error) {
-      console.error('Error reading theme from localStorage:', error);
-      return 'light';
-    }
+    return 'dark';
   };
 
   const [theme, setThemeState] = useState<Theme>(getInitialTheme);
 
-  // Tema değiştirme fonksiyonu
+  // Tema değiştirme fonksiyonu (sadece dark tema için)
   const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
+    setThemeState('dark'); // Her zaman dark tema
   };
 
-  // Tema toggle fonksiyonu
+  // Tema toggle fonksiyonu (dark tema sabit kalır)
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+    // Her zaman dark tema kalsın
+    setTheme('dark');
   };
 
   // Tema değiştiğinde DOM'a uygula ve localStorage'a kaydet
@@ -67,20 +38,23 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     try {
       // Mevcut tema class'larını temizle
       document.documentElement.classList.remove('light', 'dark');
+      // Her zaman dark tema class'ını ekle
+      document.documentElement.classList.add('dark');
       
-      // Yeni tema class'ını ekle
-      document.documentElement.classList.add(theme);
+      // localStorage'a dark tema kaydet
+      localStorage.setItem('theme', 'dark');
       
-      // localStorage'a kaydet
-      localStorage.setItem('theme', theme);
-      
-      // User preferences'taki darkMode'u da güncelle
+      // User preferences'taki darkMode'u da true yap
       try {
         const userPrefsStr = localStorage.getItem('moviloi-user-preferences');
         if (userPrefsStr) {
           const userPrefs = JSON.parse(userPrefsStr);
-          userPrefs.darkMode = theme === 'dark';
+          userPrefs.darkMode = true;
           localStorage.setItem('moviloi-user-preferences', JSON.stringify(userPrefs));
+        } else {
+          // Eğer user preferences yoksa, darkMode: true ile oluştur
+          const defaultPrefs = { darkMode: true };
+          localStorage.setItem('moviloi-user-preferences', JSON.stringify(defaultPrefs));
         }
       } catch (prefError) {
         console.error('Error updating user preferences:', prefError);
@@ -88,28 +62,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       
       // body'ye de class ekle (eski stil uyumluluk için)
       document.body.classList.remove('light', 'dark');
-      document.body.classList.add(theme);
-      
+      document.body.classList.add('dark');
     } catch (error) {
       console.error('Error applying theme:', error);
     }
-  }, [theme]);
-
-  // Sistem tema değişikliklerini dinle
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    const handleChange = (e: MediaQueryListEvent) => {
-      // Sadece localStorage'da tema yoksa sistem tercihini uygula
-      const savedTheme = localStorage.getItem('theme');
-      if (!savedTheme) {
-        setTheme(e.matches ? 'dark' : 'light');
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    
-    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   const contextValue: ThemeContextType = {

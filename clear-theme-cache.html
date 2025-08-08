@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Theme Cache - Moviloi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #121212;
+            color: white;
+        }
+        button {
+            background: #FE7743;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #e66633;
+        }
+        .output {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #444;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Moviloi - Tema Cache Temizleme</h1>
+    <p>Bu sayfa uygulamanın localStorage'daki eski tema ayarlarını temizler.</p>
+    
+    <button onclick="clearThemeCache()">🧹 Tema Cache'i Temizle</button>
+    <button onclick="checkCurrentSettings()">🔍 Mevcut Ayarları Kontrol Et</button>
+    <button onclick="goToApp()">🚀 Uygulamaya Git</button>
+    
+    <div class="output" id="output"></div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += message + '<br>';
+            console.log(message);
+        }
+
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+        }
+
+        function clearThemeCache() {
+            clearOutput();
+            log('🔄 Tema ayarları temizleniyor...');
+
+            try {
+                // Update user preferences to force darkMode: true
+                const userPrefsKey = 'moviloi-user-preferences';
+                const userPrefs = localStorage.getItem(userPrefsKey);
+                if (userPrefs) {
+                    const parsed = JSON.parse(userPrefs);
+                    parsed.darkMode = true;
+                    localStorage.setItem(userPrefsKey, JSON.stringify(parsed));
+                    log('✅ User preferences darkMode = true olarak güncellendi');
+                } else {
+                    // Create default preferences with dark mode
+                    const defaultPrefs = {
+                        favoriteGenres: [],
+                        darkMode: true,
+                        language: 'tr',
+                        defaultView: 'watched'
+                    };
+                    localStorage.setItem(userPrefsKey, JSON.stringify(defaultPrefs));
+                    log('✅ Yeni user preferences oluşturuldu (darkMode = true)');
+                }
+
+                // Force theme to dark
+                localStorage.setItem('theme', 'dark');
+                log('✅ Tema dark olarak ayarlandı');
+
+                // Apply dark class to document
+                document.documentElement.classList.remove('light');
+                document.documentElement.classList.add('dark');
+                document.body.classList.remove('light');
+                document.body.classList.add('dark');
+                log('✅ DOM\'a dark class\'ı uygulandı');
+
+                log('🎉 Tema cache başarıyla temizlendi!');
+                log('🔄 Şimdi uygulamayı yenileyin veya "Uygulamaya Git" butonuna tıklayın.');
+
+            } catch (error) {
+                log('❌ Hata: ' + error.message);
+            }
+        }
+
+        function checkCurrentSettings() {
+            clearOutput();
+            log('🔍 Mevcut ayarlar kontrol ediliyor...');
+
+            // Check localStorage keys
+            const keys = Object.keys(localStorage);
+            log('LocalStorage keys: ' + keys.join(', '));
+
+            // Check user preferences
+            const userPrefs = localStorage.getItem('moviloi-user-preferences');
+            if (userPrefs) {
+                const parsed = JSON.parse(userPrefs);
+                log('User Preferences:');
+                log('  - darkMode: ' + parsed.darkMode);
+                log('  - language: ' + parsed.language);
+                log('  - defaultView: ' + parsed.defaultView);
+            } else {
+                log('❌ User preferences bulunamadı');
+            }
+
+            // Check theme setting
+            const theme = localStorage.getItem('theme');
+            log('Theme setting: ' + (theme || 'yok'));
+
+            // Check DOM classes
+            const htmlClasses = document.documentElement.className;
+            const bodyClasses = document.body.className;
+            log('HTML classes: ' + (htmlClasses || 'yok'));
+            log('Body classes: ' + (bodyClasses || 'yok'));
+        }
+
+        function goToApp() {
+            window.location.href = 'http://localhost:8102/';
+        }
+
+        // Auto-check on load
+        window.onload = function() {
+            checkCurrentSettings();
+        };
+    </script>
+</body>
+</html>
