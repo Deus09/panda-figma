@@ -1,6 +1,9 @@
 import { PushNotifications, Token, ActionPerformed, PushNotificationSchema } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
 import { LocalStorageService } from './localStorage';
+import { pushPermissionManager } from './pushPermissionManager';
+import { errorLogger } from '../utils/errors/logger';
+import { NetworkError, AppError } from '../utils/errors/errorTypes';
 
 export interface NotificationPreferences {
   enabled: boolean;
@@ -31,38 +34,103 @@ class PushNotificationService {
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
-    // Push notifications sadece native platformlarda çalışır
-    if (!Capacitor.isNativePlatform()) {
-      console.log('Push notifications are not supported on this platform');
-      return;
-    }
-
     try {
-      // İzin durumunu kontrol et
-      const permissionStatus = await PushNotifications.checkPermissions();
+      // Permission status kontrolü via permission manager
+      const permissionResult = await pushPermissionManager.checkPermissionStatus();
       
-      if (permissionStatus.receive === 'prompt') {
-        // İzin iste
-        const permission = await PushNotifications.requestPermissions();
-        if (permission.receive !== 'granted') {
-          throw new Error('Push notification permission denied');
-        }
-      } else if (permissionStatus.receive === 'denied') {
-        throw new Error('Push notification permission denied');
+      if (permissionResult.status === 'unsupported') {
+        console.log('Push notifications not supported on this platform:', permissionResult.message);
+        throw new AppError('Push notifications not supported', 'PUSH_UNSUPPORTED', 'low');
       }
 
-      // Event listener'ları kaydet
-      this.registerEventListeners();
+      if (permissionResult.status === 'denied') {
+        throw new AppError('Push notification permission denied', 'PUSH_DENIED', 'medium');
+      }
 
-      // FCM token için kayıt yap
-      await PushNotifications.register();
+      // Permission yoksa iste
+      if (permissionResult.status !== 'granted') {
+        const requestResult = await pushPermissionManager.requestPermission();
+        if (requestResult.status !== 'granted') {
+          throw new AppError(
+            `Permission not granted: ${requestResult.status}`, 
+            'PUSH_PERMISSION_FAILED', 
+            'medium'
+          );
+        }
+      }
+
+      // Platform-specific initialization
+      if (Capacitor.isNativePlatform()) {
+        await this.initializeNative();
+      } else if (permissionResult.supportsBrowser) {
+        await this.initializeBrowser();
+      }
 
       this.isInitialized = true;
       console.log('Push notifications initialized successfully');
     } catch (error) {
       console.error('Failed to initialize push notifications:', error);
+      errorLogger.log(error as Error, { 
+        context: 'PushNotificationService.initialize',
+        platform: Capacitor.getPlatform(),
+        isNative: Capacitor.isNativePlatform()
+      });
       throw error;
     }
+  }
+
+  private async initializeNative(): Promise<void> {
+    // Event listener'ları kaydet
+    this.registerEventListeners();
+
+    // FCM token için kayıt yap
+    await PushNotifications.register();
+  }
+
+  private async initializeBrowser(): Promise<void> {
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        console.log('Service Worker registered:', registration);
+        
+        // Push manager ile subscription oluştur
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: this.getVapidPublicKey()
+        });
+        
+        // Subscription token'ını kaydet
+        this.registrationToken = JSON.stringify(subscription);
+        this.saveTokenToStorage(this.registrationToken);
+        
+        console.log('Browser push subscription created');
+      } catch (error) {
+        throw new NetworkError('Failed to register service worker for push notifications', {
+          originalError: error
+        });
+      }
+    }
+  }
+
+  private getVapidPublicKey(): ArrayBuffer {
+    // VAPID public key - bu gerçek bir public key olmalı
+    const vapidPublicKey = process.env.REACT_APP_VAPID_PUBLIC_KEY || 
+      'BEl62iUYgUivxIkv69yViEuiBIa40HI80NqrCrUIc9L7kqDTMoB5dONJF3C2iC6i4c2pNJHTAw6l2w4PWqJ9xUw';
+    
+    const padding = '='.repeat((4 - vapidPublicKey.length % 4) % 4);
+    const base64 = (vapidPublicKey + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+      
+    const rawData = atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    
+    return outputArray.buffer;
   }
 
   private registerEventListeners(): void {
@@ -256,6 +324,69 @@ class PushNotificationService {
       
     } catch (error) {
       console.error('Failed to sync FCM token with backend:', error);
+      errorLogger.log(error as Error, {
+        context: 'PushNotificationService.syncTokenWithBackend',
+        userId,
+        hasToken: !!token
+      });
+    }
+  }
+
+  /**
+   * Permission durumu kontrolü
+   */
+  async checkPermissionStatus() {
+    return pushPermissionManager.checkPermissionStatus();
+  }
+
+  /**
+   * Permission isteme
+   */
+  async requestPermission() {
+    return pushPermissionManager.requestPermission();
+  }
+
+  /**
+   * Platform desteği kontrolü
+   */
+  isSupported(): boolean {
+    // Native platform her zaman desteklenir
+    if (Capacitor.isNativePlatform()) {
+      return true;
+    }
+
+    // Browser için detaylı kontrol
+    return 'serviceWorker' in navigator && 
+           'PushManager' in window && 
+           'Notification' in window;
+  }
+
+  /**
+   * Registration durumu ve debug bilgisi
+   */
+  async getDebugInfo() {
+    try {
+      const permissionResult = await this.checkPermissionStatus();
+      const token = await this.getRegistrationToken();
+      const preferences = await this.getNotificationPreferences();
+
+      return {
+        isInitialized: this.isInitialized,
+        platform: Capacitor.getPlatform(),
+        isNative: Capacitor.isNativePlatform(),
+        isSupported: this.isSupported(),
+        permissionStatus: permissionResult.status,
+        canRequest: permissionResult.canRequest,
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+        preferences,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      };
     }
   }
 }

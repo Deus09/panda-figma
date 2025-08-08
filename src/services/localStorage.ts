@@ -34,6 +34,7 @@ export interface UserPreferences {
   language: string;
   defaultView: 'watched' | 'watchlist';
   fcmToken?: string;
+  pushPermissionStatus?: 'unknown' | 'granted' | 'denied' | 'prompt' | 'unsupported' | 'restricted';
   notificationPreferences?: {
     enabled: boolean;
     newReleases: boolean;

@@ -5,11 +5,13 @@ import BottomNavBar from '../components/BottomNavBar';
 import FabAddButton from '../components/FabAddButton';
 import FilterModal from '../components/FilterModal';
 import DetailViewModal from '../components/DetailViewModal';  // 🎯 YENİ IMPORT
+import NotificationPermissionBanner from '../components/notifications/NotificationPermissionBanner';
 import { NetworkStatusIndicator } from '../components/NetworkIndicator';
 import React, { useState, useEffect, useMemo } from 'react';
 import TabSegment from '../components/TabSegment';
 import LocalStorageService, { MovieLog } from '../services/localStorage';
 import { useModal } from '../context/ModalContext';
+import { PushPermissionStatus } from '../services/pushPermissionManager';
 
 // FilterOptions type'ını tanımla
 export type FilterOptions = {
@@ -24,6 +26,7 @@ const Home: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'watched' | 'watchlist'>('watched');
   const [movieLogs, setMovieLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showNotificationBanner, setShowNotificationBanner] = useState(true);
   
   // 🎯 YENİ: DetailViewModal state'leri
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -187,6 +190,20 @@ const Home: React.FC = () => {
       <IonContent fullscreen className="bg-background relative" scrollEvents={true}>
         <div className="bg-background min-h-screen flex flex-col items-center">
           <TopHeaderBar />
+          
+          {/* Notification Permission Banner */}
+          {showNotificationBanner && (
+            <div className="w-full px-4 mt-4">
+              <NotificationPermissionBanner 
+                onStatusChange={(status: PushPermissionStatus) => {
+                  if (status === 'granted' || status === 'denied') {
+                    setShowNotificationBanner(false);
+                  }
+                }}
+              />
+            </div>
+          )}
+          
           {/* Tab Segment + Filter */}
           <div className="relative w-full pt-6 pb-5 px-4">
             {/* TabSegment centered absolutely */}

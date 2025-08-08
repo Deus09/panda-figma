@@ -462,5 +462,60 @@
     "details_toggle": "Teknik Detayları Göster/Gizle",
     "session_expired": "Oturumunuzun süresi doldu",
     "access_denied": "Erişim reddedildi"
+  },
+  "notifications": {
+    "permission": {
+      "title": "Bildirimler",
+      "subtitle": "Size özel içerik önerilerinden haberdar olun",
+      "banner_title": "Bildirimleri etkinleştir",
+      "banner_subtitle": "Yeni filmler ve dizilerden haberdar ol",
+      "explanation": {
+        "title": "Neden bildirimlere ihtiyaç var?",
+        "subtitle": "Moviloi size şu konularda yardımcı olmak için bildirimler gönderir:",
+        "points": [
+          "İzleme listenizdeki filmler ve diziler çıktığında",
+          "Sevdiğiniz türlerde yeni içerikler yayınlandığında", 
+          "Takip ettiğiniz dizilerin yeni sezon/bölümleri çıktığında",
+          "Size özel film ve dizi önerileri hazır olduğunda",
+          "Arkadaşlarınızdan yeni aktiviteler geldiğinde"
+        ]
+      },
+      "actions": {
+        "allow": "İzin Ver",
+        "later": "Daha Sonra",
+        "never": "Hiç Sorma",
+        "open_settings": "Tarayıcı Ayarları",
+        "retry": "Tekrar Dene",
+        "dismiss": "Kapat"
+      },
+      "status": {
+        "granted": "Etkin",
+        "denied": "Reddedildi",
+        "unsupported": "Desteklenmiyor",
+        "restricted": "Kısıtlandı", 
+        "pending": "Bekliyor",
+        "unknown": "Bilinmiyor"
+      },
+      "messages": {
+        "granted": "Bildirimler başarıyla etkinleştirildi!",
+        "denied": "Bildirimler reddedildi. Tarayıcı ayarlarından etkinleştirebilirsiniz.",
+        "unsupported": "Bu tarayıcı/cihaz push bildirimleri desteklemiyor.",
+        "restricted": "Bildirimler sistem tarafından kısıtlanmış.",
+        "error": "Bildirim izni alınırken hata oluştu.",
+        "suppressed": "Bildirim isteği geçici olarak durduruldu.",
+        "daily_limit": "Günlük bildirim isteği limitine ulaştınız.",
+        "settings_help": "Bildirimleri etkinleştirmek için tarayıcı ayarlarına gidin:"
+      },
+      "toast": {
+        "granted": "Bildirimler etkinleştirildi! 🎉",
+        "denied": "Bildirimler reddedildi",
+        "error": "Bildirim ayarı değiştirilemedi",
+        "suppressed": "24 saat sonra tekrar sorulacak",
+        "daily_limit_reached": "Çok fazla deneme yapıldı, yarın tekrar deneyin"
+      },
+      "banner": {
+        "dismissed": "Bildirim banner'ı kapatıldı"
+      }
+    }
   }
 }

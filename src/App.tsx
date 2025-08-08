@@ -15,6 +15,7 @@ const Lists = lazy(() => import('./pages/lists'));
 const Profile = lazy(() => import('./pages/profile'));
 const Social = lazy(() => import('./pages/social'));
 const AuthCallback = lazy(() => import('./pages/AuthCallback'));
+const NotificationTestPage = lazy(() => import('./pages/NotificationTestPage'));
 const NotificationSettingsPage = lazy(() => import('./pages/NotificationSettingsPage'));
 const PushNotificationTestPage = lazy(() => import('./pages/PushNotificationTestPage'));
 const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage'));
@@ -224,6 +225,9 @@ const AppContent: React.FC = () => {
             </Route>
             <Route exact path="/notifications">
               <NotificationSettingsPage />
+            </Route>
+            <Route exact path="/notification-test">
+              <NotificationTestPage />
             </Route>
             <Route exact path="/push-test">
               <PushNotificationTestPage />

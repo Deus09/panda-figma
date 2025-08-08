@@ -446,5 +446,60 @@
     "details_toggle": "Mostrar/Ocultar Detalles Técnicos",
     "session_expired": "Tu sesión ha expirado",
     "access_denied": "Acceso denegado"
+  },
+  "notifications": {
+    "permission": {
+      "title": "Notificaciones",
+      "subtitle": "Recibe recomendaciones de contenido personalizado",
+      "banner_title": "Habilitar notificaciones",
+      "banner_subtitle": "Mantente al día con nuevas películas y series",
+      "explanation": {
+        "title": "¿Por qué necesitamos notificaciones?",
+        "subtitle": "Moviloi envía notificaciones para ayudarte con:",
+        "points": [
+          "Cuando se lancen películas y series de tu lista de seguimiento",
+          "Cuando se publique nuevo contenido en tus géneros favoritos",
+          "Cuando salgan nuevas temporadas/episodios de series que sigues",
+          "Cuando estén listas recomendaciones personalizadas de películas y series",
+          "Cuando hay nueva actividad de tus amigos"
+        ]
+      },
+      "actions": {
+        "allow": "Permitir",
+        "later": "Más Tarde",
+        "never": "Nunca Preguntar",
+        "open_settings": "Configuración del Navegador",
+        "retry": "Intentar de Nuevo",
+        "dismiss": "Descartar"
+      },
+      "status": {
+        "granted": "Habilitado",
+        "denied": "Denegado",
+        "unsupported": "No Compatible",
+        "restricted": "Restringido",
+        "pending": "Pendiente",
+        "unknown": "Desconocido"
+      },
+      "messages": {
+        "granted": "¡Notificaciones habilitadas exitosamente!",
+        "denied": "Notificaciones denegadas. Puedes habilitarlas desde la configuración del navegador.",
+        "unsupported": "Este navegador/dispositivo no soporta notificaciones push.",
+        "restricted": "Las notificaciones están restringidas por el sistema.",
+        "error": "Error al solicitar permisos de notificación.",
+        "suppressed": "Solicitud de notificación temporalmente suspendida.",
+        "daily_limit": "Límite diario de solicitudes de notificación alcanzado.",
+        "settings_help": "Para habilitar notificaciones, ve a la configuración de tu navegador:"
+      },
+      "toast": {
+        "granted": "¡Notificaciones habilitadas! 🎉",
+        "denied": "Notificaciones denegadas",
+        "error": "Error al cambiar configuración de notificaciones",
+        "suppressed": "Se preguntará nuevamente en 24 horas",
+        "daily_limit_reached": "Demasiados intentos, inténtalo mañana"
+      },
+      "banner": {
+        "dismissed": "Banner de notificaciones descartado"
+      }
+    }
   }
 }

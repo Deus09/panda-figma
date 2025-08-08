@@ -22,15 +22,20 @@ import {
   tv, 
   star, 
   alertCircle,
-  checkmarkCircle 
+  checkmarkCircle,
+  bugOutline 
 } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
 import { 
   getNotificationSettings, 
   updateNotificationSettings, 
   getPushNotificationToken,
-  NotificationPreferences 
+  NotificationPreferences,
+  pushNotificationService 
 } from '../services/pushNotifications';
+import NotificationPermissionCard from '../components/notifications/NotificationPermissionCard';
+import UnsupportedFallback from '../components/notifications/UnsupportedFallback';
+import { PermissionStatusResult } from '../services/pushPermissionManager';
 
 const NotificationSettingsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -47,6 +52,34 @@ const NotificationSettingsPage: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState<'success' | 'danger'>('success');
   const [fcmToken, setFcmToken] = useState<string | null>(null);
+  const [permissionStatus, setPermissionStatus] = useState<PermissionStatusResult | null>(null);
+  const [showDebugInfo, setShowDebugInfo] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
+
+  useEffect(() => {
+    loadNotificationSettings();
+    loadFCMToken();
+    loadPermissionStatus();
+  }, []);
+
+  const loadPermissionStatus = async () => {
+    try {
+      const status = await pushNotificationService.checkPermissionStatus();
+      setPermissionStatus(status);
+    } catch (error) {
+      console.error('Failed to load permission status:', error);
+    }
+  };
+
+  const loadDebugInfo = async () => {
+    try {
+      const info = await pushNotificationService.getDebugInfo();
+      setDebugInfo(info);
+      setShowDebugInfo(true);
+    } catch (error) {
+      console.error('Failed to load debug info:', error);
+    }
+  };
 
   useEffect(() => {
     loadNotificationSettings();
@@ -78,6 +111,14 @@ const NotificationSettingsPage: React.FC = () => {
   };
 
   const handlePreferenceChange = async (key: keyof NotificationPreferences, value: boolean) => {
+    // Permission kontrolü
+    if (key === 'enabled' && value && permissionStatus?.status !== 'granted') {
+      setToastMessage('Önce bildirim izni vermelisiniz');
+      setToastColor('danger');
+      setShowToast(true);
+      return;
+    }
+
     try {
       const newPreferences = { ...preferences, [key]: value };
       
@@ -107,6 +148,22 @@ const NotificationSettingsPage: React.FC = () => {
       loadNotificationSettings();
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handlePermissionStatusChange = (result: PermissionStatusResult) => {
+    setPermissionStatus(result);
+    
+    // Token'ı yeniden yükle
+    loadFCMToken();
+    
+    // Preferences'ları güncelle
+    if (result.status === 'granted' && !preferences.enabled) {
+      // Auto-enable notifications when permission granted
+      handlePreferenceChange('enabled', true);
+    } else if (result.status === 'denied' && preferences.enabled) {
+      // Auto-disable if permission lost
+      handlePreferenceChange('enabled', false);
     }
   };
 
@@ -149,6 +206,22 @@ const NotificationSettingsPage: React.FC = () => {
       </IonHeader>
       
       <IonContent>
+        {/* Permission Status Card */}
+        {permissionStatus?.status === 'unsupported' ? (
+          <div className="p-4">
+            <UnsupportedFallback 
+              reason={permissionStatus.message}
+              showUpgradeInfo={true}
+            />
+          </div>
+        ) : (
+          <div className="p-4">
+            <NotificationPermissionCard 
+              onStatusChange={handlePermissionStatusChange}
+            />
+          </div>
+        )}
+
         <IonList className="py-4">
           {/* Ana Bildirim Ayarı */}
           <IonItem>
@@ -162,12 +235,12 @@ const NotificationSettingsPage: React.FC = () => {
             <IonToggle 
               checked={preferences.enabled} 
               onIonChange={(e) => handlePreferenceChange('enabled', e.detail.checked)}
-              disabled={isSaving}
+              disabled={isSaving || permissionStatus?.status !== 'granted'}
             />
           </IonItem>
 
-          {/* Alt Kategori Ayarları - Sadece ana ayar açıksa göster */}
-          {preferences.enabled && (
+          {/* Alt Kategori Ayarları - Sadece ana ayar açık ve permission granted ise göster */}
+          {preferences.enabled && permissionStatus?.status === 'granted' && (
             <>
               <div className="px-4 py-2">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
@@ -248,8 +321,12 @@ const NotificationSettingsPage: React.FC = () => {
                 Bildirim Durumu
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                {fcmToken 
+                {permissionStatus?.status === 'granted' && fcmToken 
                   ? 'Cihaz push bildirimleri almaya hazır' 
+                  : permissionStatus?.status === 'denied'
+                  ? 'Bildirim izni reddedildi'
+                  : permissionStatus?.status === 'unsupported'
+                  ? 'Bu cihaz/tarayıcı desteklenmiyor'
                   : 'Push bildirimleri henüz etkinleştirilmedi'
                 }
               </p>
@@ -261,8 +338,8 @@ const NotificationSettingsPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Test Butonu (geliştirme amaçlı) */}
-          {fcmToken && preferences.enabled && (
+          {/* Test Butonu (sadece granted durumunda) */}
+          {fcmToken && preferences.enabled && permissionStatus?.status === 'granted' && (
             <div className="px-4 py-2">
               <IonButton 
                 expand="block" 
@@ -272,6 +349,30 @@ const NotificationSettingsPage: React.FC = () => {
               >
                 Test Bildirimi Gönder
               </IonButton>
+            </div>
+          )}
+
+          {/* Debug Info (Development) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="px-4 py-2">
+              <IonButton 
+                expand="block" 
+                fill="clear" 
+                size="small"
+                onClick={loadDebugInfo}
+                className="mt-2"
+              >
+                <IonIcon icon={bugOutline} slot="start" />
+                Debug Info
+              </IonButton>
+              
+              {showDebugInfo && debugInfo && (
+                <div className="mt-4 bg-gray-100 dark:bg-gray-800 rounded p-3">
+                  <pre className="text-xs overflow-auto">
+                    {JSON.stringify(debugInfo, null, 2)}
+                  </pre>
+                </div>
+              )}
             </div>
           )}
         </IonList>

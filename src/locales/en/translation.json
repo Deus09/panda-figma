@@ -462,5 +462,60 @@
     "details_toggle": "Show/Hide Technical Details",
     "session_expired": "Your session has expired",
     "access_denied": "Access denied"
+  },
+  "notifications": {
+    "permission": {
+      "title": "Notifications",
+      "subtitle": "Get notified about personalized content recommendations",
+      "banner_title": "Enable notifications",
+      "banner_subtitle": "Stay updated on new movies and shows",
+      "explanation": {
+        "title": "Why do we need notifications?",
+        "subtitle": "Moviloi sends notifications to help you with:",
+        "points": [
+          "When movies and shows from your watchlist are released",
+          "When new content in your favorite genres is published",
+          "When new seasons/episodes of shows you follow are out",
+          "When personalized movie and TV show recommendations are ready",
+          "When there's new activity from your friends"
+        ]
+      },
+      "actions": {
+        "allow": "Allow",
+        "later": "Later",
+        "never": "Never Ask",
+        "open_settings": "Browser Settings",
+        "retry": "Try Again",
+        "dismiss": "Dismiss"
+      },
+      "status": {
+        "granted": "Enabled",
+        "denied": "Denied",
+        "unsupported": "Unsupported",
+        "restricted": "Restricted",
+        "pending": "Pending",
+        "unknown": "Unknown"
+      },
+      "messages": {
+        "granted": "Notifications successfully enabled!",
+        "denied": "Notifications denied. You can enable them from browser settings.",
+        "unsupported": "This browser/device doesn't support push notifications.",
+        "restricted": "Notifications are restricted by the system.",
+        "error": "Error occurred while requesting notification permission.",
+        "suppressed": "Notification request temporarily suppressed.",
+        "daily_limit": "Daily notification request limit reached.",
+        "settings_help": "To enable notifications, go to your browser settings:"
+      },
+      "toast": {
+        "granted": "Notifications enabled! 🎉",
+        "denied": "Notifications denied",
+        "error": "Failed to change notification setting",
+        "suppressed": "Will ask again in 24 hours",
+        "daily_limit_reached": "Too many attempts, try again tomorrow"
+      },
+      "banner": {
+        "dismissed": "Notification banner dismissed"
+      }
+    }
   }
 }
