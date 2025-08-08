@@ -1,7 +1,10 @@
-# Cinenar - AI Coding Agent Instructions
+# Moviloi - AI Coding Agent Instructions
 
-## Project Overview
-Cinenar is a movie/TV tracking app built with **Ionic React + Capacitor** for cross-platform deployment. The architecture combines Ionic's mobile-first components with React patterns, using TMDB API for movie data and localStorage for persistence.
+## 🎬 Project Overview
+Moviloi is a movie/TV tracking app built with **Ionic React + Capacitor** for cross-platform deployment. The architecture combines Ionic's mobile-first components with React patterns, using TMDB API for movie data and localStorage for persistence.nenar - AI Coding Agent Instructions
+
+## 🎬 Project Overview
+Moviloi is a movie/TV tracking app built with **Ionic React + Capacitor** for cross-platform deployment. The architecture combines Ionic's mobile-first components with React patterns, using TMDB API for movie data and localStorage for persistence.
 
 ## Key Architecture Patterns
 

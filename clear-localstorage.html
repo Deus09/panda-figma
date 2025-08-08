@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Cinenar - LocalStorage Temizleme</h1>
+        <h1>Moviloi - LocalStorage Temizleme</h1>
         
         <h2>Mevcut Veriler:</h2>
         <div id="currentData" class="log">Veriler yükleniyor...</div>
@@ -29,7 +29,7 @@
     <script>
         function loadCurrentData() {
             try {
-                const logs = JSON.parse(localStorage.getItem('cinenar-movie-logs') || '[]');
+                const logs = JSON.parse(localStorage.getItem('moviloi-movie-logs') || '[]');
                 const tvLogs = logs.filter(log => log.mediaType === 'tv' || log.contentType === 'tv');
                 
                 document.getElementById('currentData').innerHTML = `
@@ -64,7 +64,7 @@
         
         function clearAllData() {
             if (confirm('Tüm movie log verilerini silmek istediğinizden emin misiniz?')) {
-                localStorage.removeItem('cinenar-movie-logs');
+                localStorage.removeItem('moviloi-movie-logs');
                 document.getElementById('results').innerHTML = '<strong style="color: #4CAF50;">✅ Tüm veriler temizlendi!</strong>';
                 loadCurrentData();
             }
@@ -72,9 +72,9 @@
         
         function clearOnlyTvData() {
             if (confirm('Sadece TV dizi verilerini silmek istediğinizden emin misiniz?')) {
-                const logs = JSON.parse(localStorage.getItem('cinenar-movie-logs') || '[]');
+                const logs = JSON.parse(localStorage.getItem('moviloi-movie-logs') || '[]');
                 const movieLogs = logs.filter(log => log.mediaType === 'movie' && log.contentType === 'movie');
-                localStorage.setItem('cinenar-movie-logs', JSON.stringify(movieLogs));
+                localStorage.setItem('moviloi-movie-logs', JSON.stringify(movieLogs));
                 document.getElementById('results').innerHTML = '<strong style="color: #4CAF50;">✅ TV verileri temizlendi, film verileri korundu!</strong>';
                 loadCurrentData();
             }

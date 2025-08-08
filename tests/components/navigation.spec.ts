@@ -120,7 +120,7 @@ test.describe('Navigation Components', () => {
     
     // Sayfa başlığını kontrol et
     const title = await page.title();
-    expect(title).toBe('Cinenar');
+    expect(title).toBe('Moviloi');
   });
 
   test('Bottom navigation tıklama testi', async ({ page }) => {

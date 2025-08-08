@@ -12,7 +12,7 @@ interface TopHeaderBarProps {
 }
 
 const TopHeaderBar: React.FC<TopHeaderBarProps> = ({ 
-  title = "Cinenar", 
+  title = "Moviloi", 
   showBackButton = false, 
   showLogo = true,
   showLanguageSwitcher = false,

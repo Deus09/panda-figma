@@ -1,4 +1,4 @@
-## 🌐 Cinenar - Çoklu Dil Desteği Eklendi
+## 🌐 Moviloi - Çoklu Dil Desteği Eklendi
 
 ### ✅ Tamamlanan İşlemler
 

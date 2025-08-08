@@ -25,7 +25,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       }
       
       // Sonra user preferences'taki darkMode'u kontrol et
-      const userPrefsStr = localStorage.getItem('cinenar-user-preferences');
+      const userPrefsStr = localStorage.getItem('moviloi-user-preferences');
       if (userPrefsStr) {
         try {
           const userPrefs = JSON.parse(userPrefsStr);
@@ -76,11 +76,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       
       // User preferences'taki darkMode'u da güncelle
       try {
-        const userPrefsStr = localStorage.getItem('cinenar-user-preferences');
+        const userPrefsStr = localStorage.getItem('moviloi-user-preferences');
         if (userPrefsStr) {
           const userPrefs = JSON.parse(userPrefsStr);
           userPrefs.darkMode = theme === 'dark';
-          localStorage.setItem('cinenar-user-preferences', JSON.stringify(userPrefs));
+          localStorage.setItem('moviloi-user-preferences', JSON.stringify(userPrefs));
         }
       } catch (prefError) {
         console.error('Error updating user preferences:', prefError);

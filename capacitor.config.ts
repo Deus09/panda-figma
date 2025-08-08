@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'cinenar',
+  appId: 'com.tscompany.moviloi',
+  appName: 'moviloi',
   webDir: 'dist',
   plugins: {
     PushNotifications: {

@@ -1,4 +1,4 @@
-// Local Storage Service for Cinenar
+// Local Storage Service for Moviloi
 // Manages persistent storage of movie logs and user preferences
 
 export interface MovieLog {
@@ -79,10 +79,10 @@ export interface UserProfile {
 }
 
 const STORAGE_KEYS = {
-  MOVIE_LOGS: 'cinenar-movie-logs',
-  USER_PREFERENCES: 'cinenar-user-preferences',
-  USER_PROFILE: 'cinenar-user-profile',
-  LAST_ACTIVE_TAB: 'cinenar-last-active-tab'
+  MOVIE_LOGS: 'moviloi-movie-logs',
+  USER_PREFERENCES: 'moviloi-user-preferences',
+  USER_PROFILE: 'moviloi-user-profile',
+  LAST_ACTIVE_TAB: 'moviloi-last-active-tab'
 } as const;
 
 export class LocalStorageService {

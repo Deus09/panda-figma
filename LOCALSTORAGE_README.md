@@ -1,6 +1,6 @@
-# Cinenar - LocalStorage Entegrasyonu
+# Moviloi - LocalStorage Entegrasyonu
 
-Bu döküman, Cinenar uygulamasındaki localStorage entegrasyonunu açıklar.
+Bu döküman, Moviloi uygulamasındaki localStorage entegrasyonunu açıklar.
 
 ## 🚀 Özellikler
 
@@ -196,9 +196,9 @@ clearAllData();
 
 ```typescript
 const STORAGE_KEYS = {
-  MOVIE_LOGS: 'cinenar-movie-logs',
-  USER_PREFERENCES: 'cinenar-user-preferences',
-  LAST_ACTIVE_TAB: 'cinenar-last-active-tab'
+  MOVIE_LOGS: 'moviloi-movie-logs',
+  USER_PREFERENCES: 'moviloi-user-preferences',
+  LAST_ACTIVE_TAB: 'moviloi-last-active-tab'
 };
 ```
 

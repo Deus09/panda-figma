@@ -417,7 +417,7 @@ const Explore: React.FC = () => {
   return (
     <IonPage className={styles.explorePage}>
       <IonContent ref={contentRef} className={styles.exploreContent} scrollEvents={true}>
-        <TopHeaderBar title={`Cinenar ${t('navigation.explore')}`} />
+        <TopHeaderBar title={`Moviloi ${t('navigation.explore')}`} />
         <div className="flex flex-col items-center w-full pt-6 pb-2 px-0">
           {/* Searchbar */}
           <div className="w-full max-w-[332px] flex flex-row items-center bg-[#EFEEEA] rounded-[12px] px-[15px] py-[4px] gap-[8px] mb-4">

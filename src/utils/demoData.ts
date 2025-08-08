@@ -79,7 +79,7 @@ export const createDemoData = () => {
 
 // localStorage'daki mevcut verileri konsola yazdır
 export const logStorageData = () => {
-  console.log('=== CINENAR STORAGE DATA ===');
+  console.log('=== MOVILOI STORAGE DATA ===');
   console.log('Movie Logs:', LocalStorageService.getMovieLogs());
   console.log('User Preferences:', LocalStorageService.getUserPreferences());
   console.log('Last Active Tab:', LocalStorageService.getLastActiveTab());
