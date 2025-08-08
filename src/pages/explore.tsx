@@ -10,7 +10,7 @@ import BottomNavBar from '../components/BottomNavBar';
 import SkeletonLoader from '../components/SkeletonLoader';
 import AiDiscoveryModal from '../components/AiDiscoveryModal';
 import { useNetworkErrorHandler } from '../components/NetworkErrorHandler';
-import { getPopularMovies, getPopularSeries, searchAll, getMoviesByGenre, getSeriesByGenre, searchMovies, searchSeries, TMDBMovieResult, TMDBMultiSearchResponse, TMDBSearchResult, TMDBPaginatedResponse } from '../services/tmdb';
+import { getPopularMovies, getPopularSeries, searchAll, getMoviesByGenre, getSeriesByGenre, TMDBMovieResult, TMDBMultiSearchResponse } from '../services/tmdb';
 import { useModal } from '../context/ModalContext';
 import styles from './explore.module.css';
 
@@ -40,7 +40,6 @@ const Explore: React.FC = () => {
   
   // Scroll pozisyonu koruma için ref
   const contentRef = React.useRef<HTMLIonContentElement>(null);
-  const gridContainerRef = useRef<HTMLDivElement>(null);
   
   // Infinite scroll için intersection observer
   const loadingRef = useRef<HTMLDivElement>(null);

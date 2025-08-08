@@ -1,6 +1,49 @@
 
 import { NetworkService } from './networkService';
 
+// Raw TMDB API Response types
+interface TMDBRawMovieResult {
+  id: number;
+  title: string;
+  release_date?: string;
+  poster_path?: string | null;
+  vote_average?: number;
+  overview?: string;
+  backdrop_path?: string | null;
+  runtime?: number;
+  genres?: Array<{ id: number; name: string }>;
+}
+
+interface TMDBRawSeriesResult {
+  id: number;
+  name: string;
+  first_air_date?: string;
+  poster_path?: string | null;
+  vote_average?: number;
+  overview?: string;
+  backdrop_path?: string | null;
+  number_of_seasons?: number;
+  number_of_episodes?: number;
+  genres?: Array<{ id: number; name: string }>;
+  seasons?: Array<{
+    id: number;
+    season_number: number;
+    name: string;
+    poster_path?: string | null;
+    episode_count: number;
+    air_date?: string;
+  }>;
+}
+
+interface TMDBRawVideoResult {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+  official: boolean;
+}
+
 export interface TMDBMovieResult {
   id: number;
   title: string;
@@ -187,8 +230,9 @@ const fetchWithNetworkCheck = async (url: string, options?: RequestInit): Promis
   }
 };
 
-// Genel önbellekleme sistemi
-const cache = new Map<string, any>();
+// Genel önbellekleme sistemi - generic tip kullanarak any yerine daraltılmış cache
+type CacheValue = TMDBMovieResult[] | TMDBSeriesDetails | TMDBActorDetails | TMDBActorCredit[] | unknown;
+const cache = new Map<string, CacheValue>();
 const cacheTimestamps = new Map<string, number>();
 const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 dakika
 
@@ -221,7 +265,7 @@ export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> =>
     
     if (cached && timestamp && Date.now() - timestamp < CACHE_DURATION_MS) {
       console.log(`Cache hit for: ${query}`);
-      return cached;
+      return cached as TMDBMovieResult[];
     }
 
     const response = await fetchWithNetworkCheck(
@@ -233,7 +277,7 @@ export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> =>
     }
     
     const data = await response.json();
-    const results = (data.results || []).map((movie: any) => ({
+    const results = (data.results || []).map((movie: TMDBRawMovieResult) => ({
       id: movie.id,
       title: movie.title,
       release_date: movie.release_date,
@@ -263,7 +307,7 @@ export const searchSeries = async (query: string): Promise<TMDBMovieResult[]> =>
     }
     
     const data = await response.json();
-    return (data.results || []).map((series: any) => ({
+    return (data.results || []).map((series: TMDBRawSeriesResult) => ({
       id: series.id,
       title: series.name, // TV serileri için name kullanılır
       release_date: series.first_air_date, // TV serileri için first_air_date kullanılır
@@ -332,7 +376,7 @@ export const getPopularMovies = async (): Promise<TMDBMovieResult[]> => {
       }
       
       const data = await response.json();
-      const mappedMovies = (data.results || []).map((movie: any) => ({
+      const mappedMovies = (data.results || []).map((movie: TMDBRawMovieResult) => ({
         id: movie.id,
         title: movie.title,
         release_date: movie.release_date,
@@ -361,7 +405,7 @@ export const getMoviesByGenre = async (genreId: number, page: number = 1): Promi
     
     const data = await response.json();
     return {
-      results: (data.results || []).map((movie: any) => ({
+      results: (data.results || []).map((movie: TMDBRawMovieResult) => ({
         id: movie.id,
         title: movie.title,
         release_date: movie.release_date,
@@ -389,7 +433,7 @@ export const getSeriesByGenre = async (genreId: number, page: number = 1): Promi
     
     const data = await response.json();
     return {
-      results: (data.results || []).map((series: any) => ({
+      results: (data.results || []).map((series: TMDBRawSeriesResult) => ({
         id: series.id,
         title: series.name, // TV serileri için name kullanılır
         release_date: series.first_air_date, // TV serileri için first_air_date kullanılır
@@ -426,7 +470,7 @@ export const getPopularSeries = async (): Promise<TMDBMovieResult[]> => {
       
       const data = await response.json();
       // TV series results have different structure, map them to our interface
-      const mappedSeries = (data.results || []).map((series: any) => ({
+      const mappedSeries = (data.results || []).map((series: TMDBRawSeriesResult) => ({
         id: series.id,
         title: series.name, // TV series use 'name' instead of 'title'
         release_date: series.first_air_date, // TV series use 'first_air_date'
@@ -450,7 +494,7 @@ export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails
   // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
   if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
     console.log(`CACHE HIT: Returning movie ${movieId} from cache.`);
-    return cache.get(cacheKey);
+    return cache.get(cacheKey) as TMDBMovieDetails;
   }
 
   console.log(`CACHE MISS: Fetching movie ${movieId} from API.`);
@@ -497,7 +541,7 @@ export const getMovieTrailerKey = async (movieId: number): Promise<string | null
       throw new Error(`Failed to fetch movie videos: ${response.status}`);
     }
     const data = await response.json();
-    const trailer = (data.results || []).find((vid: any) => vid.site === 'YouTube' && vid.type === 'Trailer');
+    const trailer = (data.results || []).find((vid: TMDBRawVideoResult) => vid.site === 'YouTube' && vid.type === 'Trailer');
     return trailer ? trailer.key : null;
   } catch (error) {
     console.error('Error fetching movie trailer:', error);
@@ -530,7 +574,7 @@ export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDeta
   // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
   if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
     console.log(`CACHE HIT: Returning series ${seriesId} from cache.`);
-    return cache.get(cacheKey);
+    return cache.get(cacheKey) as TMDBSeriesDetails;
   }
 
   console.log(`CACHE MISS: Fetching series ${seriesId} from API.`);
@@ -646,7 +690,7 @@ export const getActorDetails = async (actorId: number): Promise<TMDBActorDetails
   // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
   if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
     console.log(`CACHE HIT: Returning actor ${actorId} from cache.`);
-    return cache.get(cacheKey);
+    return cache.get(cacheKey) as TMDBActorDetails;
   }
 
   console.log(`CACHE MISS: Fetching actor ${actorId} from API.`);
@@ -691,7 +735,7 @@ export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[
   // 1. Önbelleği kontrol et: Veri var mı ve süresi dolmuş mu?
   if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
     console.log(`CACHE HIT: Returning actor credits ${actorId} from cache.`);
-    return cache.get(cacheKey);
+    return cache.get(cacheKey) as TMDBActorCredit[];
   }
 
   console.log(`CACHE MISS: Fetching actor credits ${actorId} from API.`);
@@ -816,7 +860,7 @@ export const getMovieReviews = async (movieId: number, page: number = 1): Promis
   // Check cache first
   if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
     console.log(`CACHE HIT: Returning movie reviews ${movieId} page ${page} from cache.`);
-    return cache.get(cacheKey);
+    return cache.get(cacheKey) as TMDBReviewsResponse;
   }
 
   console.log(`CACHE MISS: Fetching movie reviews ${movieId} page ${page} from API.`);
@@ -849,7 +893,7 @@ export const getSeriesReviews = async (seriesId: number, page: number = 1): Prom
   // Check cache first
   if (cache.has(cacheKey) && (now - cacheTimestamps.get(cacheKey)!) < CACHE_DURATION_MS) {
     console.log(`CACHE HIT: Returning series reviews ${seriesId} page ${page} from cache.`);
-    return cache.get(cacheKey);
+    return cache.get(cacheKey) as TMDBReviewsResponse;
   }
 
   console.log(`CACHE MISS: Fetching series reviews ${seriesId} page ${page} from API.`);

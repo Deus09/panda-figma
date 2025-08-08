@@ -575,96 +575,89 @@ export class LocalStorageService {
           let shouldEarn = false;
 
           switch (template.id) {
-            case 'first_movie':
+            case 'first_movie': {
               shouldEarn = profile.watchedMovieCount >= 1;
               break;
-            
-            case 'comedy_expert':
-              // Komedi filmlerini say
-              const comedyCount = watchedLogs.filter(log => 
-                log.mediaType === 'movie' && 
-                log.genres && 
-                log.genres.some(genre => 
-                  genre.toLowerCase().includes('komedi') || 
+            }
+            case 'comedy_expert': {
+              const comedyCount = watchedLogs.filter(log =>
+                log.mediaType === 'movie' &&
+                log.genres &&
+                log.genres.some(genre =>
+                  genre.toLowerCase().includes('komedi') ||
                   genre.toLowerCase().includes('comedy')
                 )
               ).length;
               shouldEarn = comedyCount >= 25;
               break;
-            
-            case 'drama_expert':
-              // Drama filmlerini say
-              const dramaCount = watchedLogs.filter(log => 
-                log.mediaType === 'movie' && 
-                log.genres && 
-                log.genres.some(genre => 
-                  genre.toLowerCase().includes('drama') || 
+            }
+            case 'drama_expert': {
+              const dramaCount = watchedLogs.filter(log =>
+                log.mediaType === 'movie' &&
+                log.genres &&
+                log.genres.some(genre =>
+                  genre.toLowerCase().includes('drama') ||
                   genre.toLowerCase().includes('dram')
                 )
               ).length;
               shouldEarn = dramaCount >= 25;
               break;
-            
-            case 'action_expert':
-              // Aksiyon filmlerini say
-              const actionCount = watchedLogs.filter(log => 
-                log.mediaType === 'movie' && 
-                log.genres && 
-                log.genres.some(genre => 
-                  genre.toLowerCase().includes('aksiyon') || 
+            }
+            case 'action_expert': {
+              const actionCount = watchedLogs.filter(log =>
+                log.mediaType === 'movie' &&
+                log.genres &&
+                log.genres.some(genre =>
+                  genre.toLowerCase().includes('aksiyon') ||
                   genre.toLowerCase().includes('action')
                 )
               ).length;
               shouldEarn = actionCount >= 25;
               break;
-            
-            case 'series_killer':
-              // Tamamlanan dizileri kontrol et
+            }
+            case 'series_killer': {
               const completedSeries = this.getCompletedSeries(watchedLogs);
               shouldEarn = completedSeries.length >= 1;
               break;
-            
-            case 'nostalgia_traveler':
-              // 1990 öncesi filmleri say
-              const oldMoviesCount = watchedLogs.filter(log => 
-                log.mediaType === 'movie' && 
-                log.releaseYear && 
+            }
+            case 'nostalgia_traveler': {
+              const oldMoviesCount = watchedLogs.filter(log =>
+                log.mediaType === 'movie' &&
+                log.releaseYear &&
                 log.releaseYear < 1990
               ).length;
               shouldEarn = oldMoviesCount >= 10;
               break;
-            
-            case 'marathon_runner':
-              // Bir günde 3+ film kontrolü
+            }
+            case 'marathon_runner': {
               const hasMarathonDay = this.hasMarathonDay(watchedLogs);
               shouldEarn = hasMarathonDay;
               break;
-            
-            case 'century_watcher':
+            }
+            case 'century_watcher': {
               shouldEarn = profile.watchedMovieCount >= 100;
               break;
-            
-            case 'binge_watcher':
+            }
+            case 'binge_watcher': {
               shouldEarn = profile.totalEpisodesWatched >= 50;
               break;
-            
-            case 'time_traveler':
+            }
+            case 'time_traveler': {
               shouldEarn = profile.totalWatchTimeMinutes >= 6000; // 100 saat
               break;
-            
-            case 'critic_master':
-              // Yorum yazılan film sayısı
-              const reviewedMoviesCount = watchedLogs.filter(log => 
+            }
+            case 'critic_master': {
+              const reviewedMoviesCount = watchedLogs.filter(log =>
                 log.review && log.review.trim().length > 0
               ).length;
               shouldEarn = reviewedMoviesCount >= 50;
               break;
-            
-            case 'collector':
-              // İzleme listesindeki film sayısı
+            }
+            case 'collector': {
               const watchlistCount = logs.filter(log => log.type === 'watchlist').length;
               shouldEarn = watchlistCount >= 25;
               break;
+            }
           }
 
           if (shouldEarn) {

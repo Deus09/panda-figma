@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IonDatetime, IonModal, IonItem, IonLabel, IonThumbnail, IonCheckbox, IonButton, IonList } from '@ionic/react';
-import { searchMovies, TMDBMovieResult, TMDBCastMember, getSeriesDetails, searchAll, TMDBMultiSearchResponse, TMDBSearchResult, getSeasonDetails, SeasonDetails as TMDBSeasonDetails } from '../services/tmdb';
+import { IonDatetime, IonModal, IonItem, IonLabel, IonThumbnail, IonCheckbox } from '@ionic/react';
+import { TMDBCastMember, getSeriesDetails, searchAll, TMDBSearchResult, getSeasonDetails, SeasonDetails as TMDBSeasonDetails } from '../services/tmdb';
 import { improveComment, chatWithCast } from '../services/gemini';
 import { LocalStorageService } from '../services/localStorage';
 import { TvSeriesDetails } from '../types/tmdb';
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
+import { MovieLogDraft } from '../types/drafts';
 
 interface AddButtonModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (log?: { selectedMovie?: TMDBMovieResult; tmdbId?: number }) => void;
-  onAddMovieLog?: (log: any) => void;
-  onMovieSelect?: (movie: TMDBMovieResult, id: number) => void;
+  onSave: (log?: { selectedMovie?: SelectedItemBase; tmdbId?: number }) => void;
+  onAddMovieLog?: (log: MovieLogDraft) => void;
+  // onMovieSelect kaldırıldı (kullanılmıyordu)
   prefillData?: {
     title?: string;
     poster?: string;
@@ -27,7 +28,7 @@ interface AddButtonModalProps {
   };
 }
 
-const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, onMovieSelect, prefillData }) => {
+const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, prefillData }) => {
   // Modal view states
   const { t } = useTranslation();
   type ModalView = 'search' | 'episodes';
@@ -49,18 +50,45 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   const [search, setSearch] = useState('');
   const [suggestions, setSuggestions] = useState<TMDBSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedMovie, setSelectedMovie] = useState<TMDBMovieResult | null>(null);
+  // selectedMovie state kaldırıldı (yerine selectedItem kullanılıyor)
   const [tmdbId, setTmdbId] = useState<number | null>(null);
   
   // Yeni state'ler - Akıllı veri aktarımı için
   const [title, setTitle] = useState('');
   const [poster, setPoster] = useState('');
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  interface SelectedItemBase {
+    id: number; // TMDB id veya episode id
+    tmdbId?: number;
+    title?: string;
+    name?: string;
+    poster?: string;
+    poster_path?: string | null;
+  media_type?: string; // TMDB ham alanı; daraltma mediaType üzerinden
+    mediaType?: 'movie' | 'tv';
+    contentType?: 'movie' | 'tv';
+    runtime?: number;
+    seriesId?: string;
+    seriesTitle?: string;
+    seriesPoster?: string;
+    seasonNumber?: number;
+    episodeNumber?: number;
+    episodeId?: number;
+    allSelectedEpisodes?: Array<{
+      id: number;
+      name: string;
+      episode_number: number;
+      still_path?: string | null;
+      runtime?: number | null;
+    }>;
+  }
+  type SelectedItem = SelectedItemBase | null;
+  const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const [comment, setComment] = useState('');
   const [improving, setImproving] = useState(false);
-  const [improved, setImproved] = useState('');
-  const [showImproveAlert, setShowImproveAlert] = useState(false);
+  // İyileştirme kaldırıldı (kullanılmıyordu)
+  // const [improved, setImproved] = useState('');
+  // const [showImproveAlert, setShowImproveAlert] = useState(false);
   const [actionSheetOpen, setActionSheetOpen] = useState(false);
   const [pendingImproved, setPendingImproved] = useState('');
   
@@ -81,6 +109,9 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       setCheckedEpisodes(new Set());
       setSearch('');
       setSelectedMovie(null);
+  // setSelectedMovie(null); // kaldırıldı
+  // setSelectedMovie(null);
+  // setSelectedMovie(null);
       setTmdbId(null);
       setRating(0);
       setHoverRating(null);
@@ -101,19 +132,19 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
 
       // Prefill data varsa kullan
       if (prefillData) {
-        setSelectedItem({
-          title: prefillData.title,
-          name: prefillData.title,
-          poster_path: prefillData.poster,
-          poster: prefillData.poster,
-          tmdbId: prefillData.tmdbId,
-          id: prefillData.tmdbId,
-          mediaType: prefillData.mediaType || 'movie',
-          contentType: prefillData.contentType || 'movie',
-          genres: prefillData.genres || [],
-          releaseYear: prefillData.releaseYear,
-          runtime: prefillData.runtime || 120
-        });
+        if (prefillData.tmdbId) {
+          setSelectedItem({
+            title: prefillData.title,
+            name: prefillData.title,
+            poster_path: prefillData.poster || null,
+              poster: prefillData.poster,
+              tmdbId: prefillData.tmdbId,
+              id: prefillData.tmdbId,
+              mediaType: prefillData.mediaType || 'movie',
+              contentType: prefillData.contentType || prefillData.mediaType || 'movie',
+              runtime: prefillData.runtime || 120
+          });
+        }
         setTmdbId(prefillData.tmdbId || null);
         setWatchList(prefillData.type === 'watchlist');
         setTitle(prefillData.title || '');
@@ -172,7 +203,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   };
 
   // Veri alma fonksiyonu - Bölüm seçim ekranından gelen veriyi işler
-  const handleItemSelected = (item: any) => {
+  const handleItemSelected = (item: SelectedItemBase) => {
     console.log('Item selected:', item);
     setSelectedItem(item);
     setTitle(item.name || item.title || '');
@@ -195,7 +226,8 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     
     // Eğer film ise selectedMovie'yi de set et
     if (item.media_type === 'movie' || item.mediaType === 'movie') {
-      setSelectedMovie(item);
+  // selectedMovie state kaldırıldı; item referansı yeterli
+                    // setSelectedMovie(null);
     }
     
     // Seçim yapıldıktan sonra search view'a dön ve form alanlarını aktif hale getir
@@ -330,16 +362,16 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     
     // Eğer birden fazla bölüm seçildiyse hepsini kaydet
     if (selectedItem.allSelectedEpisodes && selectedItem.allSelectedEpisodes.length > 1) {
-      selectedItem.allSelectedEpisodes.forEach((episode: any) => {
-        const log = {
+      selectedItem.allSelectedEpisodes.forEach((episode) => {
+        const log: MovieLogDraft = {
           title: `${selectedItem.seriesTitle} - S${selectedItem.seasonNumber}E${episode.episode_number}: ${episode.name}`,
           date,
           rating: rating.toString(),
           review: comment,
           poster: episode.still_path ? `https://image.tmdb.org/t/p/w500${episode.still_path}` : selectedItem.poster,
           type: watchList ? 'watchlist' : 'watched',
-          mediaType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
-          contentType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
+          mediaType: selectedItem.mediaType || 'movie',
+          contentType: selectedItem.contentType || selectedItem.mediaType || 'movie',
           tmdbId: episode.id, // ✅ DÜZELTİLDİ: Episode ID'si kullanılıyor, series ID'si değil
           seriesId: selectedItem.seriesId,
           seriesTitle: selectedItem.seriesTitle,
@@ -353,15 +385,15 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
       });
     } else {
       // Tek film/bölüm için normal kaydetme
-      const log = {
+      const log: MovieLogDraft = {
         title: selectedItem.title || selectedItem.name,
         date,
         rating: rating.toString(),
         review: comment,
         poster: selectedItem.poster || (selectedItem.poster_path ? `https://image.tmdb.org/t/p/w500${selectedItem.poster_path}` : ''),
         type: watchList ? 'watchlist' : 'watched',
-        mediaType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
-        contentType: selectedItem.mediaType || 'movie' as 'movie' | 'tv',
+        mediaType: selectedItem.mediaType || 'movie',
+        contentType: selectedItem.contentType || selectedItem.mediaType || 'movie',
         tmdbId: selectedItem.tmdbId || selectedItem.id,
         seriesId: selectedItem.seriesId,
         seriesTitle: selectedItem.seriesTitle,
@@ -375,7 +407,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     }
     
     // Modal'ı kapat
-    onSave({ selectedMovie: selectedItem, tmdbId: selectedItem.tmdbId || selectedItem.id });
+  onSave({ selectedMovie: selectedItem || undefined, tmdbId: selectedItem.tmdbId || selectedItem.id });
   };
 
   // TV dizisi bölümlerini kaydetme fonksiyonu - Artık "İleri" butonu mantığı
@@ -393,19 +425,19 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     const episode = seasonDetails.episodes?.find(ep => ep.id === firstEpisodeId);
     
     if (episode) {
-      const episodeItem = {
+      const episodeItem: SelectedItemBase = {
         id: episode.id,
         name: `${selectedSeries.name} - S${selectedSeason}E${episode.episode_number}: ${episode.name}`,
         title: `${selectedSeries.name} - S${selectedSeason}E${episode.episode_number}: ${episode.name}`,
-        poster_path: episode.still_path || selectedSeries.poster_path,
+        poster_path: episode.still_path || selectedSeries.poster_path || null,
         // Poster URL'ini doğru şekilde oluştur - öncelik sırası: episode still > series poster
-        poster: episode.still_path 
-          ? `https://image.tmdb.org/t/p/w500${episode.still_path}` 
-          : (selectedSeries.poster_path 
-            ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}` 
+        poster: episode.still_path
+          ? `https://image.tmdb.org/t/p/w500${episode.still_path}`
+          : (selectedSeries.poster_path
+            ? `https://image.tmdb.org/t/p/w500${selectedSeries.poster_path}`
             : ''),
-        media_type: 'tv',
         mediaType: 'tv',
+        contentType: 'tv',
         tmdbId: episode.id, // ✅ DÜZELTİLDİ: Episode ID'si kullanılıyor, series ID'si değil
         seriesId: selectedSeries.id.toString(),
         seriesTitle: selectedSeries.name,
@@ -432,9 +464,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
     }
   };
 
-  const handleChatWithCast = () => {
-    setShowCastSelection(true);
-  };
+  // handleChatWithCast kaldırıldı (kullanılmıyordu)
 
   const handleCastSelect = (castMember: TMDBCastMember) => {
     setSelectedCastMember(castMember);
@@ -500,14 +530,14 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                         onClick={() => {
                           if (item.media_type === 'movie') {
                             // Film seçimi - artık direkt ana forma aktar
-                            const movieItem = {
+                            const movieItem: SelectedItemBase = {
                               id: item.id,
                               title: item.title,
                               name: item.title,
                               poster_path: item.poster_path,
                               poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : '',
-                              media_type: 'movie',
                               mediaType: 'movie',
+                              contentType: 'movie',
                               tmdbId: item.id,
                               runtime: 120 // varsayılan
                             };

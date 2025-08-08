@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { IonTextarea, IonModal } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
 import { getMovieSuggestions, MovieSuggestion } from '../services/geminiService';
-import TopHeaderBar from './TopHeaderBar';
 import { useModal } from '../context/ModalContext';
 
 interface AiDiscoveryModalProps {
@@ -43,13 +42,6 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
     }
   };
 
-  const handleReset = () => {
-    setDescription('');
-    setSuggestedMovies([]);
-    setRetryCount(0);
-    setExcludedMovies([]);
-  };
-
   const handleTryAgain = async () => {
     if (retryCount >= MAX_RETRIES) return; // Limite ulaşıldıysa işlemi durdur
 
@@ -68,11 +60,6 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleMovieSelect = (movie: MovieSuggestion) => {
-    onMovieSelect?.(movie);
-    onClose();
   };
 
   const handleMovieClick = (movie: MovieSuggestion) => {

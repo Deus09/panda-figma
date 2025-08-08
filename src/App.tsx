@@ -167,7 +167,7 @@ const AppContent: React.FC = () => {
 
     const handlePushNotificationContent = (event: CustomEvent) => {
       console.log('Opening content from push notification:', event.detail);
-      const { contentType, id, tmdbId } = event.detail;
+      const { contentType, id } = event.detail;
       
       // Modal ile content'i aç
       if (contentType && id) {

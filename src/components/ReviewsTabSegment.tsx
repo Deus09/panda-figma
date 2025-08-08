@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonContent, IonSpinner, IonInfiniteScroll, IonInfiniteScrollContent, IonModal } from '@ionic/react';
+import { IonSpinner, IonInfiniteScroll, IonInfiniteScrollContent, IonModal } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
 import { 
   getMovieReviews, 
@@ -26,8 +26,7 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
   const [allReviews, setAllReviews] = useState<TMDBReview[]>([]);
   const [filteredReviews, setFilteredReviews] = useState<TMDBReview[]>([]);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
+  // Removed: currentPage, setCurrentPage, totalPages, setTotalPages (unused pagination)
   const [error, setError] = useState<string | null>(null);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [filter, setFilter] = useState<FilterState>({
@@ -36,7 +35,7 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
   });
   const [suggestions, setSuggestions] = useState<TMDBSearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
-  const [selectedContent, setSelectedContent] = useState<TMDBSearchResult | null>(null);
+  // Removed: selectedContent (unused state)
   const [showFullReviewModal, setShowFullReviewModal] = useState(false);
   const [selectedReview, setSelectedReview] = useState<TMDBReview | null>(null);
   
@@ -219,7 +218,7 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
         const response = await searchAll(query);
         const combined = [...response.movies, ...response.series];
         setSuggestions(combined);
-      } catch (err) {
+      } catch {
         setSuggestions([]);
       } finally {
         setSearchLoading(false);
@@ -230,7 +229,7 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
   };
 
   const handleContentSelect = async (content: TMDBSearchResult) => {
-    setSelectedContent(content);
+    // selectedContent state kaldırıldı (unused)
     setFilter(prev => ({ ...prev, searchQuery: content.title || content.name || '' }));
     setSuggestions([]);
     
@@ -410,7 +409,7 @@ const ReviewsTabSegment: React.FC<ReviewsTabSegmentProps> = ({ className = '' })
       searchQuery: '',
       mediaType: 'all'
     });
-    setSelectedContent(null);
+    // selectedContent state kaldırıldı
   };
 
   if (loading) {

@@ -1,19 +1,15 @@
 import { IonContent, IonPage } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
 import TopHeaderBar from '../components/TopHeaderBar';
-import MovieCard from '../components/MovieCard';
-import SeriesGroupCard from '../components/SeriesGroupCard';
 import BottomNavBar from '../components/BottomNavBar';
 import FabAddButton from '../components/FabAddButton';
 import FilterModal from '../components/FilterModal';
 import DetailViewModal from '../components/DetailViewModal';  // 🎯 YENİ IMPORT
 import { NetworkStatusIndicator } from '../components/NetworkIndicator';
-import fabAdd from '../assets/fab-add.svg';
 import React, { useState, useEffect, useMemo } from 'react';
 import TabSegment from '../components/TabSegment';
 import LocalStorageService, { MovieLog } from '../services/localStorage';
 import { useModal } from '../context/ModalContext';
-import { useHistory } from 'react-router-dom';
 
 // FilterOptions type'ını tanımla
 export type FilterOptions = {
@@ -25,8 +21,6 @@ export type FilterOptions = {
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
-  const { openModal } = useModal();
-  const history = useHistory();
   const [activeTab, setActiveTab] = useState<'watched' | 'watchlist'>('watched');
   const [movieLogs, setMovieLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -5,10 +5,10 @@ import { useModal } from '../context/ModalContext';
 
 interface ActorDetailModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: () => void; // Modal kapandığında tetiklenecek dış callback
   actorId: number | null;
-  onMovieClick?: (movieId: number) => void;
-  onSeriesClick?: (seriesId: number) => void;
+  onMovieClick?: (movieId: number) => void; // Film kartına tıklandığında opsiyonel
+  onSeriesClick?: (seriesId: number) => void; // Dizi kartına tıklandığında opsiyonel
 }
 
 type FilmographyTab = 'movies' | 'tv';
@@ -100,9 +100,11 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
 
   const handleFilmographyCardClick = (id: number, mediaType: 'movie' | 'tv') => {
     if (mediaType === 'movie') {
+      onMovieClick?.(id); // dış callback
       openModal('movie', id);
     } else if (mediaType === 'tv') {
-      // İsterseniz dizi detay modalı ekleyebilirsiniz
+      onSeriesClick?.(id); // dış callback
+      // İleride dizi detay modalı açılabilir
     }
   };
 
@@ -113,7 +115,7 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
       <div className="w-full h-full bg-[#0C1117] overflow-y-auto">
         {/* Back Button */}
         <button
-          onClick={closeModal}
+          onClick={() => { closeModal(); onClose(); }}
           className="absolute top-12 left-4 z-10 w-6 h-6 flex items-center justify-center"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">

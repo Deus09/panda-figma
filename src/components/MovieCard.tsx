@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { MovieLog } from '../services/localStorage';
 
 type MovieCardProps = {
   title: string;

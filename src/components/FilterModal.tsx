@@ -1,18 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  IonModal, 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonButtons, 
-  IonButton, 
-  IonContent, 
-  IonFooter,
-  IonSegment,
-  IonSegmentButton,
-  IonLabel
-} from '@ionic/react';
+import { IonModal } from '@ionic/react';
 
 export type FilterOptions = {
   contentType: 'all' | 'movie' | 'tv';

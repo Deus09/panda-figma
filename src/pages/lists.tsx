@@ -8,8 +8,36 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import { searchMovies } from '../services/tmdb';
 import styles from './lists.module.css';
 
+// Film tipi tanımları
+interface Film {
+  sira: number;
+  filmAdi: string;
+  yil: number | string; // Bazı listelerde string olabilir
+  yonetmen?: string; // Bazı listelerde opsiyonel
+  imdbPuani?: number; // Bazı listelerde opsiyonel
+  kisaAciklama?: string; // Bazı listelerde opsiyonel
+  kazandigiYil?: number; // Oscar vb listeler için
+  ulke?: string; // Ülke bazlı listeler için
+  tmdbId?: number; // API'den gelen id
+  posterPath?: string; // Poster URL
+}
+
+interface FilmListesi {
+  listeAdi: string;
+  aciklama: string;
+  filmSayisi: number;
+  filmler: Film[];
+}
+
+// Top-level liste interface (gereksiz duplicate kaldırıldı)
+interface Liste extends FilmListesi {}
+
+interface TranslationFunction {
+  (key: string): string;
+}
+
 // Film listesi verileri
-const getFilmListeleri = (t: any) => ({
+const getFilmListeleri = (t: TranslationFunction) => ({
   "filmListeleri": [
     {
       "listeAdi": t('lists.film_lists.imdb_top_10.title'),
@@ -552,26 +580,6 @@ const getFilmListeleri = (t: any) => ({
   ]
 });
 
-interface Film {
-  sira: number;
-  filmAdi: string;
-  yil: number | string;
-  yonetmen?: string;
-  imdbPuani?: number;
-  kisaAciklama?: string;
-  kazandigiYil?: number;
-  ulke?: string;
-  tmdbId?: number;
-  posterPath?: string;
-}
-
-interface Liste {
-  listeAdi: string;
-  aciklama: string;
-  filmSayisi: number;
-  filmler: Film[];
-}
-
 const Lists: React.FC = () => {
   const { t } = useTranslation();
   const [selectedListe, setSelectedListe] = useState<Liste | null>(null);
@@ -589,13 +597,13 @@ const Lists: React.FC = () => {
       const newFilmData = new Map(filmData);
       
       // Tüm filmleri topla
-      const allFilms = (getFilmListeleri(t).filmListeleri as any[]).flatMap(liste => liste.filmler);
-      const uniqueFilms = allFilms.filter((film: any, index: number, self: any[]) => 
-        index === self.findIndex((f: any) => f.filmAdi === film.filmAdi)
+      const allFilms = (getFilmListeleri(t).filmListeleri as FilmListesi[]).flatMap(liste => liste.filmler);
+      const uniqueFilms = allFilms.filter((film: Film, index: number, self: Film[]) => 
+        index === self.findIndex((f: Film) => f.filmAdi === film.filmAdi)
       );
       
       // Cache'de olmayan filmleri filtrele
-      const uncachedFilms = uniqueFilms.filter((film: any) => !newFilmData.has(film.filmAdi));
+      const uncachedFilms = uniqueFilms.filter((film: Film) => !newFilmData.has(film.filmAdi));
       
       if (uncachedFilms.length === 0) {
         console.log('All films already cached on initial load');
@@ -606,7 +614,7 @@ const Lists: React.FC = () => {
       console.log(`Initial loading: ${uncachedFilms.length} unique films in parallel...`);
       
       // Paralel API çağrıları
-      const searchPromises = uncachedFilms.map(async (film: any) => {
+      const searchPromises = uncachedFilms.map(async (film: Film) => {
         try {
           const searchResults = await searchMovies(film.filmAdi);
           if (searchResults.length > 0) {
@@ -629,7 +637,7 @@ const Lists: React.FC = () => {
       const results = await Promise.all(searchPromises);
       
       // Sonuçları Map'e ekle
-      results.forEach((result: any) => {
+      results.forEach((result: { filmAdi: string; data: { id: number; posterPath?: string } } | null) => {
         if (result) {
           newFilmData.set(result.filmAdi, result.data);
         }

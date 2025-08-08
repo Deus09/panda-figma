@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getMovieDetails, getMovieCast, getMovieTrailerKey, getSimilarMovies, TMDBMovieDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
-import { LocalStorageService } from '../services/localStorage';
+import { LocalStorageService, MovieLog } from '../services/localStorage';
 import ActorDetailModal from './ActorDetailModal';
 import AddButtonModal from './AddButtonModal';
 import ToastNotification from './ToastNotification';
@@ -14,7 +14,7 @@ interface MovieDetailModalProps {
 }
 
 const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movieId }) => {
-  const { openModal, closeModal } = useModal();
+  const { openModal } = useModal();
   const { t } = useTranslation();
   const [movieDetails, setMovieDetails] = useState<TMDBMovieDetails | null>(null);
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
@@ -32,7 +32,7 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
   
   // Film ekleme modalı state'i
   const [showAddMovieModal, setShowAddMovieModal] = useState(false);
-  const [prefillData, setPrefillData] = useState<any>(null);
+  const [prefillData, setPrefillData] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     if (open && movieId) {
@@ -208,27 +208,6 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       if (newType === 'watched') {
         setShowToast(true);
       }
-    }
-  };
-
-  const handleRatingClick = () => {
-    // Toast'u kapat
-    setShowToast(false);
-    
-    // Film ekleme modalını aç
-    if (movieDetails) {
-      setPrefillData({
-        title: movieDetails.title,
-        poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : '',
-        tmdbId: movieDetails.id,
-        mediaType: 'movie',
-        contentType: 'movie',
-        genres: movieDetails.genres?.map(g => g.name) || [],
-        releaseYear: movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : undefined,
-        runtime: movieDetails.runtime || 120,
-        type: 'watched' // Zaten izlendi olarak işaretlendiği için
-      });
-      setShowAddMovieModal(true);
     }
   };
 
@@ -465,13 +444,13 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
             setShowAddMovieModal(false);
             setPrefillData(null);
           }}
-          onSave={(log?: any) => {
+          onSave={(log?: MovieLog) => {
             setShowAddMovieModal(false);
             setPrefillData(null);
             // Başarı mesajı göster
             console.log('Film puan ve yorum ile güncellendi:', log);
           }}
-          onAddMovieLog={(log: any) => {
+          onAddMovieLog={(log: MovieLog) => {
             // Film log'unu güncelle
             if (log && movieDetails) {
               LocalStorageService.updateMovieLog(log.id, {

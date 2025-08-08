@@ -7,10 +7,9 @@ import {
   IonContent, 
   IonButton,
   IonIcon,
-  IonBackButton,
   IonButtons
 } from '@ionic/react';
-import { close, star, calendar, chatbubbles, play } from 'ionicons/icons';
+import { close, star, calendar } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
 import { LocalStorageService, MovieLog } from '../services/localStorage';
 import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, getMovieCast, TMDBCastMember } from '../services/tmdb';
@@ -288,30 +287,6 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
         'Julia': '💃', // Roberts
       };
       
-      // Genre-based emojis
-      const genreEmojis: { [key: string]: string } = {
-        'Action': '💥',
-        'Adventure': '🗺️',
-        'Comedy': '😂',
-        'Drama': '🎭',
-        'Horror': '👻',
-        'Romance': '💕',
-        'Sci-Fi': '🚀',
-        'Thriller': '😱',
-        'Fantasy': '🧙‍♂️',
-        'Animation': '🎨',
-        'Crime': '🕵️',
-        'Mystery': '🔍',
-        'War': '⚔️',
-        'Western': '🤠',
-        'Musical': '🎵',
-        'Documentary': '📹',
-        'Family': '👨‍👩‍👧‍👦',
-        'History': '📚',
-        'Biography': '👤',
-        'Sport': '⚽'
-      };
-      
       // Genre-based emoji combinations
       const genreEmojiCombos: { [key: string]: string } = {
         'Action': '💥⚡',
@@ -337,7 +312,6 @@ const DetailViewModal: React.FC<DetailViewModalProps> = ({
       };
       
       const actorEmoji = actorEmojis[firstName] || '🎭';
-      const genreEmoji = genreEmojis[movieGenre] || '🎭';
       const genreEmojiCombo = genreEmojiCombos[movieGenre] || '🎭';
       const finalEmoji = actorEmoji !== '🎭' ? actorEmoji : genreEmojiCombo;
       

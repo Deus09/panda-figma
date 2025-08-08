@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getSeriesDetails, getSeriesCast, getSeriesTrailerKey, getSimilarSeries, TMDBSeriesDetails, TMDBCastMember, TMDBMovieResult } from '../services/tmdb';
 import { LocalStorageService } from '../services/localStorage';
-import ActorDetailModal from './ActorDetailModal';
+// Removed: ActorDetailModal import (unused)
 import ToastNotification from './ToastNotification';
 import { useModal } from '../context/ModalContext';
 
 interface SeriesDetailModalProps {
   open: boolean;
-  onClose: () => void;
+  onClose: () => void; // Kullanılmıyor ama prop interface için tutulmalı
   seriesId: number | null;
 }
 
-const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, seriesId }) => {
+const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose: _, seriesId }) => {
   const { t } = useTranslation();
   const { openModal, closeModal } = useModal();
   const [seriesDetails, setSeriesDetails] = useState<TMDBSeriesDetails | null>(null);
@@ -22,8 +22,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [similarSeries, setSimilarSeries] = useState<TMDBMovieResult[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<number | null>(null);
-  const [actorModalOpen, setActorModalOpen] = useState(false);
-  const [selectedActorId, setSelectedActorId] = useState<number | null>(null);
+  // Removed: actorModalOpen, selectedActorId (unused actor modal states)
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -79,10 +78,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
     openModal('actor', actorId);
   };
 
-  const handleActorModalClose = () => {
-    setActorModalOpen(false);
-    setSelectedActorId(null);
-  };
+  // Removed: handleActorModalClose (unused function)
 
   // İzleme durumu state'i
   const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);
@@ -204,10 +200,7 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose, se
     }
   };
 
-  const formatYear = (dateString?: string) => {
-    if (!dateString) return '';
-    return new Date(dateString).getFullYear().toString();
-  };
+  // Removed: formatYear function (unused utility)
 
   if (!open) return null;
 

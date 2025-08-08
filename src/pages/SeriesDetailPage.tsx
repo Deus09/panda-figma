@@ -5,7 +5,6 @@ import {
   IonContent,
   IonHeader,
   IonToolbar,
-  IonTitle,
   IonBackButton,
   IonButtons,
   IonProgressBar,
@@ -13,7 +12,7 @@ import {
 } from '@ionic/react';
 import { checkmark, play, time, chevronBack } from 'ionicons/icons';
 import { LocalStorageService, MovieLog } from '../services/localStorage';
-import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails, Episode } from '../services/tmdb';
+import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails } from '../services/tmdb';
 import SeasonAccordion from '../components/SeasonAccordion';
 import AddButtonModal from '../components/AddButtonModal';
 import ToastNotification from '../components/ToastNotification';
@@ -30,7 +29,7 @@ const SeriesDetailPage: React.FC = () => {
   
   // Film ekleme modalı state'i
   const [showAddMovieModal, setShowAddMovieModal] = useState(false);
-  const [prefillData, setPrefillData] = useState<any>(null);
+  const [prefillData, setPrefillData] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -139,7 +138,6 @@ const SeriesDetailPage: React.FC = () => {
     watchedEpisodeCount,
     progressPercentage,
     totalWatchedMinutes,
-    totalSeriesMinutes,
     remainingMinutes,
     watchedEpisodeIds,
   } = useMemo(() => {    
@@ -161,7 +159,6 @@ const SeriesDetailPage: React.FC = () => {
       watchedEpisodeCount: watchedEpCount,
       progressPercentage: totalEpCount > 0 ? (watchedEpCount / totalEpCount) * 100 : 0,
       totalWatchedMinutes: watchedMins,
-      totalSeriesMinutes: totalSeriesMins,
       remainingMinutes: totalSeriesMins - watchedMins,
       // ❗ ÖNEMLİ FİKS: watchedEpisodeIds Set'inde de String kullanıyoruz
       watchedEpisodeIds: new Set(allEpisodes.filter(ep => watchedLogsSet.has(String(ep.id))).map(ep => String(ep.id))),
@@ -323,32 +320,6 @@ const SeriesDetailPage: React.FC = () => {
     }
   };
 
-  const handleRatingClick = () => {
-    // Toast'u kapat
-    setShowToast(false);
-    
-    // Dizi ekleme modalını aç
-    if (seriesApiData) {
-      setPrefillData({
-        title: seriesApiData.name,
-        poster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : '',
-        tmdbId: seriesApiData.id,
-        mediaType: 'tv',
-        contentType: 'tv',
-        genres: seriesApiData.genres?.map(g => g.name) || [],
-        releaseYear: seriesApiData.first_air_date ? new Date(seriesApiData.first_air_date).getFullYear() : undefined,
-        runtime: 45, // Ortalama bölüm süresi
-        type: 'watched', // Zaten izlendi olarak işaretlendiği için
-        seasonCount: seriesApiData.number_of_seasons,
-        episodeCount: seriesApiData.number_of_episodes,
-        seriesId: seriesId,
-        seriesTitle: seriesApiData.name,
-        seriesPoster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : ''
-      });
-      setShowAddMovieModal(true);
-    }
-  };
-
   if (isLoading) {
     return <IonPage><IonContent className="ion-padding">Yükleniyor...</IonContent></IonPage>;
   }
@@ -497,13 +468,13 @@ const SeriesDetailPage: React.FC = () => {
             setShowAddMovieModal(false);
             setPrefillData(null);
           }}
-          onSave={(log?: any) => {
+          onSave={(log?: MovieLog) => {
             setShowAddMovieModal(false);
             setPrefillData(null);
             // Başarı mesajı göster
             console.log('Dizi puan ve yorum ile güncellendi:', log);
           }}
-          onAddMovieLog={(log: any) => {
+          onAddMovieLog={(log: MovieLog) => {
             // Dizi log'unu güncelle
             if (log && seriesApiData) {
               LocalStorageService.updateMovieLog(log.id, {
