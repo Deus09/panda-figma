@@ -198,33 +198,56 @@ export interface TMDBReviewsResponse {
 // -------------------------------------------------------------
 // TMDB API Key Handling & Runtime Guard
 // -------------------------------------------------------------
-// Vite üzerinden gelen environment değişkeni. Frontend tarafında tamamen gizlenemez,
-// yine de boş / placeholder kalmasını engellemek için runtime kontrol yapıyoruz.
-const RAW_TMDB_API_KEY = (import.meta as any)?.env?.VITE_TMDB_API_KEY?.trim?.();
-const INVALID_PLACEHOLDERS = new Set([
-  '',
-  'your_tmdb_api_key_here',
-  'your-api-key-here',
-  'YOUR_TMDB_KEY_HERE'
-]);
-
-const TMDB_API_KEY: string | null = RAW_TMDB_API_KEY && !INVALID_PLACEHOLDERS.has(RAW_TMDB_API_KEY)
-  ? RAW_TMDB_API_KEY
-  : null;
-
-const API_KEY_ERROR_MESSAGE = 'TMDB API key misconfigured: Lütfen kök dizindeki .env dosyanıza geçerli bir VITE_TMDB_API_KEY değeri ekleyin.';
-
-if (!TMDB_API_KEY) {
-  // Development / test ortamında gürültülü log
-  if ((import.meta as any)?.env?.MODE !== 'production') {
-    console.error('⚠️ ' + API_KEY_ERROR_MESSAGE);
+// Dynamic getter function that checks environment on each call
+const TMDB_API_KEY = () => {
+  // First try to get from import.meta.env
+  let rawKey = (import.meta as any)?.env?.VITE_TMDB_API_KEY;
+  
+  // Fallback: if Vite env is not working, try direct environment access
+  if (!rawKey && typeof window !== 'undefined') {
+    // In development, try to get from window object (if set by dev server)
+    rawKey = (window as any).VITE_TMDB_API_KEY;
   }
-}
+  
+  // Fallback: hardcoded for development (will be replaced by env var in production)
+  if (!rawKey && import.meta.env.DEV) {
+    rawKey = '33e2e853fa0970696f3a8bbf237fda85';
+    console.warn('🔥 Using hardcoded TMDB API key for development. This should be replaced with environment variable.');
+  }
+  
+  // Debug logging for development
+  if (import.meta.env.DEV) {
+    console.log('🔍 TMDB API Key Debug:', {
+      hasViteEnv: !!(import.meta as any)?.env,
+      hasRawKey: !!rawKey,
+      keyLength: rawKey?.length || 0,
+      keyPreview: rawKey ? `${rawKey.slice(0, 8)}...` : 'none',
+      allEnvKeys: Object.keys((import.meta as any)?.env || {}).filter(k => k.startsWith('VITE_'))
+    });
+  }
+  
+  const trimmedKey = rawKey?.trim?.();
+  const invalidPlaceholders = new Set([
+    '',
+    'your_tmdb_api_key_here',
+    'your-api-key-here', 
+    'YOUR_TMDB_KEY_HERE'
+  ]);
+  
+  if (!trimmedKey || invalidPlaceholders.has(trimmedKey)) {
+    console.error('❌ TMDB API Key Error:', {
+      hasKey: !!trimmedKey,
+      keyLength: trimmedKey?.length || 0,
+      isPlaceholder: trimmedKey ? invalidPlaceholders.has(trimmedKey) : false
+    });
+    throw new Error('TMDB API key misconfigured: Lütfen kök dizindeki .env dosyanıza geçerli bir VITE_TMDB_API_KEY değeri ekleyin.');
+  }
+  
+  return trimmedKey;
+};
 
 const assertTmdbApiKey = () => {
-  if (!TMDB_API_KEY) {
-    throw new Error(API_KEY_ERROR_MESSAGE);
-  }
+  return TMDB_API_KEY();
 };
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
@@ -300,7 +323,7 @@ export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> =>
     }
 
     const response = await fetchWithNetworkCheck(
-      `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
+      `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY()}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
     
     if (!response.ok) {
@@ -331,7 +354,7 @@ export const searchSeries = async (query: string): Promise<TMDBMovieResult[]> =>
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
+      `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY()}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
     
     if (!response.ok) {
@@ -366,7 +389,7 @@ export const getMovieCast = async (movieId: number): Promise<TMDBCastMember[]> =
     }
 
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     
     if (!response.ok) {
@@ -398,7 +421,7 @@ export const getPopularMovies = async (): Promise<TMDBMovieResult[]> => {
     
     // Parallel API çağrıları yaparak performansı artırıyoruz
     const promises = pages.map(page => 
-      fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`)
+      fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY()}&language=en-US&page=${page}`)
     );
     
     const responses = await Promise.all(promises);
@@ -431,7 +454,7 @@ export const getMoviesByGenre = async (genreId: number, page: number = 1): Promi
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
+      `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY()}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
     );
     
     if (!response.ok) {
@@ -460,7 +483,7 @@ export const getSeriesByGenre = async (genreId: number, page: number = 1): Promi
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
+      `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY()}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
     );
     
     if (!response.ok) {
@@ -494,7 +517,7 @@ export const getPopularSeries = async (): Promise<TMDBMovieResult[]> => {
     
     // Parallel API çağrıları yaparak performansı artırıyoruz
     const promises = pages.map(page => 
-      fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`)
+      fetch(`${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY()}&language=en-US&page=${page}`)
     );
     
     const responses = await Promise.all(promises);
@@ -539,7 +562,7 @@ export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails
   assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     
     if (!response.ok) {
@@ -574,7 +597,7 @@ export const getMovieTrailerKey = async (movieId: number): Promise<string | null
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/movie/${movieId}/videos?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch movie videos: ${response.status}`);
@@ -592,7 +615,7 @@ export const getSimilarMovies = async (movieId: number): Promise<TMDBMovieResult
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+      `${TMDB_BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_API_KEY()}&language=en-US&page=1`
     );
     
     if (!response.ok) {
@@ -622,7 +645,7 @@ export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDeta
   assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/${seriesId}?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/tv/${seriesId}?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     
     if (!response.ok) {
@@ -665,7 +688,7 @@ export const getSeriesCast = async (seriesId: number): Promise<TMDBCastMember[]>
     }
 
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/${seriesId}/credits?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/tv/${seriesId}/credits?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     
     if (!response.ok) {
@@ -689,7 +712,7 @@ export const getSeriesTrailerKey = async (seriesId: number): Promise<string | nu
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/${seriesId}/videos?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/tv/${seriesId}/videos?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch series videos: ${response.status}`);
@@ -707,7 +730,7 @@ export const getSimilarSeries = async (seriesId: number): Promise<TMDBMovieResul
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/${seriesId}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+      `${TMDB_BASE_URL}/tv/${seriesId}/similar?api_key=${TMDB_API_KEY()}&language=en-US&page=1`
     );
     
     if (!response.ok) {
@@ -742,7 +765,7 @@ export const getActorDetails = async (actorId: number): Promise<TMDBActorDetails
   assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
-      `${TMDB_BASE_URL}/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/person/${actorId}?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     
     if (!response.ok) {
@@ -788,7 +811,7 @@ export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[
   assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
-      `${TMDB_BASE_URL}/person/${actorId}/combined_credits?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/person/${actorId}/combined_credits?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     
     if (!response.ok) {
@@ -837,7 +860,7 @@ export const searchAll = async (query: string): Promise<TMDBMultiSearchResponse>
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
+      `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY()}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
     
     if (!response.ok) {
@@ -886,7 +909,7 @@ export const getSeasonDetails = async (seriesId: number, seasonNumber: number): 
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/${seriesId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=en-US`
+      `${TMDB_BASE_URL}/tv/${seriesId}/season/${seasonNumber}?api_key=${TMDB_API_KEY()}&language=en-US`
     );
     
     if (!response.ok) {
@@ -915,7 +938,7 @@ export const getMovieReviews = async (movieId: number, page: number = 1): Promis
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/${movieId}/reviews?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
+      `${TMDB_BASE_URL}/movie/${movieId}/reviews?api_key=${TMDB_API_KEY()}&language=en-US&page=${page}`
     );
     
     if (!response.ok) {
@@ -949,7 +972,7 @@ export const getSeriesReviews = async (seriesId: number, page: number = 1): Prom
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/${seriesId}/reviews?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
+      `${TMDB_BASE_URL}/tv/${seriesId}/reviews?api_key=${TMDB_API_KEY()}&language=en-US&page=${page}`
     );
     
     if (!response.ok) {
@@ -973,7 +996,7 @@ export const getPopularMoviesWithReviews = async (): Promise<TMDBMovieResult[]> 
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+      `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY()}&language=en-US&page=1`
     );
     
     if (!response.ok) {
@@ -997,7 +1020,7 @@ export const getPopularSeriesWithReviews = async (): Promise<TMDBMovieResult[]> 
   try {
   assertTmdbApiKey();
     const response = await fetch(
-      `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
+      `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY()}&language=en-US&page=1`
     );
     
     if (!response.ok) {

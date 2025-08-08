@@ -114,8 +114,14 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
 
-    // Push notifications initialization
+    // Push notifications initialization - skip in development
     const initPushNotifications = async () => {
+      // Skip push notifications in development to avoid service worker CORS issues
+      if (import.meta.env.DEV) {
+        console.log('⏭️ Skipping push notifications in development mode');
+        return;
+      }
+      
       try {
         await initializePushNotifications();
         console.log('✅ Push notifications initialized successfully');

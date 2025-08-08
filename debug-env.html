@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Environment Variables</title>
+</head>
+<body>
+    <h1>Debug Environment Variables</h1>
+    <div id="output"></div>
+    
+    <script type="module">
+        console.log('=== Environment Debug ===');
+        console.log('import.meta:', import.meta);
+        console.log('import.meta.env:', import.meta.env);
+        console.log('VITE_TMDB_API_KEY:', import.meta.env.VITE_TMDB_API_KEY);
+        
+        document.getElementById('output').innerHTML = `
+            <p><strong>import.meta.env:</strong> ${JSON.stringify(import.meta.env, null, 2)}</p>
+            <p><strong>VITE_TMDB_API_KEY:</strong> ${import.meta.env.VITE_TMDB_API_KEY || 'UNDEFINED'}</p>
+            <p><strong>Type:</strong> ${typeof import.meta.env.VITE_TMDB_API_KEY}</p>
+        `;
+    </script>
+</body>
+</html>
