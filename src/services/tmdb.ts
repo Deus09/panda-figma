@@ -195,7 +195,37 @@ export interface TMDBReviewsResponse {
   total_results: number;
 }
 
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || 'your-api-key-here';
+// -------------------------------------------------------------
+// TMDB API Key Handling & Runtime Guard
+// -------------------------------------------------------------
+// Vite üzerinden gelen environment değişkeni. Frontend tarafında tamamen gizlenemez,
+// yine de boş / placeholder kalmasını engellemek için runtime kontrol yapıyoruz.
+const RAW_TMDB_API_KEY = (import.meta as any)?.env?.VITE_TMDB_API_KEY?.trim?.();
+const INVALID_PLACEHOLDERS = new Set([
+  '',
+  'your_tmdb_api_key_here',
+  'your-api-key-here',
+  'YOUR_TMDB_KEY_HERE'
+]);
+
+const TMDB_API_KEY: string | null = RAW_TMDB_API_KEY && !INVALID_PLACEHOLDERS.has(RAW_TMDB_API_KEY)
+  ? RAW_TMDB_API_KEY
+  : null;
+
+const API_KEY_ERROR_MESSAGE = 'TMDB API key misconfigured: Lütfen kök dizindeki .env dosyanıza geçerli bir VITE_TMDB_API_KEY değeri ekleyin.';
+
+if (!TMDB_API_KEY) {
+  // Development / test ortamında gürültülü log
+  if ((import.meta as any)?.env?.MODE !== 'production') {
+    console.error('⚠️ ' + API_KEY_ERROR_MESSAGE);
+  }
+}
+
+const assertTmdbApiKey = () => {
+  if (!TMDB_API_KEY) {
+    throw new Error(API_KEY_ERROR_MESSAGE);
+  }
+};
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 // Network aware API wrapper
@@ -258,6 +288,7 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     // Check cache first
     const cacheKey = `search_movies_${query.toLowerCase().trim()}`;
     const cached = cache.get(cacheKey);
@@ -298,6 +329,7 @@ export const searchMovies = async (query: string): Promise<TMDBMovieResult[]> =>
 
 export const searchSeries = async (query: string): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
@@ -321,6 +353,7 @@ export const searchSeries = async (query: string): Promise<TMDBMovieResult[]> =>
 
 export const getMovieCast = async (movieId: number): Promise<TMDBCastMember[]> => {
   try {
+  assertTmdbApiKey();
     // Validate movieId
     if (!movieId || isNaN(movieId) || movieId <= 0) {
       throw new Error('Invalid movie ID provided');
@@ -358,6 +391,7 @@ export const getMovieCast = async (movieId: number): Promise<TMDBCastMember[]> =
 
 export const getPopularMovies = async (): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     // 5 sayfa çekerek yaklaşık 100 film elde ediyoruz (20 film/sayfa)
     const pages = [1, 2, 3, 4, 5];
     const allMovies: TMDBMovieResult[] = [];
@@ -395,6 +429,7 @@ export const getPopularMovies = async (): Promise<TMDBMovieResult[]> => {
 
 export const getMoviesByGenre = async (genreId: number, page: number = 1): Promise<TMDBPaginatedResponse> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
     );
@@ -423,6 +458,7 @@ export const getMoviesByGenre = async (genreId: number, page: number = 1): Promi
 
 export const getSeriesByGenre = async (genreId: number, page: number = 1): Promise<TMDBPaginatedResponse> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${genreId}&language=en-US&page=${page}&sort_by=popularity.desc`
     );
@@ -451,6 +487,7 @@ export const getSeriesByGenre = async (genreId: number, page: number = 1): Promi
 
 export const getPopularSeries = async (): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     // 5 sayfa çekerek yaklaşık 100 dizi elde ediyoruz (20 dizi/sayfa)
     const pages = [1, 2, 3, 4, 5];
     const allSeries: TMDBMovieResult[] = [];
@@ -499,6 +536,7 @@ export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails
 
   console.log(`CACHE MISS: Fetching movie ${movieId} from API.`);
   try {
+  assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`
@@ -534,6 +572,7 @@ export const getMovieDetails = async (movieId: number): Promise<TMDBMovieDetails
 
 export const getMovieTrailerKey = async (movieId: number): Promise<string | null> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`
     );
@@ -551,6 +590,7 @@ export const getMovieTrailerKey = async (movieId: number): Promise<string | null
 
 export const getSimilarMovies = async (movieId: number): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/${movieId}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=1`
     );
@@ -579,6 +619,7 @@ export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDeta
 
   console.log(`CACHE MISS: Fetching series ${seriesId} from API.`);
   try {
+  assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${seriesId}?api_key=${TMDB_API_KEY}&language=en-US`
@@ -616,6 +657,7 @@ export const getSeriesDetails = async (seriesId: number): Promise<TMDBSeriesDeta
 
 export const getSeriesCast = async (seriesId: number): Promise<TMDBCastMember[]> => {
   try {
+  assertTmdbApiKey();
     // Check cache first
     const cached = castCache.get(seriesId);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
@@ -645,6 +687,7 @@ export const getSeriesCast = async (seriesId: number): Promise<TMDBCastMember[]>
 
 export const getSeriesTrailerKey = async (seriesId: number): Promise<string | null> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${seriesId}/videos?api_key=${TMDB_API_KEY}&language=en-US`
     );
@@ -662,6 +705,7 @@ export const getSeriesTrailerKey = async (seriesId: number): Promise<string | nu
 
 export const getSimilarSeries = async (seriesId: number): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${seriesId}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=1`
     );
@@ -695,6 +739,7 @@ export const getActorDetails = async (actorId: number): Promise<TMDBActorDetails
 
   console.log(`CACHE MISS: Fetching actor ${actorId} from API.`);
   try {
+  assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
@@ -740,6 +785,7 @@ export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[
 
   console.log(`CACHE MISS: Fetching actor credits ${actorId} from API.`);
   try {
+  assertTmdbApiKey();
     // 2. Önbellekte yoksa veya süresi dolmuşsa API'ye git
     const response = await fetch(
       `${TMDB_BASE_URL}/person/${actorId}/combined_credits?api_key=${TMDB_API_KEY}&language=en-US`
@@ -789,6 +835,7 @@ export const getActorCredits = async (actorId: number): Promise<TMDBActorCredit[
 
 export const searchAll = async (query: string): Promise<TMDBMultiSearchResponse> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(query)}&page=1&include_adult=false`
     );
@@ -837,6 +884,7 @@ export const searchAll = async (query: string): Promise<TMDBMultiSearchResponse>
 
 export const getSeasonDetails = async (seriesId: number, seasonNumber: number): Promise<SeasonDetails> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${seriesId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=en-US`
     );
@@ -865,6 +913,7 @@ export const getMovieReviews = async (movieId: number, page: number = 1): Promis
 
   console.log(`CACHE MISS: Fetching movie reviews ${movieId} page ${page} from API.`);
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/${movieId}/reviews?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
     );
@@ -898,6 +947,7 @@ export const getSeriesReviews = async (seriesId: number, page: number = 1): Prom
 
   console.log(`CACHE MISS: Fetching series reviews ${seriesId} page ${page} from API.`);
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/${seriesId}/reviews?api_key=${TMDB_API_KEY}&language=en-US&page=${page}`
     );
@@ -921,6 +971,7 @@ export const getSeriesReviews = async (seriesId: number, page: number = 1): Prom
 
 export const getPopularMoviesWithReviews = async (): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
     );
@@ -944,6 +995,7 @@ export const getPopularMoviesWithReviews = async (): Promise<TMDBMovieResult[]> 
 
 export const getPopularSeriesWithReviews = async (): Promise<TMDBMovieResult[]> => {
   try {
+  assertTmdbApiKey();
     const response = await fetch(
       `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`
     );

@@ -135,6 +135,22 @@ VITE_GEMINI_API_KEY=your_gemini_api_key
 PLAYWRIGHT_BASE_URL=http://localhost:5173
 ```
 
+### TMDB API Anahtarı Kurulumu
+
+Uygulama TMDB (The Movie Database) herkese açık okuma uçlarını kullanır. Frontend tarafında anahtar tam olarak gizlenemez; bu nedenle sadece okuma (read-only) yetkili bir key kullanın.
+
+1. TMDB hesabı açın ve API bölümünden bir v4 auth key / v3 key üretin.
+2. Proje kökünde `.env` dosyası oluşturun (örnek: `cp env.example .env`).
+3. `VITE_TMDB_API_KEY` değerini girin.
+4. Geliştirme sunucusunu yeniden başlatın.
+
+Koruma: Build veya runtime sırasında geçersiz (`your_tmdb_api_key_here` vb.) anahtar tespit edilirse konsolda uyarı verilir ve herhangi bir TMDB isteği yapılmadan hata fırlatılır. Böylece boş anahtar ile yanlışlıkla rate limit veya hata spam'i oluşmaz.
+
+Notlar:
+- Değişken Vite gereği `VITE_` prefixine sahip olmalıdır.
+- Production ortamında CI pipeline’da `.env` veya gizli yönetimi (örn. GitHub Actions Secrets) aracılığıyla enjekte edilmelidir.
+- Daha ileri güvenlik için backend proxy katmanı eklenebilir (yazma/özel istekler için gereklidir).
+
 ## Project Structure
 
 ```

@@ -21,12 +21,6 @@ const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
   const [selectedMovie, setSelectedMovie] = useState<any>(null);
   const [tmdbId, setTmdbId] = useState<number | null>(null);
 
-  // AddButtonModal'dan seçilen movie bilgisini al
-  const handleMovieSelect = (movie: any, id: number) => {
-    setSelectedMovie(movie);
-    setTmdbId(id);
-  };
-
   const handleSave = (movie?: any, id?: number) => {
     setOpen(false);
     if (movie && id) {
@@ -86,7 +80,6 @@ const FabAddButton: React.FC<FabAddButtonProps> = ({ onAddMovieLog }) => {
           }
         }}
         onAddMovieLog={onAddMovieLog}
-        onMovieSelect={handleMovieSelect}
       />
       {/* Toast Notification */}
       <ToastNotification

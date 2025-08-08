@@ -15,6 +15,7 @@ trace.zip
 # Test environments (keep examples)
 .env.test
 .env.e2e
+.env
 
 # production
 /dist
