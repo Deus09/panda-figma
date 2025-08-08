@@ -7,6 +7,14 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
+trace.zip
+*.trace
+
+# Test environments (keep examples)
+.env.test
+.env.e2e
 
 # production
 /dist

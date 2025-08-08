@@ -1,0 +1,2225 @@
+{
+  "statistics": {
+    "detectionDate": "2025-08-08T07:18:34.417Z",
+    "formats": {
+      "javascript": {
+        "sources": {
+          "/workspaces/moviloi/src/pages/social.tsx": {
+            "lines": 6,
+            "tokens": 64,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/lists.tsx": {
+            "lines": 127,
+            "tokens": 1166,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/home.tsx": {
+            "lines": 90,
+            "tokens": 732,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/explore.tsx": {
+            "lines": 234,
+            "tokens": 1933,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/SeriesDetailPage.tsx": {
+            "lines": 151,
+            "tokens": 1293,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/PushNotificationTestPageNew.tsx": {
+            "lines": 75,
+            "tokens": 587,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 75,
+            "duplicatedTokens": 587,
+            "percentage": 100,
+            "percentageTokens": 100,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/PushNotificationTestPage.tsx": {
+            "lines": 75,
+            "tokens": 587,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 75,
+            "duplicatedTokens": 587,
+            "percentage": 100,
+            "percentageTokens": 100,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/NotificationSettingsPage.tsx": {
+            "lines": 130,
+            "tokens": 1006,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/NetworkTestPage.tsx": {
+            "lines": 42,
+            "tokens": 366,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/ThemeContext.tsx": {
+            "lines": 0,
+            "tokens": 3,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/NetworkContext.tsx": {
+            "lines": 0,
+            "tokens": 3,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/ModalContext.tsx": {
+            "lines": 0,
+            "tokens": 9,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/AuthContext.tsx": {
+            "lines": 0,
+            "tokens": 3,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/TopHeaderBar.tsx": {
+            "lines": 19,
+            "tokens": 167,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ToastNotification.tsx": {
+            "lines": 4,
+            "tokens": 14,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/TabSegment.tsx": {
+            "lines": 9,
+            "tokens": 104,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SocialTabSegment.tsx": {
+            "lines": 9,
+            "tokens": 104,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SkeletonLoader.tsx": {
+            "lines": 40,
+            "tokens": 358,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SeriesGroupCard.tsx": {
+            "lines": 61,
+            "tokens": 477,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SeriesDetailModal.tsx": {
+            "lines": 203,
+            "tokens": 1652,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 180,
+            "duplicatedTokens": 1453,
+            "percentage": 88.67,
+            "percentageTokens": 87.95,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SeasonAccordion.tsx": {
+            "lines": 70,
+            "tokens": 575,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SearchTabSegment.tsx": {
+            "lines": 4,
+            "tokens": 62,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ReviewsTabSegment.tsx": {
+            "lines": 379,
+            "tokens": 3068,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/PersonCard.tsx": {
+            "lines": 12,
+            "tokens": 93,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/NetworkIndicator.tsx": {
+            "lines": 55,
+            "tokens": 403,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/NetworkErrorHandler.tsx": {
+            "lines": 36,
+            "tokens": 273,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/MoviePosterCard.tsx": {
+            "lines": 5,
+            "tokens": 30,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/MovieDetailModal.tsx": {
+            "lines": 245,
+            "tokens": 1900,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 180,
+            "duplicatedTokens": 1453,
+            "percentage": 73.47,
+            "percentageTokens": 76.47,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/MovieCard.tsx": {
+            "lines": 46,
+            "tokens": 362,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/LanguageSwitcher.tsx": {
+            "lines": 48,
+            "tokens": 383,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/FilterModal.tsx": {
+            "lines": 96,
+            "tokens": 712,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/FilmographyCard.tsx": {
+            "lines": 6,
+            "tokens": 68,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/FabAddButton.tsx": {
+            "lines": 62,
+            "tokens": 463,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ExploreTabSegment.tsx": {
+            "lines": 9,
+            "tokens": 104,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/DetailViewModal.tsx": {
+            "lines": 273,
+            "tokens": 2378,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/CategoryChip.tsx": {
+            "lines": 5,
+            "tokens": 29,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/CastSelectionModal.tsx": {
+            "lines": 35,
+            "tokens": 350,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/CastChatModal.tsx": {
+            "lines": 93,
+            "tokens": 816,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/BottomNavBar.tsx": {
+            "lines": 16,
+            "tokens": 218,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/AnimatedChatIcon.tsx": {
+            "lines": 11,
+            "tokens": 293,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/AiDiscoveryModal.tsx": {
+            "lines": 154,
+            "tokens": 1130,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/AddButtonModal.tsx": {
+            "lines": 396,
+            "tokens": 3880,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ActorDetailModal.tsx": {
+            "lines": 146,
+            "tokens": 1159,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/App.tsx": {
+            "lines": 155,
+            "tokens": 1269,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 3632,
+          "tokens": 30646,
+          "sources": 44,
+          "clones": 3,
+          "duplicatedLines": 255,
+          "duplicatedTokens": 2040,
+          "percentage": 7.02,
+          "percentageTokens": 6.66,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "tsx": {
+        "sources": {
+          "/workspaces/moviloi/src/pages/social.tsx": {
+            "lines": 47,
+            "tokens": 426,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/lists.tsx": {
+            "lines": 875,
+            "tokens": 7335,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 46,
+            "duplicatedTokens": 354,
+            "percentage": 5.26,
+            "percentageTokens": 4.83,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/home.tsx": {
+            "lines": 288,
+            "tokens": 2439,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/explore.tsx": {
+            "lines": 661,
+            "tokens": 6020,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 28,
+            "duplicatedTokens": 242,
+            "percentage": 4.24,
+            "percentageTokens": 4.02,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/SeriesDetailPage.tsx": {
+            "lines": 531,
+            "tokens": 5132,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 98,
+            "duplicatedTokens": 991,
+            "percentage": 18.46,
+            "percentageTokens": 19.31,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/PushNotificationTestPageNew.tsx": {
+            "lines": 249,
+            "tokens": 1819,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 265,
+            "duplicatedTokens": 1912,
+            "percentage": 106.43,
+            "percentageTokens": 105.11,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/PushNotificationTestPage.tsx": {
+            "lines": 249,
+            "tokens": 1819,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 249,
+            "duplicatedTokens": 1819,
+            "percentage": 100,
+            "percentageTokens": 100,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/NotificationSettingsPage.tsx": {
+            "lines": 291,
+            "tokens": 2173,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 93,
+            "percentage": 5.5,
+            "percentageTokens": 4.28,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/NetworkTestPage.tsx": {
+            "lines": 149,
+            "tokens": 1312,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/pages/AuthCallback.tsx": {
+            "lines": 120,
+            "tokens": 1094,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/ThemeContext.tsx": {
+            "lines": 136,
+            "tokens": 1074,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/NetworkContext.tsx": {
+            "lines": 25,
+            "tokens": 222,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/ModalContext.tsx": {
+            "lines": 38,
+            "tokens": 391,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/context/AuthContext.tsx": {
+            "lines": 199,
+            "tokens": 1592,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/TopHeaderBar.tsx": {
+            "lines": 50,
+            "tokens": 389,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ToastNotification.tsx": {
+            "lines": 110,
+            "tokens": 886,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/TabSegment.tsx": {
+            "lines": 34,
+            "tokens": 281,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SocialTabSegment.tsx": {
+            "lines": 34,
+            "tokens": 281,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SkeletonLoader.tsx": {
+            "lines": 71,
+            "tokens": 596,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SeriesGroupCard.tsx": {
+            "lines": 113,
+            "tokens": 940,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SeriesDetailModal.tsx": {
+            "lines": 428,
+            "tokens": 3896,
+            "sources": 1,
+            "clones": 13,
+            "duplicatedLines": 267,
+            "duplicatedTokens": 2326,
+            "percentage": 62.38,
+            "percentageTokens": 59.7,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SeasonAccordion.tsx": {
+            "lines": 123,
+            "tokens": 1046,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/SearchTabSegment.tsx": {
+            "lines": 43,
+            "tokens": 477,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ReviewsTabSegment.tsx": {
+            "lines": 809,
+            "tokens": 7208,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 22,
+            "duplicatedTokens": 148,
+            "percentage": 2.72,
+            "percentageTokens": 2.05,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/PersonCard.tsx": {
+            "lines": 90,
+            "tokens": 690,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/NetworkIndicator.tsx": {
+            "lines": 85,
+            "tokens": 660,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/NetworkErrorHandler.tsx": {
+            "lines": 83,
+            "tokens": 585,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/MoviePosterCard.tsx": {
+            "lines": 24,
+            "tokens": 155,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/MovieDetailModal.tsx": {
+            "lines": 505,
+            "tokens": 4344,
+            "sources": 1,
+            "clones": 16,
+            "duplicatedLines": 264,
+            "duplicatedTokens": 2290,
+            "percentage": 52.28,
+            "percentageTokens": 52.72,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/MovieCard.tsx": {
+            "lines": 75,
+            "tokens": 578,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/LanguageSwitcher.tsx": {
+            "lines": 101,
+            "tokens": 910,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/FilterModal.tsx": {
+            "lines": 166,
+            "tokens": 1167,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/FilmographyCard.tsx": {
+            "lines": 75,
+            "tokens": 646,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/FabAddButton.tsx": {
+            "lines": 125,
+            "tokens": 1017,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 32,
+            "duplicatedTokens": 192,
+            "percentage": 25.6,
+            "percentageTokens": 18.88,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ExploreTabSegment.tsx": {
+            "lines": 34,
+            "tokens": 281,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/DetailViewModal.tsx": {
+            "lines": 811,
+            "tokens": 7441,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 40,
+            "duplicatedTokens": 368,
+            "percentage": 4.93,
+            "percentageTokens": 4.95,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/CategoryChip.tsx": {
+            "lines": 24,
+            "tokens": 160,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/CastSelectionModal.tsx": {
+            "lines": 130,
+            "tokens": 1171,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 80,
+            "percentage": 4.62,
+            "percentageTokens": 6.83,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/CastChatModal.tsx": {
+            "lines": 262,
+            "tokens": 2244,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 6,
+            "duplicatedTokens": 80,
+            "percentage": 2.29,
+            "percentageTokens": 3.57,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/BottomNavBar.tsx": {
+            "lines": 47,
+            "tokens": 578,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/AnimatedChatIcon.tsx": {
+            "lines": 19,
+            "tokens": 367,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/AiDiscoveryModal.tsx": {
+            "lines": 256,
+            "tokens": 2026,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/AddButtonModal.tsx": {
+            "lines": 870,
+            "tokens": 8607,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 54,
+            "duplicatedTokens": 384,
+            "percentage": 6.21,
+            "percentageTokens": 4.46,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/components/ActorDetailModal.tsx": {
+            "lines": 280,
+            "tokens": 2423,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 17,
+            "duplicatedTokens": 145,
+            "percentage": 6.07,
+            "percentageTokens": 5.98,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/main.tsx": {
+            "lines": 18,
+            "tokens": 139,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/App.tsx": {
+            "lines": 240,
+            "tokens": 1925,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/workspaces/moviloi/src/App.test.tsx": {
+            "lines": 7,
+            "tokens": 77,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 10000,
+          "tokens": 87039,
+          "sources": 47,
+          "clones": 27,
+          "duplicatedLines": 705,
+          "duplicatedTokens": 5712,
+          "percentage": 7.05,
+          "percentageTokens": 6.56,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 13632,
+      "tokens": 117685,
+      "sources": 91,
+      "clones": 30,
+      "duplicatedLines": 960,
+      "duplicatedTokens": 7752,
+      "percentage": 7.04,
+      "percentageTokens": 6.59,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "tsx",
+      "lines": 24,
+      "fragment": ") => {\n      try {\n        const searchResults = await searchMovies(film.filmAdi);\n        if (searchResults.length > 0) {\n          const firstResult = searchResults[0];\n          return {\n            filmAdi: film.filmAdi,\n            data: {\n              id: firstResult.id,\n              posterPath: firstResult.poster_path\n            }\n          };\n        }\n      } catch (error) {\n        console.error(`Error finding movie ID for ${film.filmAdi}:`, error);\n      }\n      return null;\n    });\n\n    // Tüm sonuçları bekle\n    const results = await Promise.all(searchPromises);\n    \n    // Sonuçları Map'e ekle\n    results.forEach(result",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/pages/lists.tsx",
+        "start": 661,
+        "end": 684,
+        "startLoc": {
+          "line": 661,
+          "column": 5,
+          "position": 5478
+        },
+        "endLoc": {
+          "line": 684,
+          "column": 7,
+          "position": 5655
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/lists.tsx",
+        "start": 609,
+        "end": 632,
+        "startLoc": {
+          "line": 609,
+          "column": 4,
+          "position": 5064
+        },
+        "endLoc": {
+          "line": 632,
+          "column": 2,
+          "position": 5241
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 15,
+      "fragment": "(genreId, page);\n      if (page === 1) {\n        setGenreResults(data.results);\n      } else {\n        // Yeni verileri eklerken React batch update kullan\n        setGenreResults(prev => {\n          const newResults = [...prev, ...data.results];\n          return newResults;\n        });\n      }\n      setSelectedGenre(genreId);\n      setCurrentPage(data.page);\n      setTotalPages(data.total_pages);\n    } catch (err) {\n      setError('Failed to load series by genre'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/pages/explore.tsx",
+        "start": 223,
+        "end": 237,
+        "startLoc": {
+          "line": 223,
+          "column": 17,
+          "position": 2379
+        },
+        "endLoc": {
+          "line": 237,
+          "column": 33,
+          "position": 2500
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/explore.tsx",
+        "start": 189,
+        "end": 203,
+        "startLoc": {
+          "line": 189,
+          "column": 17,
+          "position": 2099
+        },
+        "endLoc": {
+          "line": 203,
+          "column": 33,
+          "position": 2220
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 39,
+      "fragment": ";\n    \n    if (newType === null) {\n      // Kaydı sil\n      const logs = LocalStorageService.getMovieLogs();\n      const logToDelete = logs.find(log => log.tmdbId === parseInt(seriesId) && log.mediaType === 'tv');\n      if (logToDelete) {\n        LocalStorageService.deleteMovieLog(logToDelete.id);\n      }\n      setLogStatus(null);\n    } else {\n      // Önce mevcut kaydı güncellemeyi dene\n      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(parseInt(seriesId), newType, 'tv');\n      \n      if (!updatedLog) {\n        // Kayıt yoksa yeni kayıt oluştur\n        updatedLog = LocalStorageService.saveMovieLog({\n          title: seriesApiData.name,\n          date: new Date().toISOString().split('T')[0],\n          rating: '',\n          review: '',\n          poster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : '',\n          type: newType,\n          mediaType: 'tv',\n          tmdbId: parseInt(seriesId),\n          contentType: 'tv',\n          genres: seriesApiData.genres?.map(g => g.name) || [],\n          releaseYear: seriesApiData.first_air_date ? new Date(seriesApiData.first_air_date).getFullYear() : undefined,\n          runtime: 45, // Ortalama bölüm süresi\n          seasonCount: seriesApiData.number_of_seasons,\n          episodeCount: seriesApiData.number_of_episodes,\n          seriesId: seriesId,\n          seriesTitle: seriesApiData.name,\n          seriesPoster: seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : ''\n        });\n      }\n      setLogStatus(newType);\n      \n      // Toast bildirimi göster",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/pages/SeriesDetailPage.tsx",
+        "start": 281,
+        "end": 319,
+        "startLoc": {
+          "line": 281,
+          "column": 10,
+          "position": 2942
+        },
+        "endLoc": {
+          "line": 319,
+          "column": 26,
+          "position": 3341
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/SeriesDetailPage.tsx",
+        "start": 238,
+        "end": 275,
+        "startLoc": {
+          "line": 238,
+          "column": 12,
+          "position": 2487
+        },
+        "endLoc": {
+          "line": 275,
+          "column": 2,
+          "position": 2884
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 76,
+      "fragment": "={informationCircle} className=\"mr-2\" />\n              Platform Durumu\n            </IonCardTitle>\n          </IonCardHeader>\n          <IonCardContent>\n            <IonList>\n              <IonItem>\n                <IonLabel>Platform</IonLabel>\n                <IonBadge color={isNative ? 'success' : 'warning'}>\n                  {isNative ? 'Native (iOS/Android)' : 'Web Browser'}\n                </IonBadge>\n              </IonItem>\n              \n              <IonItem>\n                <IonLabel>FCM Token</IonLabel>\n                <IonBadge color={fcmToken ? 'success' : 'danger'}>\n                  {fcmToken ? 'Mevcut' : 'Yok'}\n                </IonBadge>\n              </IonItem>\n\n              <IonItem>\n                <IonLabel>Bildirimler Etkin</IonLabel>\n                <IonBadge color={preferences?.enabled ? 'success' : 'danger'}>\n                  {preferences?.enabled ? 'Evet' : 'Hayır'}\n                </IonBadge>\n              </IonItem>\n            </IonList>\n\n            {!isNative && (\n              <div className=\"mt-4 p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg\">\n                <p className=\"text-sm text-yellow-800 dark:text-yellow-200\">\n                  ⚠️ Push notifications sadece native platformlarda (iOS/Android) çalışır.\n                </p>\n              </div>\n            )}\n          </IonCardContent>\n        </IonCard>\n\n        {/* Notification Testleri */}\n        <IonCard>\n          <IonCardHeader>\n            <IonCardTitle className=\"flex items-center\">\n              <IonIcon icon={notifications} className=\"mr-2\" />\n              Notification Testleri\n            </IonCardTitle>\n          </IonCardHeader>\n          <IonCardContent>\n            <IonList>\n              {notificationTests.map((test) => (\n                <IonItem key={test.id}>\n                  <IonLabel>\n                    <h3>{test.name}</h3>\n                    <p className=\"text-sm text-gray-600 dark:text-gray-400\">\n                      {test.description}\n                    </p>\n                  </IonLabel>\n                  \n                  <IonButton \n                    size=\"small\" \n                    fill=\"clear\" \n                    onClick={() => runNotificationTest(test)}\n                    disabled={testResults[test.id] === 'pending'}\n                  >\n                    {testResults[test.id] === 'pending' ? <IonSpinner name=\"circular\" /> : 'Test Et'}\n                  </IonButton>\n                </IonItem>\n              ))}\n            </IonList>\n          </IonCardContent>\n        </IonCard>\n\n        <IonToast\n          isOpen={showToast}\n          onDidDismiss={() => setShowToast(false)}\n          message={toastMessage}\n          duration={3000}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/pages/PushNotificationTestPage.tsx",
+        "start": 167,
+        "end": 242,
+        "startLoc": {
+          "line": 167,
+          "column": 5,
+          "position": 1199
+        },
+        "endLoc": {
+          "line": 242,
+          "column": 2,
+          "position": 1786
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/PushNotificationTestPageNew.tsx",
+        "start": 167,
+        "end": 242,
+        "startLoc": {
+          "line": 167,
+          "column": 5,
+          "position": 1199
+        },
+        "endLoc": {
+          "line": 242,
+          "column": 2,
+          "position": 1786
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 250,
+      "fragment": "import React, { useState, useEffect } from 'react';\nimport {\n  IonContent,\n  IonHeader,\n  IonPage,\n  IonTitle,\n  IonToolbar,\n  IonButton,\n  IonCard,\n  IonCardContent,\n  IonCardHeader,\n  IonCardTitle,\n  IonItem,\n  IonLabel,\n  IonList,\n  IonIcon,\n  IonBadge,\n  IonSpinner,\n  IonToast\n} from '@ionic/react';\nimport { \n  notifications, \n  checkmark, \n  close, \n  warning,\n  informationCircle,\n  send\n} from 'ionicons/icons';\nimport { Capacitor } from '@capacitor/core';\nimport { \n  pushNotificationService,\n  getPushNotificationToken,\n  getNotificationSettings,\n  PushNotificationPayload\n} from '../services/pushNotifications';\n\ninterface NotificationTest {\n  id: string;\n  name: string;\n  description: string;\n  payload: PushNotificationPayload;\n}\n\nconst PushNotificationTestPage: React.FC = () => {\n  const [isNative, setIsNative] = useState(false);\n  const [fcmToken, setFcmToken] = useState<string | null>(null);\n  const [preferences, setPreferences] = useState<any>(null);\n  const [isLoading, setIsLoading] = useState(true);\n  const [testResults, setTestResults] = useState<{ [key: string]: 'success' | 'error' | 'pending' }>({});\n  const [showToast, setShowToast] = useState(false);\n  const [toastMessage, setToastMessage] = useState('');\n\n  const notificationTests: NotificationTest[] = [\n    {\n      id: 'new_movie',\n      name: 'Yeni Film Bildirimi',\n      description: 'Yeni çıkan film için bildirim testi',\n      payload: {\n        id: 'test_movie_1',\n        title: 'Yeni Film Çıktı! 🎬',\n        body: 'Avengers: Endgame artık izleme listenizde',\n        type: 'new_release',\n        data: {\n          movieId: '299534',\n          tmdbId: '299534',\n          contentType: 'movie',\n          deepLink: '/movie/299534'\n        }\n      }\n    },\n    {\n      id: 'watchlist_reminder',\n      name: 'İzleme Listesi Hatırlatması',\n      description: 'İzleme listesindeki içerik için hatırlatma',\n      payload: {\n        id: 'test_reminder_1',\n        title: 'İzleme Listesi Hatırlatması 📺',\n        body: 'Stranger Things - 4. sezon henüz izlenmedi',\n        type: 'watchlist_reminder',\n        data: {\n          seriesId: '66732',\n          tmdbId: '66732',\n          contentType: 'tv',\n          deepLink: '/series/66732'\n        }\n      }\n    }\n  ];\n\n  useEffect(() => {\n    initializePage();\n  }, []);\n\n  const initializePage = async () => {\n    setIsLoading(true);\n    setIsNative(Capacitor.isNativePlatform());\n\n    try {\n      // FCM token'ı al\n      const token = await getPushNotificationToken();\n      setFcmToken(token);\n\n      // Notification preferences'ı al\n      const prefs = await getNotificationSettings();\n      setPreferences(prefs);\n    } catch (error) {\n      console.error('Failed to initialize push notification test page:', error);\n      setToastMessage('Sayfa başlatılamadı: ' + error);\n      setShowToast(true);\n    } finally {\n      setIsLoading(false);\n    }\n  };\n\n  const runNotificationTest = async (test: NotificationTest) => {\n    setTestResults(prev => ({ ...prev, [test.id]: 'pending' }));\n\n    try {\n      // Test notification gönderimi\n      await pushNotificationService.scheduleLocalNotification(test.payload);\n      \n      // Başarılı sonuç simülasyonu\n      setTimeout(() => {\n        setTestResults(prev => ({ ...prev, [test.id]: 'success' }));\n        setToastMessage(`${test.name} başarıyla test edildi!`);\n        setShowToast(true);\n      }, 1000);\n\n    } catch (error) {\n      console.error('Notification test failed:', error);\n      setTestResults(prev => ({ ...prev, [test.id]: 'error' }));\n      setToastMessage(`Test başarısız: ${error}`);\n      setShowToast(true);\n    }\n  };\n\n  if (isLoading) {\n    return (\n      <IonPage>\n        <IonHeader>\n          <IonToolbar>\n            <IonTitle>Push Notification Test</IonTitle>\n          </IonToolbar>\n        </IonHeader>\n        <IonContent className=\"ion-padding\">\n          <div className=\"flex justify-center items-center h-64\">\n            <IonSpinner name=\"circular\" />\n          </div>\n        </IonContent>\n      </IonPage>\n    );\n  }\n\n  return (\n    <IonPage>\n      <IonHeader>\n        <IonToolbar>\n          <IonTitle>Push Notification Test</IonTitle>\n        </IonToolbar>\n      </IonHeader>\n      \n      <IonContent>\n        {/* Platform Durumu */}\n        <IonCard>\n          <IonCardHeader>\n            <IonCardTitle className=\"flex items-center\">\n              <IonIcon icon={informationCircle} className=\"mr-2\" />\n              Platform Durumu\n            </IonCardTitle>\n          </IonCardHeader>\n          <IonCardContent>\n            <IonList>\n              <IonItem>\n                <IonLabel>Platform</IonLabel>\n                <IonBadge color={isNative ? 'success' : 'warning'}>\n                  {isNative ? 'Native (iOS/Android)' : 'Web Browser'}\n                </IonBadge>\n              </IonItem>\n              \n              <IonItem>\n                <IonLabel>FCM Token</IonLabel>\n                <IonBadge color={fcmToken ? 'success' : 'danger'}>\n                  {fcmToken ? 'Mevcut' : 'Yok'}\n                </IonBadge>\n              </IonItem>\n\n              <IonItem>\n                <IonLabel>Bildirimler Etkin</IonLabel>\n                <IonBadge color={preferences?.enabled ? 'success' : 'danger'}>\n                  {preferences?.enabled ? 'Evet' : 'Hayır'}\n                </IonBadge>\n              </IonItem>\n            </IonList>\n\n            {!isNative && (\n              <div className=\"mt-4 p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg\">\n                <p className=\"text-sm text-yellow-800 dark:text-yellow-200\">\n                  ⚠️ Push notifications sadece native platformlarda (iOS/Android) çalışır.\n                </p>\n              </div>\n            )}\n          </IonCardContent>\n        </IonCard>\n\n        {/* Notification Testleri */}\n        <IonCard>\n          <IonCardHeader>\n            <IonCardTitle className=\"flex items-center\">\n              <IonIcon icon={notifications} className=\"mr-2\" />\n              Notification Testleri\n            </IonCardTitle>\n          </IonCardHeader>\n          <IonCardContent>\n            <IonList>\n              {notificationTests.map((test) => (\n                <IonItem key={test.id}>\n                  <IonLabel>\n                    <h3>{test.name}</h3>\n                    <p className=\"text-sm text-gray-600 dark:text-gray-400\">\n                      {test.description}\n                    </p>\n                  </IonLabel>\n                  \n                  <IonButton \n                    size=\"small\" \n                    fill=\"clear\" \n                    onClick={() => runNotificationTest(test)}\n                    disabled={testResults[test.id] === 'pending'}\n                  >\n                    {testResults[test.id] === 'pending' ? <IonSpinner name=\"circular\" /> : 'Test Et'}\n                  </IonButton>\n                </IonItem>\n              ))}\n            </IonList>\n          </IonCardContent>\n        </IonCard>\n\n        <IonToast\n          isOpen={showToast}\n          onDidDismiss={() => setShowToast(false)}\n          message={toastMessage}\n          duration={3000}\n          position=\"bottom\"\n        />\n      </IonContent>\n    </IonPage>\n  );\n};\n\nexport default PushNotificationTestPage;",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/pages/PushNotificationTestPage.tsx",
+        "start": 1,
+        "end": 250,
+        "startLoc": {
+          "line": 1,
+          "column": 1,
+          "position": 0
+        },
+        "endLoc": {
+          "line": 250,
+          "column": 2,
+          "position": 1819
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/PushNotificationTestPageNew.tsx",
+        "start": 1,
+        "end": 250,
+        "startLoc": {
+          "line": 1,
+          "column": 1,
+          "position": 0
+        },
+        "endLoc": {
+          "line": 250,
+          "column": 2,
+          "position": 1819
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 17,
+      "fragment": "</IonTitle>\n          </IonToolbar>\n        </IonHeader>\n        <IonContent className=\"ion-padding\">\n          <div className=\"flex justify-center items-center h-64\">\n            <IonSpinner name=\"circular\" />\n          </div>\n        </IonContent>\n      </IonPage>\n    );\n  }\n\n  return (\n    <IonPage>\n      <IonHeader>\n        <IonToolbar>\n          <IonButtons",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/pages/NotificationSettingsPage.tsx",
+        "start": 128,
+        "end": 144,
+        "startLoc": {
+          "line": 128,
+          "column": 9,
+          "position": 967
+        },
+        "endLoc": {
+          "line": 144,
+          "column": 11,
+          "position": 1060
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/PushNotificationTestPageNew.tsx",
+        "start": 142,
+        "end": 158,
+        "startLoc": {
+          "line": 142,
+          "column": 5,
+          "position": 1047
+        },
+        "endLoc": {
+          "line": 158,
+          "column": 9,
+          "position": 1140
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 39,
+      "fragment": ";\n    \n    if (newType === null) {\n      // Kaydı sil\n      const logs = LocalStorageService.getMovieLogs();\n      const logToDelete = logs.find(log => log.tmdbId === seriesIdToUpdate && log.mediaType === 'tv');\n      if (logToDelete) {\n        LocalStorageService.deleteMovieLog(logToDelete.id);\n      }\n      setLogStatus(null);\n      setToastMessage(t('toast.series_removed_from_watchlist', { title: seriesDetails.name }));\n      setShowToast(true);\n    } else {\n      // Önce mevcut kaydı güncellemeyi dene\n      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(seriesIdToUpdate, newType, 'tv');\n      \n      if (!updatedLog) {\n        // Kayıt yoksa yeni kayıt oluştur\n        updatedLog = LocalStorageService.saveMovieLog({\n          title: seriesDetails.name,\n          date: new Date().toISOString().split('T')[0],\n          rating: '',\n          review: '',\n          poster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',\n          type: newType,\n          mediaType: 'tv',\n          tmdbId: seriesIdToUpdate,\n          contentType: 'tv',\n          seasonCount: seriesDetails.number_of_seasons,\n          episodeCount: seriesDetails.number_of_episodes,\n          seriesId: seriesDetails.id.toString(),\n          seriesTitle: seriesDetails.name,\n          seriesPoster: seriesDetails.poster_path ? `https://image.tmdb.org/t/p/w500${seriesDetails.poster_path}` : '',\n          genres: seriesDetails.genres?.map(g => g.name) || [],\n          releaseYear: seriesDetails.first_air_date ? new Date(seriesDetails.first_air_date).getFullYear() : undefined\n        });\n      }\n      setLogStatus(newType);\n      setToastMessage(t('toast.series_marked_as_watched'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 164,
+        "end": 202,
+        "startLoc": {
+          "line": 164,
+          "column": 10,
+          "position": 1660
+        },
+        "endLoc": {
+          "line": 202,
+          "column": 33,
+          "position": 2078
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 117,
+        "end": 155,
+        "startLoc": {
+          "line": 117,
+          "column": 12,
+          "position": 1145
+        },
+        "endLoc": {
+          "line": 155,
+          "column": 34,
+          "position": 1563
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 19,
+      "fragment": "}\n          <button\n            onClick={handleWatchlistToggle}\n            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${\n              logStatus === 'watchlist' \n                ? 'bg-[#FE7743] text-white shadow-lg' \n                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'\n            }`}\n            aria-label={logStatus === 'watchlist' ? 'İzleme listesinden çıkar' : 'İzleme listesine ekle'}\n          >\n            <svg \n              width=\"20\" \n              height=\"20\" \n              viewBox=\"0 0 24 24\" \n              fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} \n              stroke=\"currentColor\" \n              strokeWidth=\"2\"\n            >\n              <path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 251,
+        "end": 269,
+        "startLoc": {
+          "line": 251,
+          "column": 28,
+          "position": 2467
+        },
+        "endLoc": {
+          "line": 269,
+          "column": 50,
+          "position": 2580
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 229,
+        "end": 247,
+        "startLoc": {
+          "line": 229,
+          "column": 21,
+          "position": 2324
+        },
+        "endLoc": {
+          "line": 247,
+          "column": 16,
+          "position": 2437
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 12,
+      "fragment": "\"\n      >\n        {/* Ana Modal Container - Dark Theme */}\n        <div className=\"bg-[#1a1a1a] text-gray-100 h-full rounded-t-[20px] relative\">\n          {/* Pull Indicator */}\n          <div className=\"flex justify-center pt-3 pb-2\">\n            <div className=\"w-8 h-1 bg-gray-600 rounded-full\"></div>\n          </div>\n\n          {/* Modal Header */}\n          <div className=\"flex items-center justify-between px-4 py-3 border-b border-gray-700\">\n            <div",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/ReviewsTabSegment.tsx",
+        "start": 709,
+        "end": 720,
+        "startLoc": {
+          "line": 709,
+          "column": 18,
+          "position": 6399
+        },
+        "endLoc": {
+          "line": 720,
+          "column": 4,
+          "position": 6473
+        }
+      },
+      "secondFile": {
+        "name": "src/components/ReviewsTabSegment.tsx",
+        "start": 587,
+        "end": 598,
+        "startLoc": {
+          "line": 587,
+          "column": 13,
+          "position": 5466
+        },
+        "endLoc": {
+          "line": 598,
+          "column": 7,
+          "position": 5540
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 69,
+      "fragment": "}\n          className=\"absolute top-12 left-4 z-10 w-6 h-6 flex items-center justify-center\"\n        >\n          <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\">\n            <path d=\"M19 12H5M12 19L5 12L12 5\" stroke=\"#F8F8FF\" strokeWidth=\"2\" strokeLinecap=\"round\" strokeLinejoin=\"round\"/>\n          </svg>\n        </button>\n\n        {/* Action Buttons - Sağ Üst */}\n        <div className=\"absolute top-12 right-4 z-10 flex gap-2\">\n          {/* İzledim Butonu */}\n          <button\n            onClick={handleWatchedToggle}\n            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${\n              logStatus === 'watched' \n                ? 'bg-[#FE7743] text-white shadow-lg' \n                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'\n            }`}\n            aria-label={logStatus === 'watched' ? 'İzledim olarak işaretle' : 'İzledim olarak işaretle'}\n          >\n            <svg \n              width=\"20\" \n              height=\"20\" \n              viewBox=\"0 0 24 24\" \n              fill={logStatus === 'watched' ? 'currentColor' : 'none'} \n              stroke=\"currentColor\" \n              strokeWidth=\"2\"\n            >\n              <path d=\"M20 6L9 17l-5-5\" strokeLinecap=\"round\" strokeLinejoin=\"round\"/>\n            </svg>\n          </button>\n\n          {/* İzleme Listesi Butonu */}\n          <button\n            onClick={handleWatchlistToggle}\n            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${\n              logStatus === 'watchlist' \n                ? 'bg-[#FE7743] text-white shadow-lg' \n                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'\n            }`}\n            aria-label={logStatus === 'watchlist' ? 'İzleme listesinden çıkar' : 'İzleme listesine ekle'}\n          >\n            <svg \n              width=\"20\" \n              height=\"20\" \n              viewBox=\"0 0 24 24\" \n              fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} \n              stroke=\"currentColor\" \n              strokeWidth=\"2\"\n            >\n              <path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\" strokeLinecap=\"round\" strokeLinejoin=\"round\"/>\n            </svg>\n          </button>\n        </div>\n\n        {loading ? (\n          <div className=\"flex items-center justify-center h-full\">\n            <div className=\"text-white font-poppins\">{t('movie_detail_modal.loading')}</div>\n          </div>\n        ) : error ? (\n          <div className=\"flex items-center justify-center h-full\">\n            <div className=\"text-red-400 font-poppins\">{t('movie_detail_modal.error')}</div>\n          </div>\n        ) : movieDetails ? (\n          <>\n            {/* Poster Background */}\n            <div className=\"relative h-[424px] w-full\">\n              <img\n                src={movieDetails",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 254,
+        "end": 322,
+        "startLoc": {
+          "line": 254,
+          "column": 8,
+          "position": 2420
+        },
+        "endLoc": {
+          "line": 322,
+          "column": 13,
+          "position": 2941
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 219,
+        "end": 287,
+        "startLoc": {
+          "line": 219,
+          "column": 11,
+          "position": 2220
+        },
+        "endLoc": {
+          "line": 287,
+          "column": 14,
+          "position": 2741
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 113,
+      "fragment": "}\n                className=\"w-full h-full object-cover\"\n              />\n              {/* Gradient Overlay */}\n              <div className=\"absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-80\"></div>\n            </div>\n\n            {/* Content Container */}\n            <div className=\"relative -mt-16 px-[18px] pb-20\">\n              <div className=\"bg-[#0C1117] rounded-t-[24px] p-4 pb-8\">\n                {/* Movie Title and Genres */}\n                <div className=\"flex items-center gap-2 mb-2\">\n                  <h1 className=\"text-[#F8F8FF] font-poppins font-extrabold text-2xl leading-6 drop-shadow-[0_4px_15px_rgba(255,255,255,0.7)]\">\n                    {movieDetails.title}\n                  </h1>\n                  <div className=\"flex gap-1\">\n                    {movieDetails.genres?.slice(0, 2).map((genre) => (\n                      <span\n                        key={genre.id}\n                        className=\"px-1 py-0.5 bg-[rgba(254,119,67,0.5)] rounded-lg text-[#F8F8FF] text-[10px] font-poppins font-medium\"\n                      >\n                        {genre.name}\n                      </span>\n                    ))}\n                  </div>\n                </div>\n\n                {/* Year and Runtime */}\n                <div className=\"flex items-center gap-2 mb-2\">\n                  <span className=\"text-[#F8F8FF] font-poppins font-semibold text-base drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]\">\n                    {formatYear(movieDetails.release_date)}\n                  </span>\n                  <div className=\"w-2.5 h-2.5 bg-[#F8F8FF] rounded-full drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]\"></div>\n                  <span className=\"text-[#F8F8FF] font-poppins font-semibold text-base drop-shadow-[0_8px_15px_rgba(255,255,255,0.7)]\">\n                    {movieDetails.runtime ? formatRuntime(movieDetails.runtime) : ''}\n                  </span>\n                </div>\n\n\n\n                {/* Rating */}\n                <div className=\"inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#FE7743] rounded-xl mb-2 drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]\">\n                  <span className=\"text-[#F8F8FF] font-poppins text-xs\">{t('movie_detail_modal.imdb_rating')}</span>\n                  <div className=\"flex items-center gap-0.5\">\n                    <span className=\"text-[#F8F8FF] font-poppins text-sm\">\n                      {movieDetails.vote_average ? movieDetails.vote_average.toFixed(1) : 'N/A'}\n                    </span>\n                    <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"#F8F8FF\">\n                      <path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/>\n                    </svg>\n                  </div>\n                </div>\n\n                {/* Overview */}\n                <p className=\"text-[#EFEEEA] font-poppins text-xs leading-6 mb-4\">\n                  {movieDetails.overview || t('movie_detail_modal.no_overview')}\n                </p>\n\n                {/* Cast Section */}\n                <div className=\"mb-4\">\n                  <h2 className=\"text-[#EFEEEA] font-poppins font-bold text-2xl mb-1\">{t('movie_detail_modal.stars')}</h2>\n                  <div className=\"flex gap-4 overflow-x-auto\">\n                    {cast.slice(0, 6).map((member) => (\n                      <div \n                        key={member.id} \n                        className=\"flex flex-col items-center gap-1 min-w-[46px] cursor-pointer hover:opacity-80 transition-opacity\"\n                        onClick={() => handleActorClick(member.id)}\n                      >\n                        <div className=\"w-[50px] h-[50px] rounded-full overflow-hidden bg-[#D9D9D9]\">\n                          <img\n                            src={member.profile_path ? `https://image.tmdb.org/t/p/w500${member.profile_path}` : 'https://placehold.co/50x50?text=?'}\n                            alt={member.name}\n                            className=\"w-full h-full object-cover\"\n                          />\n                        </div>\n                        <span className=\"text-[#F8F8FF] font-poppins text-[10px] font-medium text-center leading-3\">\n                          {member.name.split(' ').slice(0, 2).join('\\n')}\n                        </span>\n                      </div>\n                    ))}\n                  </div>\n                </div>\n\n                {/* Watch Trailer Section */}\n                <div className=\"mb-4\">\n                  <h2 className=\"text-[#F8F8FF] font-poppins font-bold text-2xl mb-2\">{t('movie_detail_modal.watch_trailer')}</h2>\n                  {trailerKey ? (\n                    <div className=\"w-full h-40 bg-black rounded-lg overflow-hidden flex items-center justify-center\">\n                      <iframe\n                        width=\"100%\"\n                        height=\"100%\"\n                        src={`https://www.youtube.com/embed/${trailerKey}`}\n                        title=\"YouTube trailer\"\n                        frameBorder=\"0\"\n                        allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\"\n                        allowFullScreen\n                        className=\"w-full h-full rounded-lg\"\n                      ></iframe>\n                    </div>\n                  ) : (\n                    <div className=\"w-full h-40 bg-gray-800 rounded-lg flex items-center justify-center\">\n                      <span className=\"text-[#F8F8FF] font-poppins\">{t('movie_detail_modal.trailer_not_found')}</span>\n                    </div>\n                  )}\n                </div>\n\n                {/* Liked Others Section */}\n                <div className=\"mb-6\">\n                  <h2 className=\"text-[#F8F8FF] font-poppins font-bold text-2xl mb-2\">{t('movie_detail_modal.liked_others')}</h2>\n                  <div className=\"flex gap-3 overflow-x-auto pb-4\">\n                    {similarMovies.slice(0, 5).map((movie) => (\n                      <div \n                        key={movie",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 323,
+        "end": 435,
+        "startLoc": {
+          "line": 323,
+          "column": 6,
+          "position": 2965
+        },
+        "endLoc": {
+          "line": 435,
+          "column": 6,
+          "position": 3897
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 288,
+        "end": 398,
+        "startLoc": {
+          "line": 288,
+          "column": 5,
+          "position": 2765
+        },
+        "endLoc": {
+          "line": 398,
+          "column": 7,
+          "position": 3710
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 6,
+      "fragment": "| null>(null);\n  const [cast, setCast] = useState<TMDBCastMember[]>([]);\n  const [loading, setLoading] = useState(false);\n  const [error, setError] = useState<string | null>(null);\n  const [trailerKey, setTrailerKey] = useState<string | null>(null);\n  const [similarMovies",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 19,
+        "end": 24,
+        "startLoc": {
+          "line": 19,
+          "column": 2,
+          "position": 239
+        },
+        "endLoc": {
+          "line": 24,
+          "column": 14,
+          "position": 344
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 18,
+        "end": 23,
+        "startLoc": {
+          "line": 18,
+          "column": 2,
+          "position": 230
+        },
+        "endLoc": {
+          "line": 23,
+          "column": 14,
+          "position": 335
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 12,
+      "fragment": ");\n  \n  // İzleme durumu state'i\n  const [logStatus, setLogStatus] = useState<'watched' | 'watchlist' | null>(null);\n  const [showToast, setShowToast] = useState(false);\n  \n  // Film ekleme modalı state'i\n  const [showAddMovieModal, setShowAddMovieModal] = useState(false);\n  const [prefillData, setPrefillData] = useState<any>(null);\n\n  useEffect(() => {\n    if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 27,
+        "end": 38,
+        "startLoc": {
+          "line": 27,
+          "column": 5,
+          "position": 429
+        },
+        "endLoc": {
+          "line": 38,
+          "column": 3,
+          "position": 540
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/SeriesDetailPage.tsx",
+        "start": 25,
+        "end": 36,
+        "startLoc": {
+          "line": 25,
+          "column": 5,
+          "position": 294
+        },
+        "endLoc": {
+          "line": 36,
+          "column": 6,
+          "position": 405
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 11,
+      "fragment": ";\n    \n    if (newType === null) {\n      // Kaydı sil\n      const logs = LocalStorageService.getMovieLogs();\n      const logToDelete = logs.find(log => log.tmdbId === movieIdToUpdate && log.mediaType === 'movie');\n      if (logToDelete) {\n        LocalStorageService.deleteMovieLog(logToDelete.id);\n      }\n      setLogStatus(null);\n    }",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 174,
+        "end": 184,
+        "startLoc": {
+          "line": 174,
+          "column": 10,
+          "position": 1676
+        },
+        "endLoc": {
+          "line": 184,
+          "column": 2,
+          "position": 1776
+        }
+      },
+      "secondFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 131,
+        "end": 141,
+        "startLoc": {
+          "line": 131,
+          "column": 12,
+          "position": 1249
+        },
+        "endLoc": {
+          "line": 141,
+          "column": 26,
+          "position": 1349
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 26,
+      "fragment": ");\n    } else {\n      // Önce mevcut kaydı güncellemeyi dene\n      let updatedLog = LocalStorageService.updateLogTypeByTmdbId(movieIdToUpdate, newType, 'movie');\n      \n      if (!updatedLog) {\n        // Kayıt yoksa yeni kayıt oluştur\n        updatedLog = LocalStorageService.saveMovieLog({\n          title: movieDetails.title,\n          date: new Date().toISOString().split('T')[0],\n          rating: '',\n          review: '',\n          poster: movieDetails.poster_path ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}` : '',\n          type: newType,\n          mediaType: 'movie',\n          tmdbId: movieIdToUpdate,\n          contentType: 'movie',\n          genres: movieDetails.genres?.map(g => g.name) || [],\n          releaseYear: movieDetails.release_date ? new Date(movieDetails.release_date).getFullYear() : undefined,\n          runtime: movieDetails.runtime || 120\n        });\n      }\n      setLogStatus(newType);\n      \n      // Toast bildirimi göster\n      if",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 183,
+        "end": 208,
+        "startLoc": {
+          "line": 183,
+          "column": 5,
+          "position": 1772
+        },
+        "endLoc": {
+          "line": 208,
+          "column": 3,
+          "position": 2016
+        }
+      },
+      "secondFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 142,
+        "end": 166,
+        "startLoc": {
+          "line": 142,
+          "column": 5,
+          "position": 1355
+        },
+        "endLoc": {
+          "line": 166,
+          "column": 13,
+          "position": 1597
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 17,
+      "fragment": "};\n\n  const formatYear = (dateString?: string) => {\n    if (!dateString) return '';\n    return new Date(dateString).getFullYear().toString();\n  };\n\n  if (!open) return null;\n\n\n  return (\n    <div className=\"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50\">\n      <div className=\"w-full h-full bg-[#0C1117] overflow-y-auto\">\n        {/* Back Button */}\n        <button\n          onClick={onClose}\n          className=\"absolute top-12 left-4 z-10 w-6 h-6 flex items-center justify-center",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 239,
+        "end": 255,
+        "startLoc": {
+          "line": 239,
+          "column": 3,
+          "position": 2305
+        },
+        "endLoc": {
+          "line": 255,
+          "column": 69,
+          "position": 2425
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 205,
+        "end": 220,
+        "startLoc": {
+          "line": 205,
+          "column": 3,
+          "position": 2106
+        },
+        "endLoc": {
+          "line": 220,
+          "column": 68,
+          "position": 2225
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 9,
+      "fragment": "\"\n        >\n          <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\">\n            <path d=\"M19 12H5M12 19L5 12L12 5\" stroke=\"#F8F8FF\" strokeWidth=\"2\" strokeLinecap=\"round\" strokeLinejoin=\"round\"/>\n          </svg>\n        </button>\n\n        {/* Action Buttons - Sağ Üst */}\n        <div className=\"absolute top-12 right-4 z-10 flex gap-2",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 255,
+        "end": 263,
+        "startLoc": {
+          "line": 255,
+          "column": 69,
+          "position": 2426
+        },
+        "endLoc": {
+          "line": 263,
+          "column": 40,
+          "position": 2517
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 220,
+        "end": 228,
+        "startLoc": {
+          "line": 220,
+          "column": 68,
+          "position": 2226
+        },
+        "endLoc": {
+          "line": 228,
+          "column": 39,
+          "position": 2317
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 49,
+      "fragment": "\">\n          {/* İzledim Butonu */}\n          <button\n            onClick={handleWatchedToggle}\n            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${\n              logStatus === 'watched' \n                ? 'bg-[#FE7743] text-white shadow-lg' \n                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'\n            }`}\n            aria-label={logStatus === 'watched' ? 'İzledim olarak işaretle' : 'İzledim olarak işaretle'}\n          >\n            <svg \n              width=\"20\" \n              height=\"20\" \n              viewBox=\"0 0 24 24\" \n              fill={logStatus === 'watched' ? 'currentColor' : 'none'} \n              stroke=\"currentColor\" \n              strokeWidth=\"2\"\n            >\n              <path d=\"M20 6L9 17l-5-5\" strokeLinecap=\"round\" strokeLinejoin=\"round\"/>\n            </svg>\n          </button>\n\n          {/* İzleme Listesi Butonu */}\n          <button\n            onClick={handleWatchlistToggle}\n            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 ${\n              logStatus === 'watchlist' \n                ? 'bg-[#FE7743] text-white shadow-lg' \n                : 'bg-black bg-opacity-50 text-[#F8F8FF] hover:bg-opacity-70'\n            }`}\n            aria-label={logStatus === 'watchlist' ? 'İzleme listesinden çıkar' : 'İzleme listesine ekle'}\n          >\n            <svg \n              width=\"20\" \n              height=\"20\" \n              viewBox=\"0 0 24 24\" \n              fill={logStatus === 'watchlist' ? 'currentColor' : 'none'} \n              stroke=\"currentColor\" \n              strokeWidth=\"2\"\n            >\n              <path d=\"M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\" strokeLinecap=\"round\" strokeLinejoin=\"round\"/>\n            </svg>\n          </button>\n        </div>\n\n        {loading ? (\n          <div className=\"flex items-center justify-center h-full\">\n            <div className=\"text-white font-poppins\">{t('movie_detail_modal.loading'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 263,
+        "end": 311,
+        "startLoc": {
+          "line": 263,
+          "column": 40,
+          "position": 2518
+        },
+        "endLoc": {
+          "line": 311,
+          "column": 29,
+          "position": 2844
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 228,
+        "end": 276,
+        "startLoc": {
+          "line": 228,
+          "column": 39,
+          "position": 2318
+        },
+        "endLoc": {
+          "line": 276,
+          "column": 30,
+          "position": 2644
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 17,
+      "fragment": "? (\n          <>\n            {/* Poster Background */}\n            <div className=\"relative h-[424px] w-full\">\n              <img\n                src={movieDetails.backdrop_path ? `https://image.tmdb.org/t/p/w500${movieDetails.backdrop_path}` : 'https://placehold.co/393x424?text=No+Image'}\n                alt={movieDetails.title}\n                className=\"w-full h-full object-cover\"\n              />\n              {/* Gradient Overlay */}\n              <div className=\"absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-80\"></div>\n            </div>\n\n            {/* Content Container */}\n            <div className=\"relative -mt-16 px-[18px] pb-20\">\n              <div className=\"bg-[#0C1117] rounded-t-[24px] p-4 pb-8\">\n                {/* Movie Title and Genres */",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 317,
+        "end": 333,
+        "startLoc": {
+          "line": 317,
+          "column": 2,
+          "position": 2910
+        },
+        "endLoc": {
+          "line": 333,
+          "column": 29,
+          "position": 3029
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 282,
+        "end": 298,
+        "startLoc": {
+          "line": 282,
+          "column": 2,
+          "position": 2710
+        },
+        "endLoc": {
+          "line": 298,
+          "column": 30,
+          "position": 2829
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 11,
+      "fragment": ".vote_average.toFixed(1) : 'N/A'}\n                    </span>\n                    <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"#F8F8FF\">\n                      <path d=\"M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z\"/>\n                    </svg>\n                  </div>\n                </div>\n\n                {/* Overview */}\n                <p className=\"text-[#EFEEEA] font-poppins text-xs leading-6 mb-4\">\n                  {movieDetails",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 368,
+        "end": 378,
+        "startLoc": {
+          "line": 368,
+          "column": 13,
+          "position": 3317
+        },
+        "endLoc": {
+          "line": 378,
+          "column": 13,
+          "position": 3409
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 331,
+        "end": 341,
+        "startLoc": {
+          "line": 331,
+          "column": 14,
+          "position": 3130
+        },
+        "endLoc": {
+          "line": 341,
+          "column": 14,
+          "position": 3222
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 17,
+      "fragment": ")}</h2>\n                  <div className=\"flex gap-4 overflow-x-auto\">\n                    {cast.slice(0, 6).map((member) => (\n                      <div \n                        key={member.id} \n                        className=\"flex flex-col items-center gap-1 min-w-[46px] cursor-pointer hover:opacity-80 transition-opacity\"\n                        onClick={() => handleActorClick(member.id)}\n                      >\n                        <div className=\"w-[50px] h-[50px] rounded-full overflow-hidden bg-[#D9D9D9]\">\n                          <img\n                            src={member.profile_path ? `https://image.tmdb.org/t/p/w500${member.profile_path}` : 'https://placehold.co/50x50?text=?'}\n                            alt={member.name}\n                            className=\"w-full h-full object-cover\"\n                          />\n                        </div>\n                        <span className=\"text-[#F8F8FF] font-poppins text-[10px] font-medium text-center leading-3\">\n                          {member.name.split(' ').slice(0, 2).join('\\n'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 383,
+        "end": 399,
+        "startLoc": {
+          "line": 383,
+          "column": 27,
+          "position": 3457
+        },
+        "endLoc": {
+          "line": 399,
+          "column": 5,
+          "position": 3621
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 346,
+        "end": 362,
+        "startLoc": {
+          "line": 346,
+          "column": 28,
+          "position": 3270
+        },
+        "endLoc": {
+          "line": 362,
+          "column": 4,
+          "position": 3434
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 17,
+      "fragment": ")}</h2>\n                  {trailerKey ? (\n                    <div className=\"w-full h-40 bg-black rounded-lg overflow-hidden flex items-center justify-center\">\n                      <iframe\n                        width=\"100%\"\n                        height=\"100%\"\n                        src={`https://www.youtube.com/embed/${trailerKey}`}\n                        title=\"YouTube trailer\"\n                        frameBorder=\"0\"\n                        allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\"\n                        allowFullScreen\n                        className=\"w-full h-full rounded-lg\"\n                      ></iframe>\n                    </div>\n                  ) : (\n                    <div className=\"w-full h-40 bg-gray-800 rounded-lg flex items-center justify-center\">\n                      <span className=\"text-[#F8F8FF] font-poppins\">{t('movie_detail_modal.trailer_not_found'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 408,
+        "end": 424,
+        "startLoc": {
+          "line": 408,
+          "column": 35,
+          "position": 3681
+        },
+        "endLoc": {
+          "line": 424,
+          "column": 39,
+          "position": 3799
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 371,
+        "end": 387,
+        "startLoc": {
+          "line": 371,
+          "column": 36,
+          "position": 3494
+        },
+        "endLoc": {
+          "line": 387,
+          "column": 40,
+          "position": 3612
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 21,
+      "fragment": ") => (\n                      <div \n                        key={movie.id} \n                        className=\"w-[90px] h-[135px] bg-gray-800 rounded-lg border border-white flex-shrink-0 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity\"\n                        onClick={() => handleSimilarMovieClick(movie.id)}\n                      >\n                        <img\n                          src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://placehold.co/90x135?text=No+Image'}\n                          alt={movie.title}\n                          className=\"w-full h-full object-cover\"\n                        />\n                      </div>\n                    ))}\n                  </div>\n                </div>\n              </div>\n            </div>\n          </>\n        ) : null}\n\n        {/* Actor Detail Modal */",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 433,
+        "end": 453,
+        "startLoc": {
+          "line": 433,
+          "column": 6,
+          "position": 3884
+        },
+        "endLoc": {
+          "line": 453,
+          "column": 25,
+          "position": 4013
+        }
+      },
+      "secondFile": {
+        "name": "src/components/SeriesDetailModal.tsx",
+        "start": 396,
+        "end": 416,
+        "startLoc": {
+          "line": 396,
+          "column": 7,
+          "position": 3697
+        },
+        "endLoc": {
+          "line": 416,
+          "column": 25,
+          "position": 3826
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 12,
+      "fragment": "{/* Add Movie Modal */}\n        <AddButtonModal\n          open={showAddMovieModal}\n          onClose={() => {\n            setShowAddMovieModal(false);\n            setPrefillData(null);\n          }}\n          onSave={(log?: any) => {\n            setShowAddMovieModal(false);\n            setPrefillData(null);\n            // Başarı mesajı göster\n            console.log('Film puan ve yorum ile güncellendi:'",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 461,
+        "end": 472,
+        "startLoc": {
+          "line": 461,
+          "column": 9,
+          "position": 4048
+        },
+        "endLoc": {
+          "line": 472,
+          "column": 38,
+          "position": 4130
+        }
+      },
+      "secondFile": {
+        "name": "src/pages/SeriesDetailPage.tsx",
+        "start": 493,
+        "end": 504,
+        "startLoc": {
+          "line": 493,
+          "column": 9,
+          "position": 4858
+        },
+        "endLoc": {
+          "line": 504,
+          "column": 38,
+          "position": 4940
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 11,
+      "fragment": "&& (\n          <div className=\"min-h-screen bg-gradient-to-b from-black via-gray-900 to-black\">\n            {/* Header with close button */}\n            <div className=\"absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-4\">\n              <div></div>\n              <IonButton fill=\"clear\" color=\"light\" onClick={onClose}>\n                <IonIcon icon={close} size=\"large\" />\n              </IonButton>\n            </div>\n            \n            {/* Series Hero Section */",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/DetailViewModal.tsx",
+        "start": 653,
+        "end": 663,
+        "startLoc": {
+          "line": 653,
+          "column": 2,
+          "position": 6122
+        },
+        "endLoc": {
+          "line": 663,
+          "column": 26,
+          "position": 6216
+        }
+      },
+      "secondFile": {
+        "name": "src/components/DetailViewModal.tsx",
+        "start": 556,
+        "end": 566,
+        "startLoc": {
+          "line": 556,
+          "column": 2,
+          "position": 5248
+        },
+        "endLoc": {
+          "line": 566,
+          "column": 25,
+          "position": 5342
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 11,
+      "fragment": "}\n            <div className=\"relative\">\n              <img \n                src={seriesApiData.poster_path ? `https://image.tmdb.org/t/p/w500${seriesApiData.poster_path}` : '/placeholder-poster.jpg'} \n                alt={seriesApiData.name}\n                className=\"w-full h-96 object-cover\"\n              />\n              <div className=\"absolute inset-0 bg-gradient-to-t from-black/80 to-transparent\" />\n              \n              <div className=\"absolute bottom-0 left-0 right-0 p-6\">\n                <h1 className=\"text-3xl font-bold text-white mb-2\">{seriesApiData",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/DetailViewModal.tsx",
+        "start": 663,
+        "end": 673,
+        "startLoc": {
+          "line": 663,
+          "column": 26,
+          "position": 6217
+        },
+        "endLoc": {
+          "line": 673,
+          "column": 14,
+          "position": 6307
+        }
+      },
+      "secondFile": {
+        "name": "src/components/DetailViewModal.tsx",
+        "start": 566,
+        "end": 576,
+        "startLoc": {
+          "line": 566,
+          "column": 25,
+          "position": 5343
+        },
+        "endLoc": {
+          "line": 576,
+          "column": 11,
+          "position": 5420
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 7,
+      "fragment": ">\n          <button\n            onClick={onClose}\n            className=\"w-8 h-8 flex items-center justify-center text-white hover:text-[#FE7743] transition-colors\"\n          >\n            <svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" strokeWidth=\"2\">\n              <path strokeLinecap=\"round\" strokeLinejoin=\"round\" d=\"M15 19l-7-7 7-7",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/CastChatModal.tsx",
+        "start": 154,
+        "end": 160,
+        "startLoc": {
+          "line": 154,
+          "column": 2,
+          "position": 1303
+        },
+        "endLoc": {
+          "line": 160,
+          "column": 16,
+          "position": 1383
+        }
+      },
+      "secondFile": {
+        "name": "src/components/CastSelectionModal.tsx",
+        "start": 64,
+        "end": 70,
+        "startLoc": {
+          "line": 64,
+          "column": 3,
+          "position": 573
+        },
+        "endLoc": {
+          "line": 70,
+          "column": 21,
+          "position": 653
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 12,
+      "fragment": "setSearch('');\n    setSelectedMovie(null);\n    setTmdbId(null);\n    setRating(0);\n    setHoverRating(null);\n    setDate(() => {\n      const today = new Date();\n      return today.toISOString().split('T')[0];\n    });\n    setComment('');\n    setWatchList(false);\n    onClose",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/AddButtonModal.tsx",
+        "start": 144,
+        "end": 155,
+        "startLoc": {
+          "line": 144,
+          "column": 5,
+          "position": 1679
+        },
+        "endLoc": {
+          "line": 155,
+          "column": 8,
+          "position": 1775
+        }
+      },
+      "secondFile": {
+        "name": "src/components/AddButtonModal.tsx",
+        "start": 82,
+        "end": 93,
+        "startLoc": {
+          "line": 82,
+          "column": 7,
+          "position": 1154
+        },
+        "endLoc": {
+          "line": 93,
+          "column": 21,
+          "position": 1250
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 33,
+      "fragment": "{/* Cast Selection Modal */}\n      {tmdbId && tmdbId > 0 && (\n        <CastSelectionModal\n          open={showCastSelection}\n          onClose={() => {\n            setShowCastSelection(false);\n          }}\n          movieId={tmdbId}\n          movieTitle={selectedItem?.title || selectedItem?.name || ''}\n          onCastSelect={handleCastSelect}\n        />\n      )}\n\n      {/* Cast Chat Modal */}\n      {selectedCastMember && (\n        <CastChatModal\n          open={showCastChat}\n          onClose={() => {\n            setShowCastChat(false);\n            setSelectedCastMember(null);\n            // Chat kapandığında ana modal'ı da kapat\n            onSave();\n          }}\n          castMember={selectedCastMember}\n          movieTitle={selectedItem?.title || selectedItem?.name || ''}\n          onSendMessage={handleSendMessage}\n        />\n      )}\n    </>\n  );\n};\n\nexport default AddButtonModal",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/AddButtonModal.tsx",
+        "start": 839,
+        "end": 871,
+        "startLoc": {
+          "line": 839,
+          "column": 7,
+          "position": 8414
+        },
+        "endLoc": {
+          "line": 871,
+          "column": 15,
+          "position": 8606
+        }
+      },
+      "secondFile": {
+        "name": "src/components/FabAddButton.tsx",
+        "start": 100,
+        "end": 126,
+        "startLoc": {
+          "line": 100,
+          "column": 7,
+          "position": 830
+        },
+        "endLoc": {
+          "line": 126,
+          "column": 13,
+          "position": 1016
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 18,
+      "fragment": "};\n\n  if (!open) return null;\n\n  return (\n    <div className=\"fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50\">\n      <div className=\"w-full h-full bg-[#0C1117] overflow-y-auto\">\n        {/* Back Button */}\n        <button\n          onClick={closeModal}\n          className=\"absolute top-12 left-4 z-10 w-6 h-6 flex items-center justify-center\"\n        >\n          <svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\">\n            <path d=\"M19 12H5M12 19L5 12L12 5\" stroke=\"#F8F8FF\" strokeWidth=\"2\" strokeLinecap=\"round\" strokeLinejoin=\"round\"/>\n          </svg>\n        </button>\n\n        {loading",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/ActorDetailModal.tsx",
+        "start": 107,
+        "end": 124,
+        "startLoc": {
+          "line": 107,
+          "column": 3,
+          "position": 1094
+        },
+        "endLoc": {
+          "line": 124,
+          "column": 8,
+          "position": 1239
+        }
+      },
+      "secondFile": {
+        "name": "src/components/MovieDetailModal.tsx",
+        "start": 244,
+        "end": 227,
+        "startLoc": {
+          "line": 244,
+          "column": 3,
+          "position": 2361
+        },
+        "endLoc": {
+          "line": 227,
+          "column": 31,
+          "position": 2307
+        }
+      }
+    }
+  ]
+}
