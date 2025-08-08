@@ -131,19 +131,37 @@ const App: React.FC = () => {
 
     initPushNotifications();
 
-    // Google OAuth callback handling - sadece ana sayfada çalışsın
-    const handleOAuthCallback = async () => {
+    // Google OAuth callback handling - hash'de token varsa /auth/callback'e yönlendir
+    const handleOAuthCallback = () => {
       const hash = window.location.hash;
       const currentPath = window.location.pathname;
       
-      // Sadece ana sayfa veya root'ta OAuth callback'i işle
-      if (hash && hash.includes('access_token') && (currentPath === '/' || currentPath === '/home')) {
+      console.log('🔍 App.tsx - Hash check:', hash ? 'HAS_HASH' : 'NO_HASH');
+      console.log('🔍 App.tsx - Current path:', currentPath);
+      
+      // Hash'de access_token varsa ve AuthCallback sayfasında değilsek yönlendir
+      if (hash && hash.includes('access_token') && !currentPath.includes('/auth/callback')) {
         console.log('🔄 OAuth callback detected in App.tsx');
-        console.log('🔗 Hash:', hash);
+        console.log('🔗 Hash preview:', hash.substring(0, 60) + '...');
         
-        // AuthCallback sayfasına yönlendir
-        window.location.href = '/auth/callback' + hash;
+        // AuthCallback sayfasına hash ile birlikte yönlendir
+        const callbackUrl = '/auth/callback' + hash;
+        console.log('🔄 Redirecting to:', callbackUrl);
+        
+        // Hem pushState hem window.location.href dene
+        try {
+          // Önce history API ile dene
+          window.history.pushState({}, '', callbackUrl);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+          console.log('✅ History API ile yönlendirme başarılı');
+        } catch (error) {
+          console.log('❌ History API hatası, window.location.href kullanılıyor');
+          // Hata varsa direkt navigation
+          window.location.href = callbackUrl;
+        }
+        return true; // İşlem yapıldığını belirt
       }
+      return false;
     };
 
     handleOAuthCallback();

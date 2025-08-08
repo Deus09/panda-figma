@@ -10,17 +10,15 @@ const AuthCallback: React.FC = () => {
   const [isProcessing, setIsProcessing] = React.useState(false);
 
   useEffect(() => {
-    // Eğer zaten işlem yapılıyorsa, tekrar çalıştırma
-    if (isProcessing) {
-      return;
-    }
-    
+    if (isProcessing) return;
     setIsProcessing(true);
+
     const handleAuthCallback = async () => {
       console.log('🔄 AuthCallback başladı');
       console.log('📍 Mevcut URL:', window.location.href);
       console.log('🔗 Hash:', window.location.hash);
-      
+      console.log('�  Pathname:', window.location.pathname);
+
       try {
         // URL fragment'indeki hash token'ları işle
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -36,7 +34,7 @@ const AuthCallback: React.FC = () => {
           tokenType
         });
 
-        if (accessToken) {
+  if (accessToken) {
           console.log('✅ Access token bulundu, session kuruluyor...');
           
           // Token'ları Supabase session'ına set et
@@ -62,15 +60,25 @@ const AuthCallback: React.FC = () => {
               name: data.session.user.user_metadata?.full_name
             });
             
-            // URL'i temizle (token'ları kaldır)
-            console.log('🧹 URL temizleniyor...');
-            window.history.replaceState({}, document.title, '/home');
+            // Profile sayfasına yönlendir (giriş başarılı olduğunda)
+            console.log('🏠 Profile sayfasına yönlendiriliyor...');
             
-            // Kısa bir delay ekleyelim
+            // Hem history.replace hem de window.location.href kullan (çifte güvenlik)
             setTimeout(() => {
-              console.log('🏠 Ana sayfaya yönlendiriliyor...');
-              history.replace('/home');
-            }, 1000);
+              console.log('🔄 Yönlendirme işlemi başlıyor...');
+              
+              // Önce history ile dene
+              try {
+                history.replace('/profile');
+                console.log('✅ History.replace ile yönlendirme başarılı');
+              } catch (historyError) {
+                console.error('❌ History.replace hatası:', historyError);
+                // Hata varsa window.location.href kullan
+                window.location.href = '/profile';
+                console.log('✅ Window.location.href ile yönlendirme yapıldı');
+              }
+            }, 1000);  // 1 saniye bekle (session'ın tamamen kurulması için)
+            
           } else {
             console.error('❌ Session oluşturulamadı, data var ama session yok');
             history.replace('/home');
@@ -107,9 +115,12 @@ const AuthCallback: React.FC = () => {
         <div className="flex flex-col items-center justify-center h-full space-y-4">
           <IonSpinner name="dots" color="primary" className="w-12 h-12" />
           <div className="text-center">
-            <p className="text-lg font-medium text-foreground">{t('auth.signing_in_with_google')}</p>
+            <p className="text-lg font-medium text-foreground">Google ile giriş yapılıyor...</p>
             <p className="text-sm text-muted-foreground mt-2">
-              Giriş yapılıyor...
+              Token işleniyor, lütfen bekleyin...
+            </p>
+            <p className="text-xs text-muted-foreground mt-4">
+              Sorun yaşıyorsanız Console (F12) loglarını kontrol edin
             </p>
           </div>
         </div>

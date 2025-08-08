@@ -15,10 +15,15 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const signInWithGoogle = async () => {
+  // Dinamik origin kullan (port otomatik tespit)
+  const redirectUrl = `${window.location.origin}/auth/callback`;
+  
+  console.log('🔗 OAuth redirect URL (supabaseClient):', redirectUrl);
+  
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`
+      redirectTo: redirectUrl
     }
   });
   

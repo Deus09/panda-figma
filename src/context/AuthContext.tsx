@@ -139,10 +139,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
+      
+  // Dinamik origin (Codespaces / farklı port senaryoları için)
+  const redirectUrl = `${window.location.origin}/auth/callback`;
+      
+      console.log('🔗 OAuth redirect URL:', redirectUrl);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: redirectUrl
         }
       });
       if (error) {

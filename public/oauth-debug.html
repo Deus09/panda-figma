@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 10px 5px; }
+    </style>
+</head>
+<body>
+    <h1>Google OAuth Debug Test</h1>
+    
+    <div id="status"></div>
+    <div id="details"></div>
+    
+    <button onclick="testCallback()">Test AuthCallback</button>
+    <button onclick="testProfile()">Test Profile Redirect</button>
+    <button onclick="clearAndReload()">Clear & Reload</button>
+    
+    <script>
+        function log(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const className = type === 'error' ? 'error' : (type === 'success' ? 'success' : 'info');
+            statusDiv.innerHTML += `<div class="${className}">${new Date().toLocaleTimeString()}: ${message}</div>`;
+            console.log(message);
+        }
+        
+        function testCallback() {
+            log('Testing AuthCallback with sample token...');
+            const testUrl = '/auth/callback#access_token=test_token&refresh_token=test_refresh&expires_at=1754663711&token_type=bearer';
+            log(`Redirecting to: ${testUrl}`);
+            window.location.href = testUrl;
+        }
+        
+        function testProfile() {
+            log('Testing direct profile redirect...');
+            window.location.href = '/profile';
+        }
+        
+        function clearAndReload() {
+            log('Clearing hash and reloading...');
+            window.location.hash = '';
+            setTimeout(() => window.location.reload(), 100);
+        }
+        
+        // Page load handler
+        window.addEventListener('load', () => {
+            const hash = window.location.hash;
+            const path = window.location.pathname;
+            
+            log(`Current URL: ${window.location.href}`, 'info');
+            log(`Path: ${path}`, 'info');
+            log(`Hash: ${hash || 'No hash'}`, 'info');
+            
+            if (hash && hash.includes('access_token')) {
+                log('Access token detected in URL!', 'success');
+                
+                // Parse token details
+                const params = new URLSearchParams(hash.substring(1));
+                const details = {
+                    access_token: params.get('access_token')?.substring(0, 30) + '...',
+                    refresh_token: params.get('refresh_token'),
+                    expires_at: params.get('expires_at'),
+                    token_type: params.get('token_type')
+                };
+                
+                document.getElementById('details').innerHTML = 
+                    '<h3>Token Details:</h3>' + 
+                    '<pre>' + JSON.stringify(details, null, 2) + '</pre>';
+                
+                log('Parsed token details successfully', 'success');
+                
+                // Check if token is expired
+                const expiresAt = parseInt(params.get('expires_at'));
+                const now = Math.floor(Date.now() / 1000);
+                
+                if (expiresAt && expiresAt > now) {
+                    log('Token is valid (not expired)', 'success');
+                } else {
+                    log('Token is expired!', 'error');
+                }
+                
+            } else {
+                log('No access token in URL', 'info');
+            }
+        });
+    </script>
+</body>
+</html>

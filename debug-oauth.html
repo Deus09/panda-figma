@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Debug</title>
+</head>
+<body>
+    <h1>OAuth Callback Debug</h1>
+    <div id="output"></div>
+    
+    <script>
+        console.log('Full URL:', window.location.href);
+        console.log('Hash:', window.location.hash);
+        
+        const output = document.getElementById('output');
+        
+        // Hash'den parametreleri al
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const params = {};
+        
+        for (const [key, value] of hashParams) {
+            params[key] = value;
+        }
+        
+        console.log('Parsed parameters:', params);
+        
+        output.innerHTML = `
+            <h2>URL Parameters:</h2>
+            <pre>${JSON.stringify(params, null, 2)}</pre>
+            
+            <h2>Raw Hash:</h2>
+            <pre>${window.location.hash}</pre>
+            
+            <h2>Full URL:</h2>
+            <pre>${window.location.href}</pre>
+        `;
+        
+        // Eğer access_token varsa, doğru porta yönlendir
+        if (params.access_token) {
+            console.log('Access token found, redirecting to port 8104...');
+            const redirectUrl = `http://localhost:8104/auth/callback${window.location.hash}`;
+            console.log('Redirecting to:', redirectUrl);
+            
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
