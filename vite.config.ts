@@ -9,11 +9,15 @@ import { visualizer } from 'rollup-plugin-visualizer'
 export default defineConfig({
   plugins: [
     react(),
-    legacy(),
+    legacy({
+      targets: ['defaults', 'not IE 11'],
+      modernPolyfills: true
+    }),
     visualizer({
       filename: 'dist/bundle-analyzer.html',
       open: false,
-      gzipSize: true
+      gzipSize: true,
+      brotliSize: true
     })
   ],
   server: {
@@ -22,37 +26,86 @@ export default defineConfig({
   strictPort: true // Port meşgulse hata ver, otomatik değiştirme
   },
   build: {
+    // Rollup options'ı optimize et
     rollupOptions: {
       output: {
+        // Daha detaylı manual chunks
         manualChunks: {
-          // React ecosystem
-          'react-vendors': ['react', 'react-dom', 'react-router', 'react-router-dom'],
+          // React ecosystem - core
+          'react-core': ['react', 'react-dom'],
           
-          // Ionic core
-          'ionic-core': ['@ionic/react', '@ionic/react-router'],
+          // React routing - ayrı chunk
+          'react-router': ['react-router', 'react-router-dom'],
           
-          // Capacitor ecosystem
-          'capacitor': [
-            '@capacitor/core',
-            '@capacitor/app',
-            '@capacitor/haptics',
-            '@capacitor/keyboard',
-            '@capacitor/network',
-            '@capacitor/push-notifications',
-            '@capacitor/status-bar'
-          ],
+          // Ionic core'u parçalara böl - çok büyük!
+          'ionic-components': ['@ionic/react'],
+          'ionic-router': ['@ionic/react-router'],
           
-          // i18n
+          // Capacitor plugins - farklı kategorilerde grupla
+          'capacitor-core': ['@capacitor/core', '@capacitor/app'],
+          'capacitor-ui': ['@capacitor/haptics', '@capacitor/status-bar', '@capacitor/keyboard'],
+          'capacitor-network': ['@capacitor/network', '@capacitor/push-notifications'],
+          
+          // i18n ecosystem
           'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
           
-          // Supabase
+          // Supabase - büyük dependency, ayrı chunk
           'supabase': ['@supabase/supabase-js'],
           
-          // Utilities
-          'utils': ['ionicons']
+          // Icons - sadece gerektiğinde yüklensin
+          'icons': ['ionicons'],
+          
+          // Tailwind utilities - eğer kullanılıyorsa
+          'utilities': ['@tailwindcss/line-clamp']
+        },
+        // Chunk size kontrolü
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop().replace('.tsx', '').replace('.ts', '') : 'chunk';
+          return `assets/${facadeModuleId}-[hash].js`;
         }
+      },
+      // External dependencies - CDN'den yüklenebilecek olanlar
+      external: (id) => {
+        // Geliştirme ortamında external'ı devre dışı bırak
+        if (process.env.NODE_ENV === 'development') return false;
+        
+        // Production'da büyük dependencies'i external yapabilirsin (CDN kullanıyorsan)
+        return false; // Şimdilik hepsini bundle'a dahil et
       }
-    }
+    },
+    // Build optimizasyonları
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Console.log'ları production'da kaldır
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace']
+      },
+      mangle: {
+        safari10: true
+      }
+    },
+    // Chunk size limitleri
+    chunkSizeWarningLimit: 300, // 300kb chunk uyarı limiti
+    reportCompressedSize: true,
+    sourcemap: false, // Production'da sourcemap'i kapat
+  },
+  // CSS optimizasyonu
+  css: {
+    devSourcemap: false
+  },
+  // Dependency optimizasyonu
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      '@ionic/react',
+      '@ionic/react-router'
+    ],
+    exclude: [
+      // Büyük dependencies'i exclude ederek lazy loading'e zorla
+    ]
   },
   test: {
     globals: true,

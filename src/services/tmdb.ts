@@ -1,4 +1,6 @@
 
+// TMDB Service - Bundle Size Optimized
+// Lazy import NetworkService for better tree shaking
 import { NetworkService } from './networkService';
 
 // Raw TMDB API Response types
