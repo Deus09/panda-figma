@@ -114,9 +114,16 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                           onIonInput={(e) => setDescription(e.detail.value!)}
                           placeholder={t('ai.film_description_placeholder')}
                           rows={6}
-                          className="w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-[#D9D9D9] p-3 pr-10 text-black text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto border-0"
+                          className="w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-gray-800 p-3 pr-10 text-gray-200 text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto border-0"
                           fill="solid"
-                          style={{ height: 'auto', maxHeight: 250, minHeight: 150 }}
+                          style={{ 
+                            height: 'auto', 
+                            maxHeight: 250, 
+                            minHeight: 150,
+                            '--placeholder-color': '#9CA3AF', // text-gray-400
+                            '--placeholder-opacity': '1',
+                            'paddingRight': '40px' // Buton için yer aç
+                          }}
                           onInput={e => {
                             const target = e.target as HTMLTextAreaElement;
                             target.style.height = 'auto';
@@ -127,11 +134,11 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
                         {description.length > 0 && (
                           <button
                             type="button"
-                            className="absolute bottom-3 right-3 w-6 h-6 flex items-center justify-center bg-[#D9D9D9] text-black hover:bg-gray-300 transition-all duration-200"
+                            className="absolute bottom-3 right-3 w-6 h-6 flex items-center justify-center bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-all duration-200"
                             onClick={() => setDescription('')}
                             aria-label="Clear text"
                             style={{ 
-                              zIndex: 9999,
+                              zIndex: 10,
                               pointerEvents: 'auto'
                             }}
                           >
