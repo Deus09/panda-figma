@@ -259,6 +259,17 @@ export class LocalStorageService {
     }
   }
 
+  // User authentication check
+  static isUserLoggedIn(): boolean {
+    try {
+      const profile = this.getUserProfile();
+      return profile !== null;
+    } catch (error) {
+      console.error('Error checking user login status:', error);
+      return false;
+    }
+  }
+
   static getWatchlistCount(): number {
     try {
       const watchlistLogs = this.getMovieLogsByType('watchlist');

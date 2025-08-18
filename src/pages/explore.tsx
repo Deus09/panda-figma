@@ -634,10 +634,23 @@ const Explore: React.FC = () => {
         <button
           className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 flex items-center justify-center text-white font-bold text-sm shadow-lg transition-all duration-300 transform hover:scale-110 relative"
           onClick={() => {
+            // 1. Kullanıcı giriş yapmış mı kontrol et
+            const isLoggedIn = LocalStorageService.isUserLoggedIn();
+            
+            if (!isLoggedIn) {
+              // Giriş yapmamış -> Paywall göster
+              openPaywall('ai-recommendations');
+              return;
+            }
+            
+            // 2. Kullanıcı Pro üye mi kontrol et
             const isPro = LocalStorageService.isUserPro();
+            
             if (!isPro) {
+              // Free üye -> Paywall göster
               openPaywall('ai-recommendations');
             } else {
+              // Pro üye -> AI özelliğini aç
               setIsAiModalOpen(true);
             }
           }}
