@@ -500,7 +500,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   return (
     <>
       <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black bg-opacity-40">
-        <div className="w-[393px] max-h-[95vh] h-[95vh] rounded-t-[54px] bg-[#222] pb-6 pt-6 px-4 shadow-2xl animate-slideInUp overflow-y-auto relative z-[60]">
+        <div className="w-[393px] max-h-[80vh] h-[80vh] rounded-t-[54px] bg-[#222] pb-6 pt-6 px-4 shadow-2xl animate-slideInUp overflow-y-auto relative z-[60]">
           {/* Modal Title */}
           <div className="flex justify-center mb-8">
             <span className="text-[24px] font-extrabold font-poppins text-[#F8F8FF] text-center drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">{t('add_movie_modal.title')}</span>

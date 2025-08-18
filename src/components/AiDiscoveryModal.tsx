@@ -70,12 +70,12 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
     <IonModal 
       isOpen={open} 
       onDidDismiss={onClose}
-      breakpoints={[0, 0.95]} 
-      initialBreakpoint={0.95}
+      breakpoints={[0, 0.8]} 
+      initialBreakpoint={0.8}
       className="ai-discovery-modal"
       style={{
-        '--height': '95vh',
-        '--max-height': '95vh'
+        '--height': '80vh',
+        '--max-height': '80vh'
       }}
     >
       <div className="w-full h-full bg-[#222] rounded-t-[54px] overflow-hidden">
