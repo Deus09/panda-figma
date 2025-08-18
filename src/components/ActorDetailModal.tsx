@@ -204,7 +204,7 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
               {/* Tab Segment */}
               <div className="flex w-[193px] h-[32px] rounded-[10px] overflow-hidden border border-white bg-[#222] mb-4">
                 <button
-                  className={`flex-1 h-full flex items-center justify-center font-poppins font-semibold text-sm border-r border-white rounded-l-[10px] transition-all duration-300 ${activeTab === 'movies' ? 'bg-white text-[#FE7743]' : 'bg-[#222] text-white'}`}
+                  className={`flex-1 h-full flex items-center justify-center font-poppins font-semibold text-sm border-r border-white rounded-l-[9px] transition-all duration-300 ${activeTab === 'movies' ? 'bg-white text-[#FE7743]' : 'bg-[#222] text-white'}`}
                   onClick={() => {
                     console.log('Switching to movies tab');
                     setActiveTab('movies');
@@ -214,7 +214,7 @@ const ActorDetailModal: React.FC<ActorDetailModalProps> = ({
                   Filmler
                 </button>
                 <button
-                  className={`flex-1 h-full flex items-center justify-center font-poppins font-semibold text-sm rounded-r-[10px] transition-all duration-300 ${activeTab === 'tv' ? 'bg-white text-[#FE7743]' : 'bg-[#222] text-white'}`}
+                  className={`flex-1 h-full flex items-center justify-center font-poppins font-semibold text-sm rounded-r-[9px] transition-all duration-300 ${activeTab === 'tv' ? 'bg-white text-[#FE7743]' : 'bg-[#222] text-white'}`}
                   onClick={() => {
                     console.log('Switching to tv tab');
                     setActiveTab('tv');
