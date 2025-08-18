@@ -20,6 +20,7 @@ const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
   onBackClick
 }) => (
   <div className="flex flex-row items-center justify-between bg-background w-full h-[80px] p-4 relative safe-area-top">
+    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#f8f8ff]"></div>
     <div className="flex flex-row items-center gap-2 flex-1">
       {showBackButton && (
         <button 
@@ -32,7 +33,7 @@ const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
         </button>
       )}
       {showLogo && (
-        <img src={logo} alt="Logo" className="w-[40px] h-[40px] rounded-full bg-muted" />
+        <img src={logo} alt="Logo" className="w-[40px] h-[40px] rounded-full bg-[#f8f8ff]" />
       )}
       <span className="text-h2 font-bold text-foreground truncate">
         {title}
