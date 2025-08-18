@@ -5,6 +5,7 @@ import { LocalStorageService } from '../services/localStorage';
 // Removed: ActorDetailModal import (unused)
 import ToastNotification from './ToastNotification';
 import { useModal } from '../context/ModalContext';
+import { usePaywall } from '../context/PaywallContext';
 
 interface SeriesDetailModalProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface SeriesDetailModalProps {
 const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose: _, seriesId }) => {
   const { t } = useTranslation();
   const { openModal, closeModal } = useModal();
+  const { openPaywall } = usePaywall();
   const [seriesDetails, setSeriesDetails] = useState<TMDBSeriesDetails | null>(null);
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
   const [loading, setLoading] = useState(false);
@@ -123,6 +125,15 @@ const SeriesDetailModal: React.FC<SeriesDetailModalProps> = ({ open, onClose: _,
       setToastMessage(t('toast.series_removed_from_watchlist', { title: seriesDetails.name }));
       setShowToast(true);
     } else {
+      // İzleme listesine eklemeye çalışırken limit kontrolü yap
+      const { canAdd, reason } = LocalStorageService.canAddToWatchlist();
+      
+      if (!canAdd && reason === 'limit-reached') {
+        // Limit aşıldı, paywall göster
+        openPaywall('watchlist-limit');
+        return;
+      }
+      
       // Önce mevcut kaydı güncellemeyi dene
       let updatedLog = LocalStorageService.updateLogTypeByTmdbId(seriesIdToUpdate, newType, 'tv');
       

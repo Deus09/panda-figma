@@ -3,6 +3,9 @@ import { IonTextarea, IonModal } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
 import { getMovieSuggestions, MovieSuggestion } from '../services/geminiService';
 import { useModal } from '../context/ModalContext';
+import { usePaywall } from '../context/PaywallContext';
+import { LocalStorageService } from '../services/localStorage';
+import ProBadge from './ProBadge';
 
 interface AiDiscoveryModalProps {
   open: boolean;
@@ -13,6 +16,7 @@ interface AiDiscoveryModalProps {
 const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMovieSelect }) => {
   const { t } = useTranslation();
   const { openModal } = useModal();
+  const { openPaywall } = usePaywall();
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [suggestedMovies, setSuggestedMovies] = useState<MovieSuggestion[]>([]);
@@ -22,6 +26,14 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
 
   const handleFindMovies = async () => {
     if (!description.trim()) return;
+
+    // Pro kontrolü yap
+    const isPro = LocalStorageService.isUserPro();
+    if (!isPro) {
+      // Pro değilse paywall göster
+      openPaywall('ai-recommendations');
+      return;
+    }
 
     setIsLoading(true);
     setRetryCount(0); // Sayacı sıfırla
@@ -44,6 +56,13 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
 
   const handleTryAgain = async () => {
     if (retryCount >= MAX_RETRIES) return; // Limite ulaşıldıysa işlemi durdur
+
+    // Pro kontrolü yap
+    const isPro = LocalStorageService.isUserPro();
+    if (!isPro) {
+      openPaywall('ai-recommendations');
+      return;
+    }
 
     setIsLoading(true);
     setSuggestedMovies([]); // Mevcut filmleri temizle
@@ -80,10 +99,13 @@ const AiDiscoveryModal: React.FC<AiDiscoveryModalProps> = ({ open, onClose, onMo
     >
       <div className="w-full h-full bg-[#222] rounded-t-[54px] overflow-hidden">
         {/* Header Bar */}
-        <div className="flex items-center justify-center bg-background w-full h-[60px] p-4">
+        <div className="flex items-center justify-center bg-background w-full h-[60px] p-4 relative">
           <span className="text-h2 font-bold text-foreground">
             {t('ai.ai_film_discovery')}
           </span>
+          <div className="absolute right-4">
+            <ProBadge size="small" />
+          </div>
         </div>
         
         {/* Modal Content */}

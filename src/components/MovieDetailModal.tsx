@@ -6,6 +6,7 @@ import ActorDetailModal from './ActorDetailModal';
 import AddButtonModal from './AddButtonModal';
 import ToastNotification from './ToastNotification';
 import { useModal } from '../context/ModalContext';
+import { usePaywall } from '../context/PaywallContext';
 
 interface MovieDetailModalProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface MovieDetailModalProps {
 
 const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movieId }) => {
   const { openModal } = useModal();
+  const { openPaywall } = usePaywall();
   const { t } = useTranslation();
   const [movieDetails, setMovieDetails] = useState<TMDBMovieDetails | null>(null);
   const [cast, setCast] = useState<TMDBCastMember[]>([]);
@@ -141,6 +143,15 @@ const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ open, onClose, movi
       // Toast bildirimi göster
       setShowToast(true);
     } else {
+      // İzleme listesine eklemeye çalışırken limit kontrolü yap
+      const { canAdd, reason } = LocalStorageService.canAddToWatchlist();
+      
+      if (!canAdd && reason === 'limit-reached') {
+        // Limit aşıldı, paywall göster
+        openPaywall('watchlist-limit');
+        return;
+      }
+      
       // Önce mevcut kaydı güncellemeyi dene
       let updatedLog = LocalStorageService.updateLogTypeByTmdbId(movieIdToUpdate, newType, 'movie');
       

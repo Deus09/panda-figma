@@ -26,10 +26,12 @@ import { ModalProvider, useModal } from './context/ModalContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { NetworkProvider } from './context/NetworkContext';
+import { PaywallProvider, usePaywall } from './context/PaywallContext';
 import { OfflineIndicator } from './components/NetworkIndicator';
 import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
+import PaywallModal from './components/PaywallModal';
 import { initializePushNotifications } from './services/pushNotifications';
 import { useGlobalErrorHandler } from './hooks/useGlobalErrorHandler';
 import GlobalErrorBoundary from './components/errors/GlobalErrorBoundary';
@@ -91,6 +93,32 @@ const ModalRenderer: React.FC = () => {
     );
   }
   return null;
+};
+
+const PaywallRenderer: React.FC = () => {
+  const { isPaywallOpen, currentFeature, closePaywall } = usePaywall();
+  
+  if (!isPaywallOpen || !currentFeature) return null;
+
+  const handleSubscribe = (plan: 'monthly' | 'yearly') => {
+    // Demo için localStorage'a Pro durumunu kaydet
+    const success = LocalStorageService.subscribeToProPlan(plan);
+    if (success) {
+      console.log(`✅ Subscribed to ${plan} plan successfully`);
+      closePaywall();
+    } else {
+      console.error('❌ Failed to subscribe to plan');
+    }
+  };
+
+  return (
+    <PaywallModal 
+      isOpen={isPaywallOpen}
+      onClose={closePaywall}
+      feature={currentFeature}
+      onSubscribe={handleSubscribe}
+    />
+  );
 };
 
 const App: React.FC = () => {
@@ -172,7 +200,9 @@ const App: React.FC = () => {
       <AuthProvider>
         <NetworkProvider>
           <ModalProvider>
-            <AppContent />
+            <PaywallProvider>
+              <AppContent />
+            </PaywallProvider>
           </ModalProvider>
         </NetworkProvider>
       </AuthProvider>
@@ -273,6 +303,7 @@ const AppContent: React.FC = () => {
           </Suspense>
         </IonReactRouter>
         <ModalRenderer />
+        <PaywallRenderer />
       </GlobalErrorBoundary>
     </IonApp>
   );

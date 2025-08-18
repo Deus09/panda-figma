@@ -16,9 +16,11 @@ import { getSeriesDetails, getSeasonDetails, TMDBSeriesDetails, SeasonDetails } 
 import SeasonAccordion from '../components/SeasonAccordion';
 import AddButtonModal from '../components/AddButtonModal';
 import ToastNotification from '../components/ToastNotification';
+import { usePaywall } from '../context/PaywallContext';
 
 const SeriesDetailPage: React.FC = () => {
   const { seriesId } = useParams<{ seriesId: string }>();
+  const { openPaywall } = usePaywall();
   const [seriesApiData, setSeriesApiData] = useState<TMDBSeriesDetails & { seasons: SeasonDetails[] } | null>(null);
   const [watchedLogs, setWatchedLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -243,6 +245,15 @@ const SeriesDetailPage: React.FC = () => {
       }
       setLogStatus(null);
     } else {
+      // İzleme listesine eklemeye çalışırken limit kontrolü yap
+      const { canAdd, reason } = LocalStorageService.canAddToWatchlist();
+      
+      if (!canAdd && reason === 'limit-reached') {
+        // Limit aşıldı, paywall göster
+        openPaywall('watchlist-limit');
+        return;
+      }
+      
       // Önce mevcut kaydı güncellemeyi dene
       let updatedLog = LocalStorageService.updateLogTypeByTmdbId(parseInt(seriesId), newType, 'tv');
       

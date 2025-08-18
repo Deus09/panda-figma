@@ -9,13 +9,17 @@ import CategoryChip from '../components/CategoryChip';
 import BottomNavBar from '../components/BottomNavBar';
 import SkeletonLoader from '../components/SkeletonLoader';
 import AiDiscoveryModal from '../components/AiDiscoveryModal';
+import ProBadge from '../components/ProBadge';
 import { useNetworkErrorHandler } from '../components/NetworkErrorHandler';
 import { getPopularMovies, getPopularSeries, searchAll, getMoviesByGenre, getSeriesByGenre, TMDBMovieResult, TMDBMultiSearchResponse } from '../services/tmdb';
 import { useModal } from '../context/ModalContext';
+import { usePaywall } from '../context/PaywallContext';
+import { LocalStorageService } from '../services/localStorage';
 import styles from './explore.module.css';
 
 const Explore: React.FC = () => {
   const { openModal } = useModal();
+  const { openPaywall } = usePaywall();
   const { t } = useTranslation();
   const { handleNetworkError, NetworkErrorComponent } = useNetworkErrorHandler();
   const [activeTab, setActiveTab] = useState<'filmler' | 'series'>('filmler');
@@ -623,37 +627,35 @@ const Explore: React.FC = () => {
         
         {/* Bottom Navigation */}
         <BottomNavBar className="rounded-t-[24px]" />
+      </IonContent>
 
-        {/* AI Discovery FAB Button */}
+      {/* AI Discovery FAB Button */}
+      <div className="fixed bottom-[110px] right-[20px] z-[1000]">
         <button
-          className="fixed bottom-[110px] right-[20px] w-[56px] h-[56px] rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center shadow-[0_8px_24px_0_rgba(0,0,0,0.15),0_2px_4px_0_rgba(0,0,0,0.2)] z-50 hover:from-purple-700 hover:to-blue-700 transition-all duration-200 hover:scale-105 active:scale-95"
-          onClick={() => setIsAiModalOpen(true)}
+          className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 flex items-center justify-center text-white font-bold text-sm shadow-lg transition-all duration-300 transform hover:scale-110 relative"
+          onClick={() => {
+            const isPro = LocalStorageService.isUserPro();
+            if (!isPro) {
+              openPaywall('ai-recommendations');
+            } else {
+              setIsAiModalOpen(true);
+            }
+          }}
           aria-label={t('ai.ai_discovery')}
         >
-          {/* Brain/AI Icon */}
-          <svg 
-            width="28" 
-            height="28" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            className="text-white"
-          >
-            <path 
-              d="M12 2C13.1 2 14 2.9 14 4C14 4.74 13.6 5.39 13 5.73V7H14C15.1 7 16 7.9 16 9V10C16.6 10.34 17 10.9 17 11.5C17 12.1 16.6 12.66 16 13V14C16 15.1 15.1 16 14 16H13V16.27C13.6 16.61 14 17.26 14 18C14 19.1 13.1 20 12 20C10.9 20 10 19.1 10 18C10 17.26 10.4 16.61 11 16.27V16H10C8.9 16 8 15.1 8 14V13C7.4 12.66 7 12.1 7 11.5C7 10.9 7.4 10.34 8 10V9C8 7.9 8.9 7 10 7H11V5.73C10.4 5.39 10 4.74 10 4C10 2.9 10.9 2 12 2M12 4.5C12.28 4.5 12.5 4.72 12.5 5S12.28 5.5 12 5.5 11.5 5.28 11.5 5 11.72 4.5 12 4.5M9.5 10C9.78 10 10 10.22 10 10.5S9.78 11 9.5 11 9 10.78 9 10.5 9.22 10 9.5 10M14.5 10C14.78 10 15 10.22 15 10.5S14.78 11 14.5 11 14 10.78 14 10.5 14.22 10 14.5 10M12 17.5C12.28 17.5 12.5 17.72 12.5 18S12.28 18.5 12 18.5 11.5 18.28 11.5 18 11.72 17.5 12 17.5Z" 
-              fill="currentColor"
-            />
-          </svg>
+          <span className="text-xs">AI</span>
+          <ProBadge size="small" className="absolute -top-1 -right-1" />
         </button>
+      </div>
 
-        {/* AI Discovery Modal */}
-        <AiDiscoveryModal
-          open={isAiModalOpen}
-          onClose={() => setIsAiModalOpen(false)}
-        />
+      {/* AI Discovery Modal */}
+      <AiDiscoveryModal
+        open={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+      />
         
-        {/* Network Error Handler */}
-        <NetworkErrorComponent />
-      </IonContent>
+      {/* Network Error Handler */}
+      <NetworkErrorComponent />
     </IonPage>
   );
 };

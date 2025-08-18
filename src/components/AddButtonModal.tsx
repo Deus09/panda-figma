@@ -8,6 +8,8 @@ import { TvSeriesDetails } from '../types/tmdb';
 import CastSelectionModal from './CastSelectionModal';
 import CastChatModal from './CastChatModal';
 import { MovieLogDraft } from '../types/drafts';
+import { usePaywall } from '../context/PaywallContext';
+import ProBadge from './ProBadge';
 
 interface SelectedItemBase {
   id: number; // TMDB id veya episode id
@@ -72,6 +74,8 @@ interface AddButtonModalProps {
 const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, onAddMovieLog, prefillData }) => {
   // Modal view states
   const { t } = useTranslation();
+  const { openPaywall } = usePaywall();
+  
   type ModalView = 'search' | 'episodes';
   const [view, setView] = useState<ModalView>('search');
   
@@ -206,6 +210,13 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   // Sparkle butonuna tıklama fonksiyonu
   const handleImprove = async () => {
     if (!comment.trim() || !selectedItem) return;
+    
+    // Pro kontrolü ekle
+    if (!LocalStorageService.isUserPro()) {
+      openPaywall('comment-enhancer');
+      return;
+    }
+    
     setImproving(true);
     try {
       const movieTitle = selectedItem.title || selectedItem.name || '';
@@ -741,7 +752,13 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           </div>
           {/* Comment */}
           <div className="mb-8 relative">
-            <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF] mb-1">{t('add_movie_modal.comment')}</span>
+            <div className="flex items-center justify-between mb-1">
+              <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF]">{t('add_movie_modal.comment')}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400">AI Enhancer</span>
+                <ProBadge variant="badge" size="small" />
+              </div>
+            </div>
             <div className="relative">
               <textarea
                 className={`w-full min-h-[150px] max-h-[250px] rounded-[12px] bg-[#D9D9D9] p-3 pr-10 text-black text-[16px] font-poppins font-normal resize-none outline-none overflow-y-auto ${(watchList || !selectedItem) ? 'opacity-50 pointer-events-none' : ''}`}
@@ -760,12 +777,15 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                 type="button"
                 className="absolute bottom-2 right-2 w-7 h-7 flex items-center justify-center bg-transparent p-0 m-0 focus:outline-none"
                 tabIndex={-1}
-                aria-label="Sparkle"
+                aria-label="AI Comment Enhancer"
                 disabled={watchList || improving || !selectedItem}
                 onClick={handleImprove}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="22" height="22" viewBox="0 0 50 50">
-                  <path d="M22.462 11.035l2.88 7.097c1.204 2.968 3.558 5.322 6.526 6.526l7.097 2.88c1.312.533 1.312 2.391 0 2.923l-7.097 2.88c-2.968 1.204-5.322 3.558-6.526 6.526l-2.88 7.097c-.533 1.312-2.391 1.312-2.923 0l-2.88-7.097c-1.204-2.968-3.558-5.322-6.526-6.526l-7.097-2.88c-1.312-.533-1.312-2.391 0-2.923l7.097-2.88c2.968-1.204 5.322-3.558 6.526-6.526l2.88-7.097C20.071 9.723 21.929 9.723 22.462 11.035zM39.945 2.701l.842 2.428c.664 1.915 2.169 3.42 4.084 4.084l2.428.842c.896.311.896 1.578 0 1.889l-2.428.842c-1.915.664-3.42 2.169-4.084 4.084l-.842 2.428c-.311.896-1.578.896-1.889 0l-.842-2.428c-.664-1.915-2.169-3.42-4.084-4.084l-2.428-.842c-.896-.311-.896-1.578 0-1.889l2.428-.842c1.915-.664 3.42-2.169 4.084-4.084l.842-2.428C38.366 1.805 39.634 1.805 39.945 2.701z"></path>
+                  <path 
+                    d="M22.462 11.035l2.88 7.097c1.204 2.968 3.558 5.322 6.526 6.526l7.097 2.88c1.312.533 1.312 2.391 0 2.923l-7.097 2.88c-2.968 1.204-5.322 3.558-6.526 6.526l-2.88 7.097c-.533 1.312-2.391 1.312-2.923 0l-2.88-7.097c-1.204-2.968-3.558-5.322-6.526-6.526l-7.097-2.88c-1.312-.533-1.312-2.391 0-2.923l7.097-2.88c2.968-1.204 5.322-3.558 6.526-6.526l2.88-7.097C20.071 9.723 21.929 9.723 22.462 11.035zM39.945 2.701l.842 2.428c.664 1.915 2.169 3.42 4.084 4.084l2.428.842c.896.311.896 1.578 0 1.889l-2.428.842c-1.915.664-3.42 2.169-4.084 4.084l-.842 2.428c-.311.896-1.578.896-1.889 0l-.842-2.428c-.664-1.915-2.169-3.42-4.084-4.084l-2.428-.842c-.896-.311-.896-1.578 0-1.889l2.428-.842c1.915-.664 3.42-2.169 4.084-4.084l.842-2.428C38.366 1.805 39.634 1.805 39.945 2.701z"
+                    fill={LocalStorageService.isUserPro() ? '#FE7743' : '#888888'}
+                  />
                 </svg>
               </button>
             </div>

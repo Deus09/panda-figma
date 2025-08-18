@@ -12,7 +12,7 @@ const startApp = async () => {
   const root = createRoot(container!);
   root.render(
     <React.StrictMode>
-  <App />
+      <App />
     </React.StrictMode>
   );
 };

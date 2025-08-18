@@ -517,5 +517,64 @@
         "dismissed": "Bildirim banner'ı kapatıldı"
       }
     }
+  },
+  "paywall": {
+    "watchlist_limit": {
+      "title": "İzleme Listesi Limiti",
+      "subtitle": "Ücretsiz hesabınızda 100 film/dizi limitine ulaştınız",
+      "benefit1": "Sınırsız izleme listesi",
+      "benefit2": "Gelişmiş filtreleme",
+      "benefit3": "Öncelik sıralama"
+    },
+    "ai_recommendations": {
+      "title": "AI Film Önerileri",
+      "subtitle": "Kişiselleştirilmiş film önerileri için Pro gerekli",
+      "benefit1": "Kişiselleştirilmiş öneriler",
+      "benefit2": "Gelişmiş AI algoritması",
+      "benefit3": "Anlık öneriler"
+    },
+    "comment_enhancer": {
+      "title": "Yorum Geliştirici",
+      "subtitle": "AI ile yorumlarınızı geliştirin",
+      "benefit1": "AI destekli yorum geliştirme",
+      "benefit2": "Dil bilgisi düzeltme",
+      "benefit3": "Yaratıcı öneriler"
+    },
+    "chat_with_cast": {
+      "title": "Oyuncularla Sohbet",
+      "subtitle": "Favori karakterlerinizle AI sohbeti",
+      "benefit1": "Karakterlerle AI sohbet",
+      "benefit2": "Gerçekçi diyaloglar",
+      "benefit3": "Sınırsız konuşma"
+    },
+    "detailed_stats": {
+      "title": "Detaylı İstatistikler",
+      "subtitle": "İzleme alışkanlıklarınızı keşfedin",
+      "benefit1": "Detaylı grafikler",
+      "benefit2": "Trend analizi",
+      "benefit3": "Kişiselleştirilmiş raporlar"
+    },
+    "benefits_title": "Pro ile neler kazanırsın?",
+    "all_features_title": "Tüm Pro Özellikler",
+    "feature": {
+      "unlimited_watchlist": "Sınırsız İzleme Listesi",
+      "ai_recommendations": "AI Film Önerileri",
+      "comment_enhancer": "Yorum Geliştirici",
+      "chat_cast": "Oyuncularla Sohbet",
+      "detailed_stats": "Detaylı İstatistikler",
+      "priority_support": "Öncelikli Destek"
+    },
+    "most_popular": "EN POPÜLER",
+    "year": "yıl",
+    "month": "ay",
+    "yearly_savings": "Aylık plana göre %17 tasarruf",
+    "monthly_desc": "Aylık ödeme seçeneği",
+    "start_yearly": "Yıllık Planı Başlat",
+    "start_monthly": "Aylık Planı Başlat",
+    "free_trial": "1 ay ücretsiz deneme!",
+    "free_trial_desc": "İstediğin zaman iptal edebilirsin",
+    "auto_renewal": "Otomatik yenileme, istediğin zaman iptal edebilirsin",
+    "terms": "Kullanım Şartları",
+    "privacy": "Gizlilik Politikası"
   }
 }

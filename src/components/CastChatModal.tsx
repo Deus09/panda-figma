@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TMDBCastMember } from '../services/tmdb';
+import { usePaywall } from '../context/PaywallContext';
+import { LocalStorageService } from '../services/localStorage';
+import ProBadge from './ProBadge';
 
 interface ChatMessage {
   id: string;
@@ -25,6 +28,7 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
   onSendMessage
 }) => {
   const { t, i18n } = useTranslation();
+  const { openPaywall } = usePaywall();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +68,13 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
+
+    // Pro kontrolü yap
+    const isPro = LocalStorageService.isUserPro();
+    if (!isPro) {
+      openPaywall('chat-with-cast');
+      return;
+    }
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -151,7 +162,7 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="bg-[#222] rounded-[16px] shadow-[0_8px_24px_0_rgba(0,0,0,0.15)] w-[90vw] max-w-[400px] h-[80vh] flex flex-col animate-fadeIn">
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-[#333]">
+        <div className="flex items-center gap-3 p-4 border-b border-[#333] relative">
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center text-white hover:text-[#FE7743] transition-colors"
@@ -180,6 +191,11 @@ const CastChatModal: React.FC<CastChatModalProps> = ({
               <p className="text-white font-poppins text-[14px] font-semibold">{castMember.name}</p>
               <p className="text-[#EFEEEA] font-poppins text-[12px]">{castMember.character}</p>
             </div>
+          </div>
+          
+          {/* Pro Badge */}
+          <div className="absolute top-4 right-4">
+            <ProBadge size="small" />
           </div>
         </div>
 

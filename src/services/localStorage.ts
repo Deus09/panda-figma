@@ -42,6 +42,12 @@ export interface UserPreferences {
     seasonFinales: boolean;
     recommendations: boolean;
   };
+  // Pro subscription fields
+  isPro?: boolean;
+  proSubscriptionType?: 'monthly' | 'yearly' | null;
+  proExpiryDate?: string; // ISO string
+  freeTrialUsed?: boolean;
+  freeTrialExpiryDate?: string; // ISO string
 }
 
 export interface Badge {
@@ -227,6 +233,179 @@ export class LocalStorageService {
     return logs.filter(log => log.type === type);
   }
 
+  // Pro subscription and limits
+  static isUserPro(): boolean {
+    try {
+      const preferences = this.getUserPreferences();
+      
+      // Check if user has active Pro subscription
+      if (preferences.isPro && preferences.proExpiryDate) {
+        const expiryDate = new Date(preferences.proExpiryDate);
+        const now = new Date();
+        return now < expiryDate;
+      }
+      
+      // Check if user has active free trial
+      if (!preferences.freeTrialUsed && preferences.freeTrialExpiryDate) {
+        const trialExpiryDate = new Date(preferences.freeTrialExpiryDate);
+        const now = new Date();
+        return now < trialExpiryDate;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error checking Pro status:', error);
+      return false;
+    }
+  }
+
+  static getWatchlistCount(): number {
+    try {
+      const watchlistLogs = this.getMovieLogsByType('watchlist');
+      return watchlistLogs.length;
+    } catch (error) {
+      console.error('Error getting watchlist count:', error);
+      return 0;
+    }
+  }
+
+  static canAddToWatchlist(): { canAdd: boolean; reason?: 'limit-reached' | 'error' } {
+    try {
+      // Pro users have unlimited watchlist
+      if (this.isUserPro()) {
+        return { canAdd: true };
+      }
+      
+      // Free users are limited to 100 items
+      const watchlistCount = this.getWatchlistCount();
+      const FREE_WATCHLIST_LIMIT = 100;
+      
+      if (watchlistCount >= FREE_WATCHLIST_LIMIT) {
+        return { canAdd: false, reason: 'limit-reached' };
+      }
+      
+      return { canAdd: true };
+    } catch (error) {
+      console.error('Error checking watchlist limit:', error);
+      return { canAdd: false, reason: 'error' };
+    }
+  }
+
+  static startFreeTrial(): boolean {
+    try {
+      const preferences = this.getUserPreferences();
+      
+      // Check if free trial already used
+      if (preferences.freeTrialUsed) {
+        return false;
+      }
+      
+      // Set free trial for 1 month
+      const now = new Date();
+      const trialExpiryDate = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days
+      
+      const updatedPreferences: UserPreferences = {
+        ...preferences,
+        freeTrialUsed: true,
+        freeTrialExpiryDate: trialExpiryDate.toISOString(),
+        isPro: false // Trial is separate from Pro subscription
+      };
+      
+      this.saveUserPreferences(updatedPreferences);
+      return true;
+    } catch (error) {
+      console.error('Error starting free trial:', error);
+      return false;
+    }
+  }
+
+  static subscribeToProPlan(planType: 'monthly' | 'yearly'): boolean {
+    try {
+      const preferences = this.getUserPreferences();
+      const now = new Date();
+      
+      // Calculate expiry date based on plan type
+      let expiryDate: Date;
+      if (planType === 'monthly') {
+        expiryDate = new Date(now.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days
+      } else {
+        expiryDate = new Date(now.getTime() + (365 * 24 * 60 * 60 * 1000)); // 365 days
+      }
+      
+      const updatedPreferences: UserPreferences = {
+        ...preferences,
+        isPro: true,
+        proSubscriptionType: planType,
+        proExpiryDate: expiryDate.toISOString(),
+        // Clear free trial data when user subscribes
+        freeTrialExpiryDate: undefined
+      };
+      
+      this.saveUserPreferences(updatedPreferences);
+      return true;
+    } catch (error) {
+      console.error('Error subscribing to Pro plan:', error);
+      return false;
+    }
+  }
+
+  static getProStatus(): {
+    isPro: boolean;
+    isInFreeTrial: boolean;
+    subscriptionType?: 'monthly' | 'yearly';
+    expiryDate?: string;
+    daysRemaining?: number;
+  } {
+    try {
+      const preferences = this.getUserPreferences();
+      const now = new Date();
+      
+      // Check Pro subscription
+      if (preferences.isPro && preferences.proExpiryDate) {
+        const expiryDate = new Date(preferences.proExpiryDate);
+        const isActive = now < expiryDate;
+        const daysRemaining = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (isActive) {
+          return {
+            isPro: true,
+            isInFreeTrial: false,
+            subscriptionType: preferences.proSubscriptionType,
+            expiryDate: preferences.proExpiryDate,
+            daysRemaining: Math.max(0, daysRemaining)
+          };
+        }
+      }
+      
+      // Check free trial
+      if (!preferences.freeTrialUsed && preferences.freeTrialExpiryDate) {
+        const trialExpiryDate = new Date(preferences.freeTrialExpiryDate);
+        const isActive = now < trialExpiryDate;
+        const daysRemaining = Math.ceil((trialExpiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (isActive) {
+          return {
+            isPro: false,
+            isInFreeTrial: true,
+            expiryDate: preferences.freeTrialExpiryDate,
+            daysRemaining: Math.max(0, daysRemaining)
+          };
+        }
+      }
+      
+      return {
+        isPro: false,
+        isInFreeTrial: false
+      };
+    } catch (error) {
+      console.error('Error getting Pro status:', error);
+      return {
+        isPro: false,
+        isInFreeTrial: false
+      };
+    }
+  }
+
   // User Preferences Operations
   static getUserPreferences(): UserPreferences {
     try {
@@ -235,7 +414,9 @@ export class LocalStorageService {
         favoriteGenres: [],
         darkMode: true,
         language: 'tr',
-        defaultView: 'watched'
+        defaultView: 'watched',
+        isPro: false,
+        freeTrialUsed: false
       };
     } catch (error) {
       console.error('Error reading user preferences:', error);
@@ -243,7 +424,9 @@ export class LocalStorageService {
         favoriteGenres: [],
         darkMode: true,
         language: 'tr',
-        defaultView: 'watched'
+        defaultView: 'watched',
+        isPro: false,
+        freeTrialUsed: false
       };
     }
   }
