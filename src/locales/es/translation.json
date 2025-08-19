@@ -22,7 +22,9 @@
     "all": "Todo",
     "alphabetical": "Alfabético",
     "my_review": "Mi Reseña",
-    "no_cast_found": "No se encontraron miembros del reparto"
+    "no_cast_found": "No se encontraron miembros del reparto",
+    "year": "año",
+    "month": "mes"
   },
   "navigation": {
     "home": "Inicio",
@@ -507,12 +509,10 @@
     "subtitle": "Desbloquea todas las funciones",
     "description": "Obtén acceso ilimitado a todas las funciones de IA y contenido premium",
     "features": {
-      "unlimited_ai": "Recomendaciones de IA ilimitadas",
-      "advanced_search": "Búsqueda avanzada y filtros",
-      "priority_support": "Soporte prioritario al cliente",
-      "exclusive_content": "Acceso a contenido exclusivo",
-      "offline_mode": "Soporte de modo sin conexión",
-      "no_ads": "Experiencia sin anuncios"
+      "unlimited_ai": "Recomendaciones IA Ilimitadas y Descubrimiento",
+      "unlimited_movies": "Seguimiento Ilimitado de Películas y Series",
+      "comment_enhancement": "Comentarios y Análisis Mejorados con IA",
+      "character_chat": "Chat Exclusivo con Personajes de Películas"
     },
     "plans": {
       "monthly": "Mensual",

@@ -22,7 +22,9 @@
     "all": "Tümü",
     "alphabetical": "Alfabetik",
     "my_review": "Yorumum",
-    "no_cast_found": "Oyuncu bulunamadı"
+    "no_cast_found": "Oyuncu bulunamadı",
+    "year": "yıl",
+    "month": "ay"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -523,12 +525,10 @@
     "subtitle": "Tüm özelliklerini aç",
     "description": "Tüm AI özelliklerine ve premium içeriğe sınırsız erişim elde et",
     "features": {
-      "unlimited_ai": "Sınırsız AI önerileri",
-      "advanced_search": "Gelişmiş arama ve filtreler",
-      "priority_support": "Öncelikli müşteri desteği",
-      "exclusive_content": "Özel içeriğe erişim",
-      "offline_mode": "Çevrimdışı mod desteği",
-      "no_ads": "Reklamsız deneyim"
+      "unlimited_ai": "Sınırsız AI Önerileri & Keşif",
+      "unlimited_movies": "Sınırsız Film & Dizi Takibi",
+      "comment_enhancement": "AI Destekli Yorum & Analiz",
+      "character_chat": "Film Karakterleri ile Özel Sohbet"
     },
     "plans": {
       "monthly": "Aylık",

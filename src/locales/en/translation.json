@@ -22,7 +22,9 @@
     "all": "All",
     "alphabetical": "Alphabetical",
     "my_review": "My Review",
-    "no_cast_found": "No cast members found"
+    "no_cast_found": "No cast members found",
+    "year": "year",
+    "month": "month"
   },
   "navigation": {
     "home": "Home",
@@ -523,12 +525,10 @@
     "subtitle": "Unlock all features",
     "description": "Get unlimited access to all AI features and premium content",
     "features": {
-      "unlimited_ai": "Unlimited AI recommendations",
-      "advanced_search": "Advanced search and filters",
-      "priority_support": "Priority customer support",
-      "exclusive_content": "Access to exclusive content",
-      "offline_mode": "Offline mode support",
-      "no_ads": "Ad-free experience"
+      "unlimited_ai": "Unlimited AI Recommendations & Discovery",
+      "unlimited_movies": "Unlimited Movie & TV Tracking",
+      "comment_enhancement": "AI-Enhanced Comments & Analysis",
+      "character_chat": "Exclusive Chat with Movie Characters"
     },
     "plans": {
       "monthly": "Monthly",

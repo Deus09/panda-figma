@@ -123,45 +123,63 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
 
           {/* Main Content */}
           <div className="px-6 pb-6">
-            {/* Feature Description - Minimal */}
+            {/* Feature Description - Clean & Minimal */}
             <div className="text-center mb-8">
-              <div className="text-5xl mb-4">{featureInfo.icon}</div>
-              <p className="text-white/90 text-base leading-relaxed">
-                {featureInfo.description}
+              <h2 className="text-white text-xl font-bold mb-3">{t('paywall.title')}</h2>
+              <p className="text-white/80 text-sm leading-relaxed">
+                {t('paywall.description')}
               </p>
             </div>
 
-            {/* Premium Features List - Minimal */}
-            <div className="bg-white/5 rounded-lg p-3 mb-6 border border-white/10">
-              <h3 className="text-white font-medium text-sm mb-2">{t('paywall.subtitle')}:</h3>
-              <div className="space-y-1">
-                <div className="flex items-center text-white/80 text-xs">
-                  <span className="text-green-400 mr-2">✓</span>
-                  {t('paywall.features.unlimited_ai')}
+            {/* Premium Features - Soft Color Design */}
+            <div className="mb-8">
+              <div className="space-y-3">
+                <div className="bg-gradient-to-r from-slate-600/20 to-slate-700/10 rounded-xl p-4 border border-slate-500/30 backdrop-blur-sm">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0 shadow-lg">
+                      <span className="text-white text-lg">🚀</span>
+                    </div>
+                    <span className="text-white font-semibold text-sm">{t('paywall.features.unlimited_ai')}</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-white/80 text-xs">
-                  <span className="text-green-400 mr-2">✓</span>
-                  {t('paywall.features.advanced_search')}
+                
+                <div className="bg-gradient-to-r from-slate-600/20 to-slate-700/10 rounded-xl p-4 border border-slate-500/30 backdrop-blur-sm">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0 shadow-lg">
+                      <span className="text-white text-lg">🎬</span>
+                    </div>
+                    <span className="text-white font-semibold text-sm">{t('paywall.features.unlimited_movies')}</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-white/80 text-xs">
-                  <span className="text-green-400 mr-2">✓</span>
-                  {t('paywall.features.priority_support')}
+                
+                <div className="bg-gradient-to-r from-slate-600/20 to-slate-700/10 rounded-xl p-4 border border-slate-500/30 backdrop-blur-sm">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-violet-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0 shadow-lg">
+                      <span className="text-white text-lg">✨</span>
+                    </div>
+                    <span className="text-white font-semibold text-sm">{t('paywall.features.comment_enhancement')}</span>
+                  </div>
                 </div>
-                <div className="flex items-center text-white/80 text-xs">
-                  <span className="text-green-400 mr-2">✓</span>
-                  {t('paywall.features.no_ads')}
+                
+                <div className="bg-gradient-to-r from-slate-600/20 to-slate-700/10 rounded-xl p-4 border border-slate-500/30 backdrop-blur-sm">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-rose-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0 shadow-lg">
+                      <span className="text-white text-lg">🎭</span>
+                    </div>
+                    <span className="text-white font-semibold text-sm">{t('paywall.features.character_chat')}</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Pricing Plans - Minimal */}
+            {/* Pricing Plans - Distinct Colors */}
             <div className="space-y-3">
               {/* Yearly Plan - Popular */}
               <IonButton
                 fill={selectedPlan === 'yearly' ? 'solid' : 'outline'}
                 expand="block"
                 size="default"
-                color={selectedPlan === 'yearly' ? 'primary' : 'medium'}
+                color={selectedPlan === 'yearly' ? 'success' : 'medium'}
                 className="m-0 h-auto"
                 onClick={() => setSelectedPlan('yearly')}
                 disabled={loadingPricing}
@@ -179,7 +197,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                         <div className="text-base font-bold">
                           {LocationPricingService.formatPrice(pricing.yearly, pricing)}
                         </div>
-                        <div className="text-xs opacity-70">/year</div>
+                        <div className="text-xs opacity-70">/{t('common.year')}</div>
                       </>
                     ) : (
                       <div className="text-base font-bold">-</div>
@@ -193,7 +211,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                 fill={selectedPlan === 'monthly' ? 'solid' : 'outline'}
                 expand="block"
                 size="default"
-                color={selectedPlan === 'monthly' ? 'primary' : 'medium'}
+                color={selectedPlan === 'monthly' ? 'secondary' : 'medium'}
                 className="m-0 h-auto"
                 onClick={() => setSelectedPlan('monthly')}
                 disabled={loadingPricing}
@@ -201,7 +219,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                 <div className="flex justify-between items-center w-full py-2">
                   <div className="text-left">
                     <div className="text-sm font-semibold">{t('paywall.plans.monthly')}</div>
-                    <div className="text-xs opacity-70">{t('paywall.pricing.billing_info', { period: 'monthly' })}</div>
+                    <div className="text-xs opacity-70">{t('paywall.pricing.billing_info', { period: t('paywall.plans.monthly').toLowerCase() })}</div>
                   </div>
                   <div className="text-right">
                     {loadingPricing ? (
@@ -211,7 +229,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                         <div className="text-base font-bold">
                           {LocationPricingService.formatPrice(pricing.monthly, pricing)}
                         </div>
-                        <div className="text-xs opacity-70">/month</div>
+                        <div className="text-xs opacity-70">/{t('common.month')}</div>
                       </>
                     ) : (
                       <div className="text-base font-bold">-</div>
@@ -221,7 +239,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
               </IonButton>
             </div>
 
-            {/* Action Buttons - Minimal */}
+            {/* Action Buttons - Distinct Primary Color */}
             <div className="space-y-3 mt-8">
               <IonButton
                 expand="block"
@@ -249,7 +267,7 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
             {/* Footer */}
             <div className="text-center mt-4 mb-2">
               <p className="text-white/50 text-xs px-2">
-                {t('paywall.pricing.billing_info', { period: selectedPlan === 'yearly' ? 'yearly' : 'monthly' })}
+                {t('paywall.pricing.billing_info', { period: selectedPlan === 'yearly' ? t('paywall.plans.yearly').toLowerCase() : t('paywall.plans.monthly').toLowerCase() })}
               </p>
             </div>
           </div>
