@@ -511,7 +511,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
   return (
     <>
       <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black bg-opacity-40">
-        <div className="w-[393px] max-h-[80vh] h-[80vh] rounded-t-[54px] bg-[#222] pb-6 pt-6 px-4 shadow-2xl animate-slideInUp overflow-y-auto relative z-[60]">
+        <div className="w-full max-w-[393px] mx-4 max-h-[80vh] h-[80vh] rounded-t-[54px] bg-[#222] pb-6 pt-6 px-4 shadow-2xl animate-slideInUp overflow-y-auto relative z-[60]">
           {/* Modal Title */}
           <div className="flex justify-center mb-8">
             <span className="text-[24px] font-extrabold font-poppins text-[#F8F8FF] text-center drop-shadow-[0_4px_15px_rgba(255,255,255,0.5)]">{t('add_movie_modal.title')}</span>
@@ -594,8 +594,8 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
           ) : (
             // Seçim yapıldıktan sonra seçilen içeriği göster
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <span className="block text-[16px] font-semibold font-poppins text-[#F8F8FF]">{t('add_movie_modal.selected_content')}</span>
+              <div className="flex items-center gap-4 p-3 bg-[#333] rounded-lg relative">
+                {/* Değiştir butonu - minimalist */}
                 <button
                   onClick={() => {
                     setSelectedItem(null);
@@ -604,12 +604,13 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                     setSelectedItem(null);
                     setTmdbId(null);
                   }}
-                  className="text-[#FE7743] text-sm font-medium hover:text-[#FE7743]/80"
+                  className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full bg-[#FE7743]/20 hover:bg-[#FE7743]/30 transition-colors"
                 >
-                  {t('add_movie_modal.change')}
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 3L3 9M3 3L9 9" stroke="#FE7743" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 </button>
-              </div>
-              <div className="flex items-center gap-4 p-3 bg-[#333] rounded-lg">
+                
                 {poster && (
                   <img
                     src={poster}
@@ -617,7 +618,7 @@ const AddButtonModal: React.FC<AddButtonModalProps> = ({ open, onClose, onSave, 
                     className="w-16 h-24 object-cover rounded"
                   />
                 )}
-                <div className="flex-1">
+                <div className="flex-1 pr-8">
                   <h3 className="text-[#F8F8FF] font-semibold text-[16px] leading-5">{title}</h3>
                   <p className="text-[#B0B0B0] text-sm mt-1">
                     {selectedItem?.mediaType === 'tv' ? t('add_movie_modal.tv_series_episode') : t('add_movie_modal.movie')}
