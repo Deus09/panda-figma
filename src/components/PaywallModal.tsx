@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonModal, IonButton } from '@ionic/react';
 import { useTranslation } from 'react-i18next';
+import { LocationPricingService, PricingTier } from '../services/locationPricing';
 
 export interface PaywallModalProps {
   isOpen: boolean;
@@ -15,46 +16,74 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
   feature,
   onSubscribe
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
+  const [pricing, setPricing] = useState<PricingTier | null>(null);
+  const [loadingPricing, setLoadingPricing] = useState(true);
+
+  useEffect(() => {
+    const loadPricing = async () => {
+      try {
+        setLoadingPricing(true);
+        const userPricing = await LocationPricingService.getPricingForLocation();
+        setPricing(userPricing);
+      } catch (error) {
+        console.error('Failed to load pricing:', error);
+        // Fallback to default pricing (Europe)
+        setPricing({
+          monthly: 1,
+          yearly: 10,
+          currency: 'EUR',
+          currencySymbol: '€',
+          region: 'europe'
+        });
+      } finally {
+        setLoadingPricing(false);
+      }
+    };
+
+    if (isOpen) {
+      loadPricing();
+    }
+  }, [isOpen]);
 
   // Feature'a göre başlık ve açıklama
   const getFeatureInfo = () => {
     switch (feature) {
       case 'watchlist-limit':
         return {
-          title: t('paywall.watchlist_limit.title', 'İzleme Listesi Limiti'),
-          description: t('paywall.watchlist_limit.description', 'Ücretsiz kullanıcılar 100 filme kadar izleme listesi oluşturabilir.'),
+          title: t('paywall.title'),
+          description: t('paywall.subtitle'),
           icon: '📝'
         };
       case 'ai-recommendations':
         return {
-          title: t('paywall.ai_recommendations.title', 'AI Film Önerileri'),
-          description: t('paywall.ai_recommendations.description', 'Kişiselleştirilmiş AI önerilerinize erişim için Pro üyelik gereklidir.'),
+          title: t('paywall.title'),
+          description: t('paywall.subtitle'),
           icon: '🤖'
         };
       case 'comment-enhancer':
         return {
-          title: t('paywall.comment_enhancer.title', 'Yorum Geliştirici'),
-          description: t('paywall.comment_enhancer.description', 'AI ile yorumlarınızı geliştirin ve daha etkileyici hale getirin.'),
+          title: t('paywall.title'),
+          description: t('paywall.subtitle'),
           icon: '✨'
         };
       case 'chat-with-cast':
         return {
-          title: t('paywall.chat_with_cast.title', 'Oyuncularla Sohbet'),
-          description: t('paywall.chat_with_cast.description', 'AI ile favori oyuncularınızla sohbet etme deneyimi yaşayın.'),
+          title: t('paywall.title'),
+          description: t('paywall.subtitle'),
           icon: '💬'
         };
       case 'detailed-stats':
         return {
-          title: t('paywall.detailed_stats.title', 'Detaylı İstatistikler'),
-          description: t('paywall.detailed_stats.description', 'İzleme geçmişinizin derinlemesine analizi için Pro üyelik gereklidir.'),
+          title: t('paywall.title'),
+          description: t('paywall.subtitle'),
           icon: '📊'
         };
       default:
         return {
-          title: t('paywall.default.title', 'Premium Özellik'),
-          description: t('paywall.default.description', 'Bu özellik Pro üyeler için ayrılmıştır.'),
+          title: t('paywall.title'),
+          description: t('paywall.subtitle'),
           icon: '⭐'
         };
     }
@@ -79,15 +108,16 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
 
         {/* Scrollable Content */}
         <div className="relative z-10 h-full overflow-y-auto">
-          {/* Header - Minimal close button only */}
+          {/* Close Button */}
           <div className="flex justify-end p-3">
             <IonButton
               fill="clear"
+              color="light"
               size="small"
               onClick={onClose}
-              className="text-white/70"
+              className="w-8 h-8 --border-radius: 50%"
             >
-              ×
+              ✕
             </IonButton>
           </div>
 
@@ -103,27 +133,23 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
 
             {/* Premium Features List - Minimal */}
             <div className="bg-white/5 rounded-lg p-3 mb-6 border border-white/10">
-              <h3 className="text-white font-medium text-sm mb-2">Pro üyelikle kazanın:</h3>
+              <h3 className="text-white font-medium text-sm mb-2">{t('paywall.subtitle')}:</h3>
               <div className="space-y-1">
                 <div className="flex items-center text-white/80 text-xs">
                   <span className="text-green-400 mr-2">✓</span>
-                  Sınırsız İzleme Listesi
+                  {t('paywall.features.unlimited_ai')}
                 </div>
                 <div className="flex items-center text-white/80 text-xs">
                   <span className="text-green-400 mr-2">✓</span>
-                  AI Film Önerileri
+                  {t('paywall.features.advanced_search')}
                 </div>
                 <div className="flex items-center text-white/80 text-xs">
                   <span className="text-green-400 mr-2">✓</span>
-                  Yorum Geliştirici AI
+                  {t('paywall.features.priority_support')}
                 </div>
                 <div className="flex items-center text-white/80 text-xs">
                   <span className="text-green-400 mr-2">✓</span>
-                  Oyuncularla AI Sohbet
-                </div>
-                <div className="flex items-center text-white/80 text-xs">
-                  <span className="text-green-400 mr-2">✓</span>
-                  Detaylı İstatistikler
+                  {t('paywall.features.no_ads')}
                 </div>
               </div>
             </div>
@@ -138,15 +164,26 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                 color={selectedPlan === 'yearly' ? 'primary' : 'medium'}
                 className="m-0 h-auto"
                 onClick={() => setSelectedPlan('yearly')}
+                disabled={loadingPricing}
               >
                 <div className="flex justify-between items-center w-full py-2">
                   <div className="text-left">
-                    <div className="text-sm font-semibold">Yıllık Plan</div>
-                    <div className="text-xs opacity-70">İlk 1 ay ücretsiz</div>
+                    <div className="text-sm font-semibold">{t('paywall.plans.yearly')}</div>
+                    <div className="text-xs opacity-70">{t('paywall.pricing.free_trial')}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-base font-bold">₺99</div>
-                    <div className="text-xs opacity-70 line-through">₺119</div>
+                    {loadingPricing ? (
+                      <div className="text-base font-bold">...</div>
+                    ) : pricing ? (
+                      <>
+                        <div className="text-base font-bold">
+                          {LocationPricingService.formatPrice(pricing.yearly, pricing)}
+                        </div>
+                        <div className="text-xs opacity-70">/year</div>
+                      </>
+                    ) : (
+                      <div className="text-base font-bold">-</div>
+                    )}
                   </div>
                 </div>
               </IonButton>
@@ -159,15 +196,26 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                 color={selectedPlan === 'monthly' ? 'primary' : 'medium'}
                 className="m-0 h-auto"
                 onClick={() => setSelectedPlan('monthly')}
+                disabled={loadingPricing}
               >
                 <div className="flex justify-between items-center w-full py-2">
                   <div className="text-left">
-                    <div className="text-sm font-semibold">Aylık Plan</div>
-                    <div className="text-xs opacity-70">İstediğin zaman iptal et</div>
+                    <div className="text-sm font-semibold">{t('paywall.plans.monthly')}</div>
+                    <div className="text-xs opacity-70">{t('paywall.pricing.billing_info', { period: 'monthly' })}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-base font-bold">₺12</div>
-                    <div className="text-xs opacity-70">/ay</div>
+                    {loadingPricing ? (
+                      <div className="text-base font-bold">...</div>
+                    ) : pricing ? (
+                      <>
+                        <div className="text-base font-bold">
+                          {LocationPricingService.formatPrice(pricing.monthly, pricing)}
+                        </div>
+                        <div className="text-xs opacity-70">/month</div>
+                      </>
+                    ) : (
+                      <div className="text-base font-bold">-</div>
+                    )}
                   </div>
                 </div>
               </IonButton>
@@ -181,8 +229,9 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                 color="primary"
                 onClick={handleSubscribe}
                 className="m-0"
+                disabled={loadingPricing}
               >
-                Pro Plana Geç - {selectedPlan === 'yearly' ? 'Yıllık' : 'Aylık'}
+                {t('paywall.actions.subscribe')} - {selectedPlan === 'yearly' ? t('paywall.plans.yearly') : t('paywall.plans.monthly')}
               </IonButton>
               
               <IonButton
@@ -193,14 +242,14 @@ const PaywallModal: React.FC<PaywallModalProps> = ({
                 onClick={onClose}
                 className="m-0"
               >
-                Şimdi Değil
+                {t('paywall.actions.cancel')}
               </IonButton>
             </div>
 
             {/* Footer */}
             <div className="text-center mt-4 mb-2">
               <p className="text-white/50 text-xs px-2">
-                İstediğin zaman iptal edebilirsin. Gizlilik politikamız ve kullanım şartlarımız geçerlidir.
+                {t('paywall.pricing.billing_info', { period: selectedPlan === 'yearly' ? 'yearly' : 'monthly' })}
               </p>
             </div>
           </div>

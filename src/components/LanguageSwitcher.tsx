@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { changeLanguage as changeI18nLanguage } from '../i18n';
 import './LanguageSwitcher.css';
 
 interface LanguageSwitcherProps {
@@ -9,6 +10,7 @@ interface LanguageSwitcherProps {
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) => {
   const { i18n, t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState(i18n.language || 'en');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const languages = [
@@ -17,12 +19,59 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) 
     { code: 'es', label: 'Español', flag: '🇪🇸', short: 'ES' }
   ];
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
+  // i18n dil değişikliklerini dinle
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => {
+      console.log('🌍 Language changed to:', lng);
+      setCurrentLang(lng);
+    };
+
+    const handleCustomLanguageChange = (event: CustomEvent) => {
+      console.log('🔄 Custom language change event:', event.detail);
+      setCurrentLang(event.detail);
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+    window.addEventListener('languageChanged', handleCustomLanguageChange as EventListener);
+    
+    // İlk load'da da güncelle
+    setCurrentLang(i18n.language || 'en');
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+      window.removeEventListener('languageChanged', handleCustomLanguageChange as EventListener);
+    };
+  }, [i18n]);
+
+  const changeLanguage = async (lng: string) => {
+    console.log('🔄 Changing language to:', lng);
+    try {
+      await changeI18nLanguage(lng);
+      console.log('✅ Language changed successfully to:', lng);
+    } catch (error) {
+      console.error('❌ Failed to change language:', error);
+    }
     setIsOpen(false);
   };
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[1];
+  // Mevcut dili doğru bulma - fallback dahil
+  const getCurrentLanguage = () => {
+    const currentLangCode = currentLang || 'en';
+    console.log('🌍 Current language code:', currentLangCode);
+    
+    // Tam eşleşme ara
+    const exactMatch = languages.find(lang => lang.code === currentLangCode);
+    if (exactMatch) return exactMatch;
+    
+    // Kısaltma ile eşleşme ara (örn: en-US -> en)
+    const shortMatch = languages.find(lang => currentLangCode.startsWith(lang.code));
+    if (shortMatch) return shortMatch;
+    
+    // Fallback İngilizce
+    return languages.find(lang => lang.code === 'en') || languages[0];
+  };
+
+  const currentLanguage = getCurrentLanguage();
 
   // Dropdown dışına tıklandığında kapat
   useEffect(() => {
@@ -63,7 +112,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) 
             {languages.map((lang) => (
               <button
                 key={lang.code}
-                className={`dropdown-item ${i18n.language === lang.code ? 'active' : ''}`}
+                className={`dropdown-item ${currentLang === lang.code ? 'active' : ''}`}
                 onClick={() => changeLanguage(lang.code)}
                 type="button"
               >
@@ -85,7 +134,7 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ compact = false }) 
             key={lang.code}
             onClick={() => changeLanguage(lang.code)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-              i18n.language === lang.code
+              currentLang === lang.code
                 ? 'bg-[#FE7743] text-white shadow-lg'
                 : 'bg-[#333] text-gray-300 hover:bg-[#444] hover:text-white'
             }`}

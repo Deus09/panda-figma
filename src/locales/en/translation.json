@@ -517,5 +517,36 @@
         "dismissed": "Notification banner dismissed"
       }
     }
+  },
+  "paywall": {
+    "title": "Upgrade to Premium",
+    "subtitle": "Unlock all features",
+    "description": "Get unlimited access to all AI features and premium content",
+    "features": {
+      "unlimited_ai": "Unlimited AI recommendations",
+      "advanced_search": "Advanced search and filters",
+      "priority_support": "Priority customer support",
+      "exclusive_content": "Access to exclusive content",
+      "offline_mode": "Offline mode support",
+      "no_ads": "Ad-free experience"
+    },
+    "plans": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "save": "Save {{percentage}}%"
+    },
+    "actions": {
+      "subscribe": "Subscribe Now",
+      "cancel": "Cancel",
+      "restore": "Restore Purchase",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    },
+    "pricing": {
+      "monthly": "{{price}}/month",
+      "yearly": "{{price}}/year",
+      "free_trial": "Free trial available",
+      "billing_info": "Billed {{period}}"
+    }
   }
 }

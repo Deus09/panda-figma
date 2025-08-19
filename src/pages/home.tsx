@@ -11,6 +11,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import TabSegment from '../components/TabSegment';
 import LocalStorageService, { MovieLog } from '../services/localStorage';
 import { useModal } from '../context/ModalContext';
+import { usePaywall } from '../context/PaywallContext';
 import { PushPermissionStatus } from '../services/pushPermissionManager';
 
 // FilterOptions type'ını tanımla
@@ -23,6 +24,7 @@ export type FilterOptions = {
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
+  const { openPaywall } = usePaywall();
   const [activeTab, setActiveTab] = useState<'watched' | 'watchlist'>('watched');
   const [movieLogs, setMovieLogs] = useState<MovieLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);

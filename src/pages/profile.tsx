@@ -780,7 +780,7 @@ const Profile: React.FC = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FE7743]"></div>
-                <p className="text-gray-400">Yükleniyor...</p>
+                <p className="text-gray-400">{t('common.loading')}</p>
                 <p className="text-xs text-gray-500">Auth durumu kontrol ediliyor</p>
               </div>
             </div>

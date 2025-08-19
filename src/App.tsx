@@ -1,5 +1,6 @@
 import { Redirect, Route } from 'react-router-dom';
 import { useEffect, lazy, Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   IonApp,
   setupIonicReact,
@@ -32,6 +33,7 @@ import MovieDetailModal from './components/MovieDetailModal';
 import ActorDetailModal from './components/ActorDetailModal';
 import SeriesDetailModal from './components/SeriesDetailModal';
 import PaywallModal from './components/PaywallModal';
+import I18nDebugTest from './components/I18nDebugTest';
 import { initializePushNotifications } from './services/pushNotifications';
 import { useGlobalErrorHandler } from './hooks/useGlobalErrorHandler';
 import GlobalErrorBoundary from './components/errors/GlobalErrorBoundary';

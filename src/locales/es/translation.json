@@ -501,5 +501,36 @@
         "dismissed": "Banner de notificaciones descartado"
       }
     }
+  },
+  "paywall": {
+    "title": "Actualizar a Premium",
+    "subtitle": "Desbloquea todas las funciones",
+    "description": "Obtén acceso ilimitado a todas las funciones de IA y contenido premium",
+    "features": {
+      "unlimited_ai": "Recomendaciones de IA ilimitadas",
+      "advanced_search": "Búsqueda avanzada y filtros",
+      "priority_support": "Soporte prioritario al cliente",
+      "exclusive_content": "Acceso a contenido exclusivo",
+      "offline_mode": "Soporte de modo sin conexión",
+      "no_ads": "Experiencia sin anuncios"
+    },
+    "plans": {
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "save": "Ahorra {{percentage}}%"
+    },
+    "actions": {
+      "subscribe": "Suscribirse Ahora",
+      "cancel": "Cancelar",
+      "restore": "Restaurar Compra",
+      "terms": "Términos de Servicio",
+      "privacy": "Política de Privacidad"
+    },
+    "pricing": {
+      "monthly": "{{price}}/mes",
+      "yearly": "{{price}}/año",
+      "free_trial": "Prueba gratuita disponible",
+      "billing_info": "Facturado {{period}}"
+    }
   }
 }
