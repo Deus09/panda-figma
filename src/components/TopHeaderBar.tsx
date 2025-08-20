@@ -43,7 +43,7 @@ const TopHeaderBar: React.FC<TopHeaderBarProps> = ({
     {/* Sağ taraf - LanguageSwitcher (sadece profil sayfası için) */}
     {showLanguageSwitcher && isProfilePage && (
       <div className="flex items-center justify-end relative z-10">
-        <LanguageSwitcher compact={true} />
+        <LanguageSwitcher />
       </div>
     )}
   </div>

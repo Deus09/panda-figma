@@ -2,6 +2,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { detectUserLanguage } from './services/languageDetection';
 
 // Dinamik çeviri yükleme fonksiyonu
 const loadTranslation = async (language: string) => {
@@ -81,19 +82,14 @@ const changeLanguage = async (lng: string) => {
 // İlk dil yükleme
 const initializeI18n = async () => {
   try {
-    // Tarayıcı dilini algıla ve normalize et
-    let detectedLng = i18n.language || 'tr'; // Default to Turkish
-    console.log('🌍 i18n detected language:', detectedLng);
-    
-    // Uzun dil kodlarını kısalt (en-US -> en)
-    if (detectedLng.includes('-')) {
-      detectedLng = detectedLng.split('-')[0];
-    }
+    // Gelişmiş dil algılama sistemi
+    let detectedLng = await detectUserLanguage();
+    console.log('🌍 Detected user language:', detectedLng);
     
     // Desteklenen dillerde mi kontrol et
     const supportedLanguages = ['tr', 'en', 'es'];
     if (!supportedLanguages.includes(detectedLng)) {
-      detectedLng = 'tr'; // Fallback to Turkish
+      detectedLng = 'en'; // Fallback to English (more universal)
     }
     
     console.log('🌍 Using language:', detectedLng);
@@ -110,9 +106,8 @@ const initializeI18n = async () => {
     // Test için çeviriyi deneme
     console.log('🧪 Test translations:', {
       language: detectedLng,
-      paywallTitle: i18n.t('paywall.title'),
-      paywallSubtitle: i18n.t('paywall.subtitle'),
-      billingInfo: i18n.t('paywall.pricing.billing_info', { period: 'monthly' }),
+      authTitle: i18n.t('auth.welcome'),
+      authSubtitle: i18n.t('auth.app_subtitle'),
       hasResources: i18n.hasResourceBundle(detectedLng, 'translation')
     });
     

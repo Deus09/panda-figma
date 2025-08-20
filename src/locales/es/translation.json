@@ -270,7 +270,22 @@
     "sign_in_with_google": "Iniciar Sesión con Google",
     "signing_in_with_google": "Iniciando sesión con Google...",
     "track_movies_description": "Inicia sesión para rastrear tu historial de películas y series de TV, crear listas favoritas e interactuar con otros usuarios.",
-    "welcome": "¡Bienvenido!"
+    "welcome": "¡Bienvenido!",
+    "app_subtitle": "Descubre tu experiencia de películas y series",
+    "sign_in": "Iniciar Sesión",
+    "sign_up": "Registrarse",
+    "create_account": "Crear Cuenta",
+    "email_placeholder": "Tu dirección de correo",
+    "password_placeholder": "Tu contraseña",
+    "confirm_password_placeholder": "Confirma tu contraseña",
+    "or": "o",
+    "google_sign_in": "Iniciar sesión con Google",
+    "google_sign_up": "Registrarse con Google",
+    "no_account": "¿No tienes cuenta?",
+    "have_account": "¿Ya tienes cuenta?",
+    "loading": "Cargando...",
+    "passwords_do_not_match": "Las contraseñas no coinciden",
+    "error_occurred": "Ocurrió un error"
   },
   "add_movie_modal": {
     "title": "Añadir Película/Serie",

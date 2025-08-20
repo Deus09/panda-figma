@@ -9,6 +9,10 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Debug için environment değişkenlerini kontrol et
+console.log('🔧 Supabase URL:', supabaseUrl ? 'SET' : 'NOT SET');
+console.log('🔧 Supabase Anon Key:', supabaseAnonKey ? 'SET' : 'NOT SET');
+
 // Supabase client'ını oluşturup dışa aktarıyoruz.
 // Artık projenin herhangi bir yerinde Supabase'e erişmek istediğimizde,
 // bu 'supabase' nesnesini import etmemiz yeterli olacak.

@@ -270,7 +270,22 @@
     "sign_in_with_google": "Google ile Giriş Yap",
     "signing_in_with_google": "Google ile giriş yapılıyor...",
     "track_movies_description": "Film ve dizi izleme geçmişinizi takip etmek, favori listelerinizi oluşturmak ve diğer kullanıcılarla etkileşime geçmek için giriş yapın.",
-    "welcome": "Hoş Geldiniz!"
+    "welcome": "Hoş Geldiniz!",
+    "app_subtitle": "Film ve dizi deneyiminizi keşfedin",
+    "sign_in": "Giriş Yap",
+    "sign_up": "Kayıt Ol",
+    "create_account": "Hesap Oluştur",
+    "email_placeholder": "E-posta adresiniz",
+    "password_placeholder": "Şifreniz",
+    "confirm_password_placeholder": "Şifrenizi onaylayın",
+    "or": "veya",
+    "google_sign_in": "Google ile giriş yap",
+    "google_sign_up": "Google ile kayıt ol",
+    "no_account": "Hesabınız yok mu?",
+    "have_account": "Zaten hesabınız var mı?",
+    "loading": "Yükleniyor...",
+    "passwords_do_not_match": "Şifreler eşleşmiyor",
+    "error_occurred": "Bir hata oluştu"
   },
   "add_movie_modal": {
     "title": "Film/Dizi Ekle",

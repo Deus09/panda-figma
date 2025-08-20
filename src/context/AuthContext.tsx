@@ -13,6 +13,8 @@ interface AuthContextType {
   profile: any | null; // Profil verisi için şimdilik 'any' kullanıyoruz.
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -162,6 +164,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Email ile giriş fonksiyonu
+  const signInWithEmail = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      if (error) {
+        console.error('Error signing in with email:', error);
+        throw error;
+      }
+      // Başarılı giriş durumunda loading state'i onAuthStateChange'de false yapılacak
+    } catch (error) {
+      console.error('Error signing in with email:', error);
+      setLoading(false);
+      throw error;
+    }
+  };
+
+  // Email ile kayıt fonksiyonu
+  const signUpWithEmail = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signUp({
+        email,
+        password
+      });
+      if (error) {
+        console.error('Error signing up with email:', error);
+        throw error;
+      }
+      // Başarılı kayıt durumunda loading state'i onAuthStateChange'de false yapılacak
+    } catch (error) {
+      console.error('Error signing up with email:', error);
+      setLoading(false);
+      throw error;
+    }
+  };
+
   // Çıkış fonksiyonu
   const signOut = async () => {
     try {
@@ -185,6 +227,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     profile,
     loading,
     signInWithGoogle,
+    signInWithEmail,
+    signUpWithEmail,
     signOut,
   };
 

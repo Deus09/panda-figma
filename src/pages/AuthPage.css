@@ -1,0 +1,207 @@
+/* Auth Page Styles */
+.auth-page {
+  --background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+}
+
+.auth-page ion-header {
+  z-index: 1000 !important;
+}
+
+.auth-page ion-toolbar {
+  z-index: 1000 !important;
+  position: relative;
+}
+
+.auth-content {
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --overflow: hidden;
+}
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+  gap: 2rem;
+}
+
+.auth-title {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #FE7743;
+}
+
+/* Logo Section */
+.auth-logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.auth-logo {
+  width: 150px;
+  height: 150px;
+  border-radius: 38px;
+  background: #f8f8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 20px 40px rgba(248, 248, 255, 0.3);
+  padding: 15px;
+}
+
+.auth-logo-image {
+  width: 160%;
+  height: 160%;
+  object-fit: contain;
+  filter: brightness(1.1);
+}
+
+.auth-logo .logo-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+  font-size: 1rem;
+  text-align: center;
+  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Auth Card */
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.auth-card-title {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #f8f8ff !important;
+  margin-bottom: 0;
+}
+
+/* Input Styles */
+.auth-input-item {
+  --background: rgba(255, 255, 255, 0.05);
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 48px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-input-item:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.auth-input {
+  --color: var(--ion-color-light);
+  --placeholder-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Button Styles */
+.auth-email-button {
+  --background: linear-gradient(135deg, #FE7743 0%, #FF6B35 100%);
+  --border-radius: 12px;
+  --min-height: 48px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-transform: none;
+}
+
+.google-signin-button {
+  --background: #f8f8ff;
+  --color: #333333;
+  --border-radius: 12px;
+  --min-height: 48px;
+  font-weight: 600;
+  text-transform: none;
+  border: none;
+}
+
+.google-signin-button:hover {
+  --background: #eeeeee;
+  --color: #333333;
+}
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+}
+
+/* Toggle Section */
+.auth-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.auth-toggle-button {
+  --color: #FE7743;
+  font-weight: 600;
+  text-transform: none;
+  --min-height: auto;
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .auth-card {
+    margin: 0 1rem;
+  }
+  
+  .auth-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 30px;
+    padding: 24px;
+  }
+  
+  .auth-logo .logo-text {
+    font-size: 18px;
+  }
+}

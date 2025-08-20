@@ -1,5 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IonApp,
@@ -37,6 +37,8 @@ import I18nDebugTest from './components/I18nDebugTest';
 import { initializePushNotifications } from './services/pushNotifications';
 import { useGlobalErrorHandler } from './hooks/useGlobalErrorHandler';
 import GlobalErrorBoundary from './components/errors/GlobalErrorBoundary';
+import SplashScreen from './components/SplashScreen';
+import AuthGuard from './components/AuthGuard';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -120,95 +122,6 @@ const PaywallRenderer: React.FC = () => {
       feature={currentFeature}
       onSubscribe={handleSubscribe}
     />
-  );
-};
-
-const App: React.FC = () => {
-  // Initialize global error handling
-  useGlobalErrorHandler({
-    onError: (error, context) => {
-      console.warn('Global error caught:', error.message, context);
-    }
-  });
-
-  useEffect(() => {
-    // Dark mode theme system initialization - Her zaman dark tema
-    const preferences = LocalStorageService.getUserPreferences();
-    
-    // Her zaman dark mode uygula
-    document.documentElement.classList.add('dark');
-    document.body.classList.add('dark');
-    
-    // User preferences'ta darkMode'u true yap
-    const updatedPrefs = { ...preferences, darkMode: true };
-    LocalStorageService.saveUserPreferences(updatedPrefs);
-
-    // Push notifications initialization - skip in development
-    const initPushNotifications = async () => {
-      // Skip push notifications in development to avoid service worker CORS issues
-      if (import.meta.env.DEV) {
-        console.log('⏭️ Skipping push notifications in development mode');
-        return;
-      }
-      
-      try {
-        await initializePushNotifications();
-        console.log('✅ Push notifications initialized successfully');
-      } catch (error) {
-        console.error('❌ Failed to initialize push notifications:', error);
-      }
-    };
-
-    initPushNotifications();
-
-    // Google OAuth callback handling - hash'de token varsa /auth/callback'e yönlendir
-    const handleOAuthCallback = () => {
-      const hash = window.location.hash;
-      const currentPath = window.location.pathname;
-      
-      console.log('🔍 App.tsx - Hash check:', hash ? 'HAS_HASH' : 'NO_HASH');
-      console.log('🔍 App.tsx - Current path:', currentPath);
-      
-      // Hash'de access_token varsa ve AuthCallback sayfasında değilsek yönlendir
-      if (hash && hash.includes('access_token') && !currentPath.includes('/auth/callback')) {
-        console.log('🔄 OAuth callback detected in App.tsx');
-        console.log('🔗 Hash preview:', hash.substring(0, 60) + '...');
-        
-        // AuthCallback sayfasına hash ile birlikte yönlendir
-        const callbackUrl = '/auth/callback' + hash;
-        console.log('🔄 Redirecting to:', callbackUrl);
-        
-        // Hem pushState hem window.location.href dene
-        try {
-          // Önce history API ile dene
-          window.history.pushState({}, '', callbackUrl);
-          window.dispatchEvent(new PopStateEvent('popstate'));
-          console.log('✅ History API ile yönlendirme başarılı');
-        } catch (error) {
-          console.log('❌ History API hatası, window.location.href kullanılıyor');
-          // Hata varsa direkt navigation
-          window.location.href = callbackUrl;
-        }
-        return true; // İşlem yapıldığını belirt
-      }
-      return false;
-    };
-
-    handleOAuthCallback();
-  }, []);
-
-  return (
-    <ThemeProvider>
-      <AuthProvider>
-        <NetworkProvider>
-          <ModalProvider>
-            <PaywallProvider>
-              <AppContent />
-            </PaywallProvider>
-          </ModalProvider>
-        </NetworkProvider>
-      </AuthProvider>
-    </ThemeProvider>
   );
 };
 
@@ -308,6 +221,108 @@ const AppContent: React.FC = () => {
         <PaywallRenderer />
       </GlobalErrorBoundary>
     </IonApp>
+  );
+};
+
+const App: React.FC = () => {
+  const [showSplash, setShowSplash] = useState(true);
+  
+  // Initialize global error handling
+  useGlobalErrorHandler({
+    onError: (error, context) => {
+      console.warn('Global error caught:', error.message, context);
+    }
+  });
+
+  useEffect(() => {
+    // Dark mode theme system initialization - Her zaman dark tema
+    const preferences = LocalStorageService.getUserPreferences();
+    
+    // Her zaman dark mode uygula
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('dark');
+    
+    // User preferences'ta darkMode'u true yap
+    const updatedPrefs = { ...preferences, darkMode: true };
+    LocalStorageService.saveUserPreferences(updatedPrefs);
+
+    // Push notifications initialization - skip in development
+    const initPushNotifications = async () => {
+      // Skip push notifications in development to avoid service worker CORS issues
+      if (import.meta.env.DEV) {
+        console.log('⏭️ Skipping push notifications in development mode');
+        return;
+      }
+      
+      try {
+        await initializePushNotifications();
+        console.log('✅ Push notifications initialized successfully');
+      } catch (error) {
+        console.error('❌ Failed to initialize push notifications:', error);
+      }
+    };
+
+    initPushNotifications();
+
+    // Google OAuth callback handling - hash'de token varsa /auth/callback'e yönlendir
+    const handleOAuthCallback = () => {
+      const hash = window.location.hash;
+      const currentPath = window.location.pathname;
+      
+      console.log('🔍 App.tsx - Hash check:', hash ? 'HAS_HASH' : 'NO_HASH');
+      console.log('🔍 App.tsx - Current path:', currentPath);
+      
+      // Hash'de access_token varsa ve AuthCallback sayfasında değilsek yönlendir
+      if (hash && hash.includes('access_token') && !currentPath.includes('/auth/callback')) {
+        console.log('🔄 OAuth callback detected in App.tsx');
+        console.log('🔗 Hash preview:', hash.substring(0, 60) + '...');
+        
+        // AuthCallback sayfasına hash ile birlikte yönlendir
+        const callbackUrl = '/auth/callback' + hash;
+        console.log('🔄 Redirecting to:', callbackUrl);
+        
+        // Hem pushState hem window.location.href dene
+        try {
+          // Önce history API ile dene
+          window.history.pushState({}, '', callbackUrl);
+          window.dispatchEvent(new PopStateEvent('popstate'));
+          console.log('✅ History API ile yönlendirme başarılı');
+        } catch (error) {
+          console.log('❌ History API hatası, window.location.href kullanılıyor');
+          // Hata varsa direkt navigation
+          window.location.href = callbackUrl;
+        }
+        return true; // İşlem yapıldığını belirt
+      }
+      return false;
+    };
+
+    handleOAuthCallback();
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
+  // Eğer splash screen gösteriliyorsa, sadece splash'i render et
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
+
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <NetworkProvider>
+          <ModalProvider>
+            <PaywallProvider>
+              <AuthGuard>
+                <AppContent />
+              </AuthGuard>
+            </PaywallProvider>
+          </ModalProvider>
+        </NetworkProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 
