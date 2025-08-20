@@ -68,11 +68,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Hemen çalıştır
     getInitialSession();
     
-    // Fallback: 5 saniye sonra loading'i false yap
+    // Fallback: 3 saniye sonra loading'i false yap (daha agresif)
     const fallbackTimer = setTimeout(() => {
-      console.log('⚠️ AuthContext: Fallback timer tetiklendi, loading false yapılıyor');
+      console.log('⚠️ AuthContext: Fallback timer tetiklendi (3s), loading false yapılıyor');
       setLoading(false);
-    }, 5000);
+    }, 3000);
     
     return () => {
       clearTimeout(fallbackTimer);
@@ -84,9 +84,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('🔄 AuthContext: onAuthStateChange tetiklendi:', event);
       console.log('📦 AuthContext: Session:', !!session);
+      console.log('👤 AuthContext: Session user:', session?.user?.email || 'Yok');
+      
       setSession(session);
       const currentUser = session?.user ?? null;
-      console.log('👤 AuthContext: Kullanıcı:', currentUser?.email || 'Yok');
       setUser(currentUser);
       
       // Eğer bir kullanıcı varsa, onun profil bilgilerini veritabanından çek.
@@ -97,8 +98,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('❌ AuthContext: Kullanıcı yok, profil temizleniyor');
         setProfile(null); // Kullanıcı yoksa (çıkış yapmışsa) profili temizleniyor.
       }
-      console.log('✅ AuthContext: Loading false yapılıyor');
-      setLoading(false);
+      
+      // Auth event'lerine göre loading state'i yönet
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        console.log(`✅ AuthContext: ${event} event - Loading false yapılıyor`);
+        setLoading(false);
+      } else if (event === 'SIGNED_OUT') {
+        console.log('✅ AuthContext: SIGNED_OUT event - Loading false yapılıyor');
+        setLoading(false);
+      } else {
+        // Diğer tüm event'lerde de loading'i false yap
+        console.log(`✅ AuthContext: ${event} event - Loading false yapılıyor`);
+        setLoading(false);
+      }
     });
 
     // Component DOM'dan kaldırıldığında (unmount) listener'ı temizliyoruz.
@@ -121,18 +133,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log('📦 AuthContext: getProfile response:', { data, error, status });
 
       if (error && status !== 406) {
-        throw error;
+        console.warn('⚠️ AuthContext: Profil çekme hatası:', error);
+        // Profil yoksa boş profil oluştur
+        setProfile(null);
+        return;
       }
 
       if (data) {
         console.log('✅ AuthContext: Profil bulundu:', data.username);
         setProfile(data);
       } else {
-        console.log('❌ AuthContext: Profil bulunamadı');
+        console.log('❌ AuthContext: Profil bulunamadı, boş profil ayarlanıyor');
         setProfile(null);
       }
     } catch (error) {
-      console.error('❌ AuthContext: getProfile hatası:', error);
+      console.error('❌ AuthContext: getProfile exception:', error);
       setProfile(null);
     }
   };
@@ -188,17 +203,57 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUpWithEmail = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
+      console.log('🔄 AuthContext: Email kayıt işlemi başlatılıyor...');
+      
+      const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: window.location.origin
+        }
       });
+      
       if (error) {
-        console.error('Error signing up with email:', error);
+        console.error('❌ AuthContext: Email kayıt hatası:', error);
+        setLoading(false);
         throw error;
       }
-      // Başarılı kayıt durumunda loading state'i onAuthStateChange'de false yapılacak
+
+      console.log('✅ AuthContext: Email kayıt başarılı, kullanıcı:', data.user?.id);
+      console.log('📧 AuthContext: Email confirmation required:', !data.session);
+      
+      // Eğer session varsa (email confirmation kapalı), doğrudan user'ı set et
+      if (data.session && data.user) {
+        console.log('✅ AuthContext: Session mevcut, user state güncelleniyor');
+        setSession(data.session);
+        setUser(data.user);
+        
+        // Profil yüklemeyi dene
+        try {
+          await getProfile(data.user);
+        } catch (profileError) {
+          console.warn('⚠️ AuthContext: Profil yüklenemedi:', profileError);
+          setProfile(null);
+        }
+        
+        setLoading(false);
+      } else if (data.user) {
+        // Email confirmation gerekli ama user oluşturuldu
+        console.log('📧 AuthContext: Email confirmation gerekli, user manuel set ediliyor');
+        setUser(data.user);
+        setSession(null);
+        setProfile(null);
+        setLoading(false);
+      } else {
+        // Fallback timeout
+        setTimeout(() => {
+          console.log('⏰ AuthContext: Signup timeout ile loading false yapılıyor');
+          setLoading(false);
+        }, 1000);
+      }
+      
     } catch (error) {
-      console.error('Error signing up with email:', error);
+      console.error('❌ AuthContext: Email kayıt genel hatası:', error);
       setLoading(false);
       throw error;
     }
