@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IonContent, IonPage } from '@ionic/react';
+import { IonContent, IonPage, IonIcon } from '@ionic/react';
+import { sparkles } from 'ionicons/icons';
 import TopHeaderBar from '../components/TopHeaderBar';
 import ExploreTabSegment from '../components/ExploreTabSegment';
 import SearchTabSegment from '../components/SearchTabSegment';
@@ -656,7 +657,7 @@ const Explore: React.FC = () => {
           }}
           aria-label={t('ai.ai_discovery')}
         >
-          <span className="text-xs">AI</span>
+          <IonIcon icon={sparkles} className="w-6 h-6" />
           <ProBadge size="small" className="absolute -top-1 -right-1" />
         </button>
       </div>

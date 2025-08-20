@@ -16,22 +16,22 @@ const ProBadge: React.FC<ProBadgeProps> = ({
   const getSizeClasses = () => {
     switch (size) {
       case 'small':
-        return 'text-xs px-1.5 py-0.5 min-w-[40px] h-5';
+        return 'text-xs px-1 py-0.5 min-w-[20px] h-5';
       case 'large':
-        return 'text-sm px-3 py-1.5 min-w-[60px] h-8';
+        return 'text-sm px-2 py-1.5 min-w-[32px] h-8';
       default: // medium
-        return 'text-xs px-2 py-1 min-w-[50px] h-6';
+        return 'text-xs px-1.5 py-1 min-w-[24px] h-6';
     }
   };
 
   const getIconSize = () => {
     switch (size) {
       case 'small':
-        return 'w-3 h-3';
-      case 'large':
-        return 'w-5 h-5';
-      default: // medium
         return 'w-4 h-4';
+      case 'large':
+        return 'w-6 h-6';
+      default: // medium
+        return 'w-5 h-5';
     }
   };
 
@@ -51,9 +51,8 @@ const ProBadge: React.FC<ProBadgeProps> = ({
       <span className={`inline-flex items-center text-[#FE7743] font-semibold ${className}`}>
         <IonIcon 
           icon={star} 
-          className={`mr-1 ${getIconSize()}`}
+          className={getIconSize()}
         />
-        PRO
       </span>
     );
   }
@@ -70,9 +69,8 @@ const ProBadge: React.FC<ProBadgeProps> = ({
     `}>
       <IonIcon 
         icon={star} 
-        className={`mr-1 ${getIconSize()}`}
+        className={getIconSize()}
       />
-      PRO
     </div>
   );
 };
