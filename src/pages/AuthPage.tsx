@@ -31,13 +31,74 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailLoading, setEmailLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  // Şifre kuralları doğrulama
+  const validatePassword = (pass: string) => {
+    const minLength = pass.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(pass);
+    const hasLowerCase = /[a-z]/.test(pass);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pass);
+    
+    if (!minLength) {
+      return t('auth.password_min_length', 'Şifre en az 8 karakter olmalıdır');
+    }
+    if (!hasUpperCase) {
+      return t('auth.password_uppercase', 'Şifre en az 1 büyük harf içermelidir');
+    }
+    if (!hasLowerCase) {
+      return t('auth.password_lowercase', 'Şifre en az 1 küçük harf içermelidir');
+    }
+    if (!hasSpecialChar) {
+      return t('auth.password_special', 'Şifre en az 1 özel karakter içermelidir');
+    }
+    return '';
+  };
+
+  // Şifre değiştiğinde doğrulama
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (!isLogin && value) {
+      const error = validatePassword(value);
+      setPasswordError(error);
+    } else {
+      setPasswordError('');
+    }
+    
+    // Şifre onayı kontrolü
+    if (!isLogin && confirmPassword && value !== confirmPassword) {
+      setConfirmPasswordError(t('auth.passwords_do_not_match', 'Şifreler eşleşmiyor'));
+    } else {
+      setConfirmPasswordError('');
+    }
+  };
+
+  // Şifre onayı değiştiğinde doğrulama
+  const handleConfirmPasswordChange = (value: string) => {
+    setConfirmPassword(value);
+    if (!isLogin && password && value !== password) {
+      setConfirmPasswordError(t('auth.passwords_do_not_match', 'Şifreler eşleşmiyor'));
+    } else {
+      setConfirmPasswordError('');
+    }
+  };
 
   const handleEmailAuth = async () => {
     if (!email || !password) return;
     
-    if (!isLogin && password !== confirmPassword) {
-      alert(t('auth.passwords_do_not_match', 'Şifreler eşleşmiyor'));
-      return;
+    // Kayıt olurken şifre doğrulamaları
+    if (!isLogin) {
+      const passwordValidationError = validatePassword(password);
+      if (passwordValidationError) {
+        setPasswordError(passwordValidationError);
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        setConfirmPasswordError(t('auth.passwords_do_not_match', 'Şifreler eşleşmiyor'));
+        return;
+      }
     }
 
     setEmailLoading(true);
@@ -110,23 +171,37 @@ const AuthPage: React.FC = () => {
                   type="password"
                   placeholder={t('auth.password_placeholder')}
                   value={password}
-                  onIonInput={(e) => setPassword(e.detail.value!)}
+                  onIonInput={(e) => handlePasswordChange(e.detail.value!)}
                   className="auth-input"
                 />
               </IonItem>
+              {/* Password Error Message */}
+              {passwordError && (
+                <IonText color="danger" className="text-sm ml-4 mb-2 block">
+                  {passwordError}
+                </IonText>
+              )}
 
               {/* Confirm Password (only for signup) */}
               {!isLogin && (
-                <IonItem className="auth-input-item">
-                  <IonIcon icon={lockClosedOutline} slot="start" color="medium" />
-                  <IonInput
-                    type="password"
-                    placeholder={t('auth.confirm_password_placeholder')}
-                    value={confirmPassword}
-                    onIonInput={(e) => setConfirmPassword(e.detail.value!)}
-                    className="auth-input"
-                  />
-                </IonItem>
+                <>
+                  <IonItem className="auth-input-item">
+                    <IonIcon icon={lockClosedOutline} slot="start" color="medium" />
+                    <IonInput
+                      type="password"
+                      placeholder={t('auth.confirm_password_placeholder')}
+                      value={confirmPassword}
+                      onIonInput={(e) => handleConfirmPasswordChange(e.detail.value!)}
+                      className="auth-input"
+                    />
+                  </IonItem>
+                  {/* Confirm Password Error Message */}
+                  {confirmPasswordError && (
+                    <IonText color="danger" className="text-sm ml-4 mb-2 block">
+                      {confirmPasswordError}
+                    </IonText>
+                  )}
+                </>
               )}
 
               {/* Email Auth Button */}

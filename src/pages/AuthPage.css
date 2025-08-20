@@ -106,6 +106,7 @@
   --padding-start: 16px;
   --padding-end: 16px;
   --min-height: 48px;
+  --color: #f8f8ff !important;
   margin-bottom: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -115,8 +116,16 @@
 }
 
 .auth-input {
-  --color: var(--ion-color-light);
+  --color: #f8f8ff !important;
   --placeholder-color: rgba(255, 255, 255, 0.6);
+}
+
+.auth-input input {
+  color: #f8f8ff !important;
+}
+
+.auth-input-item ion-input {
+  --color: #f8f8ff !important;
 }
 
 /* Button Styles */

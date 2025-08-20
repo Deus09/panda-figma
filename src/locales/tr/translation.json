@@ -285,6 +285,10 @@
     "have_account": "Zaten hesabınız var mı?",
     "loading": "Yükleniyor...",
     "passwords_do_not_match": "Şifreler eşleşmiyor",
+    "password_min_length": "Şifre en az 8 karakter olmalıdır",
+    "password_uppercase": "Şifre en az 1 büyük harf içermelidir",
+    "password_lowercase": "Şifre en az 1 küçük harf içermelidir",
+    "password_special": "Şifre en az 1 özel karakter içermelidir",
     "error_occurred": "Bir hata oluştu"
   },
   "add_movie_modal": {

@@ -285,6 +285,10 @@
     "have_account": "¿Ya tienes cuenta?",
     "loading": "Cargando...",
     "passwords_do_not_match": "Las contraseñas no coinciden",
+    "password_min_length": "La contraseña debe tener al menos 8 caracteres",
+    "password_uppercase": "La contraseña debe contener al menos 1 letra mayúscula",
+    "password_lowercase": "La contraseña debe contener al menos 1 letra minúscula",
+    "password_special": "La contraseña debe contener al menos 1 caracter especial",
     "error_occurred": "Ocurrió un error"
   },
   "add_movie_modal": {
