@@ -17,7 +17,10 @@ const AuthCallback: React.FC = () => {
       console.log('🔄 AuthCallback başladı');
       console.log('📍 Mevcut URL:', window.location.href);
       console.log('🔗 Hash:', window.location.hash);
-      console.log('�  Pathname:', window.location.pathname);
+      console.log('📂 Pathname:', window.location.pathname);
+      console.log('🔍 Search params:', window.location.search);
+      console.log('🌐 Origin:', window.location.origin);
+      console.log('🏠 Host:', window.location.host);
 
       try {
         // URL fragment'indeki hash token'ları işle

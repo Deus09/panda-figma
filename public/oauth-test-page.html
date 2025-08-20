@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .info {
+            background: #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .success { background: #2d5a2d; }
+        .error { background: #5a2d2d; }
+        button {
+            background: #FE7743;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #E56A3C;
+        }
+    </style>
+</head>
+<body>
+    <h1>OAuth Debug Test</h1>
+    
+    <div class="info">
+        <h3>URL Bilgileri:</h3>
+        <p><strong>Current URL:</strong> <span id="currentUrl"></span></p>
+        <p><strong>Origin:</strong> <span id="origin"></span></p>
+        <p><strong>Hash:</strong> <span id="hash"></span></p>
+        <p><strong>Search:</strong> <span id="search"></span></p>
+    </div>
+
+    <div class="info">
+        <h3>Expected URLs:</h3>
+        <p><strong>Site URL (Supabase):</strong> http://localhost:8101</p>
+        <p><strong>Redirect URL (Supabase):</strong> http://localhost:8101/auth/callback</p>
+        <p><strong>Google OAuth Redirect URI:</strong> https://mwnhmhtkilqrjggttbmx.supabase.co/auth/v1/callback</p>
+    </div>
+
+    <button onclick="testOAuth()">Google ile Giriş Yap (Test)</button>
+    <button onclick="goToCallback()">Callback Sayfasına Git</button>
+    <button onclick="checkServer()">Sunucu Durumunu Kontrol Et</button>
+
+    <div id="logs"></div>
+
+    <script>
+        // URL bilgilerini göster
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('origin').textContent = window.location.origin;
+        document.getElementById('hash').textContent = window.location.hash || 'Yok';
+        document.getElementById('search').textContent = window.location.search || 'Yok';
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const div = document.createElement('div');
+            div.className = `info ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            logs.appendChild(div);
+        }
+
+        function testOAuth() {
+            log('OAuth test başlatılıyor...');
+            const url = 'https://mwnhmhtkilqrjggttbmx.supabase.co/auth/v1/authorize?provider=google&redirect_to=' + 
+                       encodeURIComponent(window.location.origin + '/auth/callback');
+            log(`Redirect URL: ${url}`);
+            window.location.href = url;
+        }
+
+        function goToCallback() {
+            window.location.href = '/auth/callback';
+        }
+
+        function checkServer() {
+            fetch('/')
+                .then(() => log('✅ Sunucu çalışıyor', 'success'))
+                .catch(() => log('❌ Sunucu çalışmıyor', 'error'));
+        }
+
+        // Sayfa yüklendiğinde sunucu durumunu kontrol et
+        checkServer();
+    </script>
+</body>
+</html>
